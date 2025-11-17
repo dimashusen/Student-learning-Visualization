@@ -1,37 +1,44 @@
-// src/scripts/pages/auth/register-page.js
-
-const Register = {
+const RegisterPage = {
   async render() {
     return `
-      <div class="modal-overlay">
+      <div class="modal" id="authModal">
         <div class="modal-content">
-          <a href="#/" class="close-modal">&times;</a>
-          <h2>Daftar akun Dicoding</h2>
+          <span class="close-btn" id="closeModal">&times;</span>
+          
+          <h3>Daftar akun Dicoding</h3>
+          <br>
+          
           <form id="registerForm">
             <div class="form-group">
-              <label for="fullName">Nama Lengkap</label>
-              <input type="text" id="fullName" name="fullName" required>
-              <small>Gunakan nama asli Anda, nama akan digunakan pada data sertifikat</small>
+              <label>Nama Lengkap</label>
+              <input type="text" class="form-input" placeholder="Nama Lengkap" required>
+              <small style="font-size:0.6rem; color:#888;">Gunakan nama asli pada sertifikat</small>
             </div>
+
             <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required>
-              <small>Gunakan alamat email aktif Anda</small>
+              <label>Email</label>
+              <input type="email" class="form-input" placeholder="Alamat Email" required>
             </div>
+
             <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" id="password" name="password" required>
-              <small>Gunakan minimal 8 karakter dengan kombinasi huruf dan angka</small>
+              <label>Password</label>
+              <input type="password" class="form-input" placeholder="Masukan password baru" required>
+              <small style="font-size:0.6rem; color:#888;">Minimal 8 karakter kombinasi huruf & angka</small>
             </div>
-             <div class="form-group">
-              <label for="referral">Kode Referral (opsional)</label>
-              <input type="text" id="referral" name="referral">
-              <small>Masukan kode referral pengguna lain jika ada</small>
+
+            <div class="form-group">
+              <label>Kode Referral (opsional)</label>
+              <input type="text" class="form-input" placeholder="Masukan kode referral jika ada">
             </div>
-            <button type="submit" class="btn btn-primary">Daftar</button>
-            <div class="separator">atau</div>
-            <button type="button" class="btn btn-google">
-              <img src="httpssmall" alt="Google icon"> Masuk dengan Google
+
+            <button type="submit" class="btn-primary">Daftar</button>
+            
+            <div style="margin: 15px 0; border-bottom: 1px solid #ccc; line-height:0.1em;">
+                <span style="background:#fff; padding:0 10px; color:#777;">atau</span>
+            </div>
+
+            <button type="button" class="btn-google">
+              <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="G"> Masuk dengan Google
             </button>
           </form>
         </div>
@@ -40,15 +47,15 @@ const Register = {
   },
 
   async afterRender() {
-    // Tambahkan event listener untuk form register di sini
-    document.getElementById('registerForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      // Logika registrasi
-      console.log('Register form submitted');
-      // Contoh: Pindah ke halaman login setelah daftar
-      // window.location.hash = '/login';
+    const modal = document.getElementById('authModal');
+    const closeBtn = document.getElementById('closeModal');
+    
+    closeBtn.addEventListener('click', () => {
+      modal.remove();
     });
-  },
+    
+    // Tambahkan logika submit form di sini jika diperlukan
+  }
 };
 
-export default Register;
+export default RegisterPage;

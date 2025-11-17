@@ -1,53 +1,68 @@
-// src/scripts/pages/auth/login-page.js
-
-const Login = {
+const LoginPage = {
   async render() {
     return `
-      <div class="modal-overlay">
+      <div class="modal" id="authModal">
         <div class="modal-content">
-          <a href="#/" class="close-modal">&times;</a>
+          <span class="close-btn" id="closeModal">&times;</span>
+          
           <h2>Masuk</h2>
+          <br>
+          
           <form id="loginForm">
             <div class="form-group">
-              <label for="username">Username, email & phone number</label>
-              <input type="text" id="username" name="username" required>
+              <input type="text" class="form-input" placeholder="Username, email & phone number" required>
             </div>
             <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" id="password" name="password" required>
+              <input type="password" class="form-input" placeholder="Password" required>
             </div>
-            <div class="form-options">
-              <label class="checkbox-label">
-                <input type="checkbox" name="remember"> Remember Me
-              </label>
-              <a href="#" class="forgot-password">Lupa Password?</a>
+            
+            <div style="display:flex; justify-content:space-between; font-size: 0.85rem; margin-bottom:20px;">
+                <label><input type="checkbox"> Remember Me</label>
+                <a href="#" style="color: var(--primary-color); text-decoration:none; font-weight:bold;">Lupa Password?</a>
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-            <div class="separator">atau</div>
-            <button type="button" class="btn btn-google">
-              <img src="httpssmall" alt="Google icon"> Masuk dengan Google
+
+            <button type="submit" class="btn-primary">Login</button>
+            
+            <div style="margin: 15px 0; border-bottom: 1px solid #ccc; line-height:0.1em;">
+                <span style="background:#fff; padding:0 10px; color:#777;">atau</span>
+            </div>
+
+            <button type="button" class="btn-google">
+              <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="G"> Masuk dengan Google
             </button>
-            <p class="auth-link">Belum punya akun? <a href="#/register">Daftar</a></p>
+
+            <p class="text-small">Belum punya akun? <a href="#" id="goToRegister" style="color:blue;">Daftar</a></p>
+            
+            <p class="text-small" style="font-size: 0.6rem; margin-top: 20px; color: #999;">
+              Dengan melakukan Login, Anda setuju dengan syarat & ketentuan...
+            </p>
           </form>
-          <p class="terms">
-            Dengan melakukan Login, Anda setuju dengan <a href="#">syarat & ketentuan Dicoding</a>.
-            This site is protected by reCAPTCHA and the Google <a href="#">Privacy Policy</a> and <a href="#">Terms of service apply</a>.
-          </p>
         </div>
       </div>
     `;
   },
 
   async afterRender() {
-    // Tambahkan event listener untuk form login di sini
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      // Logika login
-      console.log('Login form submitted');
-      // Contoh: Pindah ke dashboard setelah login
-      // window.location.hash = '/dashboard';
+    // Tutup Modal
+    const modal = document.getElementById('authModal');
+    const closeBtn = document.getElementById('closeModal');
+    
+    closeBtn.addEventListener('click', () => {
+      modal.remove(); // Hapus modal dari DOM
     });
-  },
+
+    // Pindah ke Register
+    const goToRegister = document.getElementById('goToRegister');
+    goToRegister.addEventListener('click', async (e) => {
+        e.preventDefault();
+        modal.remove(); // Hapus login modal
+        // Load Register Page
+        const { default: RegisterPage } = await import('./register-page.js');
+        const container = document.getElementById('modal-container');
+        container.innerHTML = await RegisterPage.render();
+        await RegisterPage.afterRender();
+    });
+  }
 };
 
-export default Login;
+export default LoginPage;

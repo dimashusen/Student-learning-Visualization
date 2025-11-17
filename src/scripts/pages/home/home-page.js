@@ -1,54 +1,70 @@
-// src/scripts/pages/home/home-page.js
-
-const Home = {
+const HomePage = {
   async render() {
     return `
-      <section class="hero-section">
-        <div class="hero-text">
-          <h1>Selamat datang</h1>
-          <p>Kembangkan dirimu menjadi profesional</p>
-        </div>
-        <div class="hero-image">
-          </div>
-      </section>
+      <nav class="app-bar">
+        <a href="#/home" class="nav-link active">Home</a>
+        <a href="#/dashboard" class="nav-link">Dashboard</a>
+        <a href="#/academy" class="nav-link">Academy</a>
+        <button id="loginBtn" class="nav-link" style="border:none; background:transparent; cursor:pointer;">Login</button>
+      </nav>
 
-      <section class="features-section">
-        <div class="features-text">
-          <h2>Wujudkan Mimpi Mu!!</h2>
-          <p>Semoga aktifitas belajarmu menyenangkan</p>
-          <div class="social-icons">
-            <a href="#" aria-label="Email"><i class="fas fa-envelope"></i></a>
-            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <main>
+        <section class="hero">
+          <div class="hero-content">
+            <h1 class="hero-title">Selamat datang</h1>
+            <p class="hero-subtitle">Kembangkan dirimu menjadi profesional</p>
           </div>
-        </div>
-        <div class="features-cards">
-          <div class="card">
-            <i class="fas fa-graduation-cap card-icon"></i>
-            <h3>Program Akademik</h3>
+          <div class="hero-image-container">
+            </div>
+        </section>
+
+        <section class="features">
+          <div class="feature-text-area">
+            <h2 class="hero-title">Wujudkan Mimpi Mu!!</h2>
+            <p>Semoga aktifitas belajarmu menyenangkan</p>
+            <div style="margin-top: 20px; font-size: 1.5rem;">
+                <span>📧</span> <span>📍</span> <span>📷</span>
+            </div>
           </div>
-          <div class="card">
-            <i class="fas fa-book-open card-icon"></i>
-            <h3>Aktivitas Belajar</h3>
+
+          <div class="feature-cards">
+            <div class="card">
+              <span>🎓</span> <h4>Program Akademik</h4>
+            </div>
+            <div class="card">
+              <span>📚</span>
+              <h4>Aktivitas Belajar</h4>
+            </div>
+            <div class="card">
+              <span>📅</span>
+              <h4>Aktivitas Lain</h4>
+            </div>
           </div>
-          <div class="card">
-            <i class="fas fa-calendar-alt card-icon"></i>
-            <h3>Aktivitas Lain</h3>
-          </div>
-        </div>
-      </section>
+        </section>
+      </main>
+
+      <footer style="text-align: center; padding: 20px; color: #777;">
+        © 2025 Dicoding Indonesia
+      </footer>
+      
+      <div id="modal-container"></div>
     `;
   },
 
   async afterRender() {
-    // Fungsi ini akan dipanggil setelah render()
-    // Tempat untuk menambahkan event listener jika ada
-    console.log('Home page rendered');
-
-    // P.S. Anda perlu memuat Font Awesome untuk ikon-ikon di atas.
-    // Tambahkan di <head> pada index.html Anda:
-    // <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    // Logika tombol Login untuk memunculkan Modal
+    const loginBtn = document.getElementById('loginBtn');
+    const modalContainer = document.getElementById('modal-container');
+    
+    // Import dinamis login page jika diperlukan, atau panggil fungsi render
+    // Untuk simpelnya, kita asumsikan logika pemanggilan modal ada di sini
+    loginBtn.addEventListener('click', async () => {
+        // Disini kita akan memanggil konten Login Page
+        const { default: LoginPage } = await import('../auth/login-page.js');
+        modalContainer.innerHTML = await LoginPage.render();
+        await LoginPage.afterRender();
+    });
   },
 };
 
-export default Home;
+export default HomePage;
