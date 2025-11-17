@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "name": "Student A",
+        "activities": [
+            { "module": "Math", "score": 85 },
+            { "module": "Science", "score": 92 }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Student B",
+        "activities": [
+            { "module": "Math", "score": 78 },
+            { "module": "Science", "score": 88 }
+        ]
+    }
+]
