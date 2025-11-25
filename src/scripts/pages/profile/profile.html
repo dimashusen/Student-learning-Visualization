@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Profil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS DASHBOARD --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f5f7fa; color: #333; }
+
+        /* Navbar */
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 50px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .nav-left { display: flex; align-items: center; gap: 20px; flex: 1; }
+        .logo-circle {
+            width: 40px; height: 40px; background: #001e2b; color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px;
+        }
+        .search-bar {
+            width: 100%; max-width: 400px; position: relative;
+        }
+        .search-bar input {
+            width: 100%; padding: 10px 15px; border-radius: 5px; border: 1px solid #ddd; outline: none;
+        }
+        .nav-right { display: flex; align-items: center; gap: 30px; }
+        .nav-right a { text-decoration: none; color: #333; font-weight: 600; }
+        .profile-icon {
+            width: 40px; height: 40px; background-color: #dbeafe; border-radius: 50%;
+            cursor: pointer; /* Bisa diklik */
+        }
+
+        /* Banner & Profile Header */
+        .profile-banner {
+            background-color: #085f73; /* Teal Background */
+            color: white;
+            padding: 40px 50px 80px 50px; /* Padding bottom extra for overlap */
+            position: relative;
+            margin-bottom: 60px; /* Space for profile info overlap */
+            display: flex;
+            align-items: center;
+        }
+
+        /* Dekorasi Lengkungan Kiri (Opsional untuk mirip gambar) */
+        .banner-curve {
+            position: absolute; left: 0; top: 0; height: 100%; width: 150px;
+            background: #085f73; border-radius: 0 0 100px 0; z-index: 0;
+        }
+
+        .profile-content {
+            display: flex; width: 100%; max-width: 1200px; margin: 0 auto; z-index: 1; position: relative; gap: 40px;
+        }
+
+        /* Foto Profil */
+        .profile-pic-container {
+            position: relative;
+        }
+        .profile-pic {
+            width: 180px; height: 180px; border-radius: 50%; border: 5px solid white;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .status-dot {
+            width: 25px; height: 25px; background: white; border-radius: 50%;
+            position: absolute; bottom: 15px; right: 15px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Info Text */
+        .user-info h1 { font-size: 32px; font-weight: 600; margin-bottom: 10px; }
+        .info-list p { margin-bottom: 8px; font-size: 14px; display: flex; align-items: center; gap: 10px; opacity: 0.9; }
+        .about-section { max-width: 400px; margin-left: auto; }
+        .about-section h3 { font-size: 18px; margin-bottom: 10px; font-weight: 600; }
+        .about-section p { font-size: 13px; line-height: 1.5; opacity: 0.9; }
+
+        /* Tabs (Academy, Event, Challenge) */
+        .tabs-container {
+            max-width: 1200px; margin: 0 auto; padding: 0 50px;
+            display: flex; gap: 30px; margin-bottom: 30px;
+        }
+        .tab-item { font-size: 18px; font-weight: 500; color: #888; cursor: pointer; }
+        .tab-item.active { color: #333; font-weight: 700; border-bottom: 2px solid #333; padding-bottom: 5px; }
+        .badge-count { font-size: 14px; margin-left: 5px; }
+
+        /* Grid Courses */
+        .courses-grid {
+            max-width: 1200px; margin: 0 auto; padding: 0 50px 50px 50px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+
+        .course-card {
+            background: white; border-radius: 10px; padding: 20px;
+            display: flex; gap: 20px; align-items: flex-start;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee;
+        }
+
+        .course-img {
+            width: 100px; height: 80px; border-radius: 8px; object-fit: cover;
+        }
+
+        .course-details { flex: 1; }
+        .status-badge {
+            color: #00a86b; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 5px; margin-bottom: 5px;
+        }
+        .course-title { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 10px; line-height: 1.4; }
+        .course-meta { display: flex; gap: 15px; font-size: 12px; color: #666; font-weight: 500; }
+        .course-meta i { color: #f4c542; } /* Icon star color */
+
+        footer { text-align: center; padding: 20px; font-size: 14px; color: #666; margin-top: 20px; }
+
+        /* Responsif */
+        @media (max-width: 768px) {
+            .profile-content { flex-direction: column; text-align: center; }
+            .about-section { margin: 0 auto; text-align: center; margin-top: 20px; }
+            .courses-grid { grid-template-columns: 1fr; }
+            .nav-left { display: none; } /* Hide search on mobile for simple view */
+            nav { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <div class="logo-circle">g</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Apa yang ingin anda pelajari">
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="index.html">Home</a>
+            <a href="#">Dashboard</a>
+            <div class="profile-icon" title="Profil Saya"></div>
+            
+            <a href="javascript:void(0)" onclick="logoutUser()" style="font-weight: 400; font-size: 14px;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="profile-banner">
+        <div class="profile-content">
+            <div class="profile-pic-container">
+                <img src="https://i.pravatar.cc/300?img=11" alt="Profile" class="profile-pic">
+                <div class="status-dot"></div> </div>
+
+            <div class="user-info">
+                <h1>Fardan Zaindi Akmal</h1>
+                <div class="info-list">
+                    <p><i class="fa-regular fa-envelope"></i> Fardanadjha@gmail.com</p>
+                    <p><i class="fa-solid fa-location-dot"></i> Aceh</p>
+                    <p><i class="fa-regular fa-calendar"></i> Bergabung sejak 1945</p>
+                    <p><i class="fa-solid fa-trophy"></i> 99999 xp</p>
+                </div>
+            </div>
+
+            <div class="about-section">
+                <h3>Tentang Saya</h3>
+                <p>Akulah sang raja hutan, aku menguasai semua elemen di dunia ini, harimau, singa, gajah dan butet semua tunduk padaku</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <div class="tab-item active">Academy <span class="badge-count" style="font-weight:700;">99</span></div>
+        <div class="tab-item">Event <span class="badge-count">10</span></div>
+        <div class="tab-item">Challenge <span class="badge-count">0</span></div>
+    </div>
+
+    <div class="courses-grid">
+        
+        <div class="course-card">
+            <img src="https://img.freepik.com/free-photo/woman-working-call-center_23-2148094895.jpg" class="course-img" alt="Course">
+            <div class="course-details">
+                <div class="status-badge"><i class="fa-solid fa-circle-check"></i> Lulus</div>
+                <div class="course-title">Memulai Dasar Pemrograman untuk Menjadi Pengembang Software</div>
+                <div class="course-meta">
+                    <span><i class="fa-regular fa-clock"></i> 9 Jam</span>
+                    <span><i class="fa-solid fa-star"></i> 4,88</span>
+                    <span><i class="fa-solid fa-signal"></i> Dasar</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-card">
+            <img src="https://img.freepik.com/free-photo/medium-shot-man-working-laptop_23-2150323507.jpg" class="course-img" alt="Course">
+            <div class="course-details">
+                <div class="status-badge"><i class="fa-solid fa-circle-check"></i> Lulus</div>
+                <div class="course-title">Belajar Dasar Cloud dan Gen AI di AWS</div>
+                <div class="course-meta">
+                    <span><i class="fa-regular fa-clock"></i> 10 Jam</span>
+                    <span><i class="fa-solid fa-star"></i> 4,82</span>
+                    <span><i class="fa-solid fa-signal"></i> Dasar</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-card">
+            <img src="https://img.freepik.com/free-photo/programming-background-with-person-working-with-codes-computer_23-2150010125.jpg" class="course-img" alt="Course">
+            <div class="course-details">
+                <div class="status-badge"><i class="fa-solid fa-circle-check"></i> Lulus</div>
+                <div class="course-title">Belajar Fundamental Front-End Web Development</div>
+                <div class="course-meta">
+                    <span><i class="fa-regular fa-clock"></i> 80 Jam</span>
+                    <span><i class="fa-solid fa-star"></i> 4,89</span>
+                    <span><i class="fa-solid fa-signal"></i> Menengah</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-card">
+            <img src="https://img.freepik.com/free-photo/hacker-man-laptop_23-2148028340.jpg" class="course-img" alt="Course">
+            <div class="course-details">
+                <div class="status-badge"><i class="fa-solid fa-circle-check"></i> Lulus</div>
+                <div class="course-title">Memulai Pemrograman dengan Python</div>
+                <div class="course-meta">
+                    <span><i class="fa-regular fa-clock"></i> 60 Jam</span>
+                    <span><i class="fa-solid fa-star"></i> 4,82</span>
+                    <span><i class="fa-solid fa-signal"></i> Dasar</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2025 Dicoding Indonesia
+    </footer>
+
+    <script>
+        function logoutUser() {
+            // Hapus status login dari penyimpanan browser
+            localStorage.removeItem('statusLogin');
+            // Arahkan kembali ke halaman Home
+            window.location.href = "index.html";
+        }
+    </script>
+
+</body>
+</html>

@@ -1,245 +1,243 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-
+/* ========================================= */
+/* 1. RESET & VARIABLES */
+/* ========================================= */
 :root {
-  --primary: #004e64;       /* Biru Tua */
-  --accent: #dcecfb;        /* Biru Muda */
-  --white: #ffffff;
-  --bg-body: #f8f9fa;
-  --text-dark: #333333;
-  --shadow-soft: 0 10px 30px rgba(0, 78, 100, 0.08);
-  --radius-lg: 30px;
+    --primary-dark: #003e52;
+    --primary-blue: #2196f3;
+    --bg-main: #f5f9fa;
+    --text-dark: #333;
+    --text-grey: #888;
+    --accent-green: #4caf50;
+    --accent-red: #ef5350;
+    --card-shadow: 0 4px 20px rgba(0,0,0,0.03);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
-body {
-  background-color: var(--bg-body);
-  color: var(--text-dark);
-  line-height: 1.6;
+body.dashboard-body {
+    background-color: var(--bg-main);
+    display: flex;
+    min-height: 100vh;
+    color: var(--text-dark);
 }
 
-/* Container Utility */
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 20px;
+/* ========================================= */
+/* 2. SIDEBAR (Kiri) */
+/* ========================================= */
+.sidebar {
+    width: 260px;
+    background-color: var(--primary-dark);
+    color: white;
+    padding: 30px 25px;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    left: 0; top: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
 }
 
-a { text-decoration: none; color: inherit; }
+.sidebar-header { margin-bottom: 50px; display: flex; justify-content: space-between; align-items: center; }
+.brand-logo { font-size: 24px; display: flex; align-items: center; gap: 10px; }
+.close-sidebar-btn { display: none; background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
 
-/* --- 1. NAVBAR (Modern & Bersih) --- */
-.navbar-area {
-  background-color: var(--white);
-  padding: 15px 0;
-  position: sticky; /* Menempel saat scroll */
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+.menu-group { margin-bottom: 30px; }
+.menu-category { font-size: 11px; letter-spacing: 1px; color: #a0bacc; margin-bottom: 15px; text-transform: uppercase; font-weight: 600; }
+.menu-item { display: block; text-decoration: none; color: #cfdfe6; padding: 12px 15px; border-radius: 8px; margin-bottom: 5px; font-size: 14px; transition: 0.2s; }
+.menu-item:hover { background-color: rgba(255,255,255,0.1); color: white; }
+.menu-item.active { background-color: white; color: var(--primary-dark); font-weight: 600; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+/* ========================================= */
+/* 3. MAIN CONTENT & HEADER */
+/* ========================================= */
+.main-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    padding: 30px 40px;
 }
 
-.nav-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.header-left h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 5px; }
+.header-left p { color: var(--text-grey); font-size: 14px; }
+
+.header-right { display: flex; align-items: center; gap: 20px; }
+.search-wrapper { background: white; border: 1px solid #eee; padding: 10px 20px; border-radius: 30px; display: flex; align-items: center; gap: 10px; width: 250px; }
+.search-wrapper input { border: none; outline: none; font-size: 13px; width: 100%; }
+.search-wrapper i { color: #ccc; }
+.notif-btn { background: white; border: 1px solid #eee; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; }
+.hamburger-btn { display: none; font-size: 24px; cursor: pointer; margin-right: 15px; }
+
+/* ========================================= */
+/* 4. DASHBOARD GRID SYSTEM */
+/* ========================================= */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2.4fr 1fr; /* Kolom Kiri lebih lebar */
+    gap: 25px;
+    align-items: start;
 }
 
-.logo a {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--primary);
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 25px;
+    position: relative;
 }
 
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 30px;
+/* --- HERO CARD --- */
+.hero-card {
+    background: linear-gradient(100deg, #ffffff 50%, #e3f2fd 100%);
+    display: flex; justify-content: space-between;
+    align-items: center; min-height: 200px;
+}
+.tag-blue { background: #dbeafe; color: #003e52; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; display: inline-block; margin-bottom: 12px; }
+.hero-text-content h2 { font-size: 22px; font-weight: 700; margin-bottom: 10px; max-width: 400px; line-height: 1.3; }
+.hero-text-content p { font-size: 13px; color: var(--text-grey); margin-bottom: 20px; max-width: 400px; line-height: 1.6; }
+.hero-actions { display: flex; align-items: center; gap: 15px; }
+.btn-primary { background: var(--primary-dark); color: white; padding: 10px 24px; border-radius: 30px; border: none; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.dot-indicator { width: 8px; height: 8px; background: white; border-radius: 50%; }
+.time-left { font-size: 12px; color: #888; }
+.react-icon-3d { font-size: 80px; color: #61dafb; filter: drop-shadow(0 10px 15px rgba(97, 218, 251, 0.4)); animation: spin 10s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* --- MIDDLE ROW (CHECKIN + SCHEDULE) --- */
+.middle-row-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 25px; margin-bottom: 25px; }
+.card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.card-header-row h3 { font-size: 16px; font-weight: 700; }
+.week-label { font-size: 11px; color: #888; }
+.sub-date { font-size: 11px; color: #aaa; margin-bottom: 15px; }
+.link-view-all { font-size: 11px; color: #888; text-decoration: none; }
+
+/* Daily Check-in Pills */
+.checkin-pills-container { display: flex; justify-content: space-between; gap: 8px; }
+.day-pill-vertical {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 10px 5px; border-radius: 12px; border: 1px solid #f0f0f0; min-height: 70px;
+}
+.pill-day { font-size: 10px; color: #888; margin-bottom: 5px; font-weight: 500; }
+.pill-num { font-size: 16px; font-weight: 700; color: #333; }
+
+/* Status Colors Checkin */
+.day-pill-vertical.done { background-color: #e8f5e9; border-color: #c8e6c9; } /* Hijau */
+.day-pill-vertical.done .pill-num { color: #2e7d32; }
+.day-pill-vertical.missed { background-color: #ffebee; border-color: #ffcdd2; } /* Merah */
+.day-pill-vertical.missed .pill-num { color: #c62828; }
+.day-pill-vertical.active { background-color: white; border: 2px solid var(--primary-dark); transform: scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.day-pill-vertical.future { background-color: #f9f9f9; opacity: 0.6; }
+
+/* My Schedule Box */
+.schedule-box-blue { background: #e1f5fe; border-radius: 15px; padding: 15px; }
+.sched-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.sched-row h4 { font-size: 13px; margin-bottom: 3px; }
+.sched-time { font-size: 11px; color: #0277bd; font-weight: 500; }
+.sched-actions { display: flex; gap: 5px; }
+.btn-outline-white { background: white; border: 1px solid white; padding: 4px 10px; border-radius: 15px; font-size: 10px; font-weight: 600; color: #0277bd; cursor: pointer; }
+.btn-solid-white { background: white; border: none; padding: 4px 10px; border-radius: 15px; font-size: 10px; font-weight: 600; color: #0277bd; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.sched-deadline-row { background: rgba(255,255,255,0.5); border-radius: 12px; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+.deadline-text { font-size: 10px; color: #333; line-height: 1.4; }
+.deadline-right { text-align: right; }
+.deadline-right span { display: block; font-size: 10px; font-weight: 700; margin-bottom: 3px; }
+.btn-pilled-white { font-size: 9px; padding: 3px 8px; border-radius: 10px; border: none; background: white; cursor: pointer; font-weight: 600; }
+
+/* --- CURRENT MODULES --- */
+.modules-section h3 { font-size: 16px; font-weight: 700; }
+.mb-20 { margin-bottom: 20px; }
+.link-text { font-size: 11px; color: #2196f3; text-decoration: none; font-weight: 600; }
+
+.module-row { display: flex; align-items: center; gap: 15px; padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; }
+.module-row.border-none { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.mod-icon { width: 45px; height: 45px; border-radius: 12px; background-color: var(--primary-dark); }
+.mod-details { flex: 1; }
+.mod-top { display: flex; justify-content: space-between; margin-bottom: 2px; }
+.mod-top h4 { font-size: 13px; font-weight: 600; max-width: 250px; }
+.mod-top .score { font-weight: 700; font-size: 14px; }
+.mod-sub { font-size: 10px; color: #999; margin-bottom: 8px; }
+.progress-track { width: 100%; height: 5px; background: #eee; border-radius: 5px; overflow: hidden; }
+.progress-bar { height: 100%; border-radius: 5px; }
+.progress-bar.green { background: #4caf50; }
+.progress-bar.blue { background: #2196f3; }
+.progress-bar.grey { background: #bdbdbd; }
+.badge-locked { font-size: 9px; background: #eee; padding: 2px 6px; border-radius: 4px; color: #777; }
+.mod-meta-bottom { display: flex; justify-content: flex-end; margin-top: 5px; font-size: 10px; color: #888; }
+.mod-status-icon { width: 20px; text-align: center; }
+.mod-status-icon.green { color: #4caf50; font-size: 18px; }
+.mod-status-icon.blue-solid { width: 12px; height: 12px; background: #2196f3; border-radius: 50%; }
+.mod-status-icon.grey-circle { width: 12px; height: 12px; background: #ddd; border-radius: 50%; }
+
+/* --- SKILL ANALYSIS --- */
+.skill-section { min-height: 300px; }
+.chart-legend { font-size: 10px; color: #666; }
+.legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 10px; margin-right: 3px; }
+.legend-dot.blue { background: #2196f3; }
+.legend-dot.grey { background: #ddd; }
+.radar-wrapper { height: 220px; width: 100%; display: flex; justify-content: center; }
+
+/* ========================================= */
+/* 5. RIGHT COLUMN WIDGETS */
+/* ========================================= */
+.right-column { display: flex; flex-direction: column; gap: 25px; }
+
+/* Study Time */
+.stats-dark-card { background: var(--primary-dark); color: white; padding: 20px; border-radius: 20px; position: relative; overflow: hidden; min-height: 140px; }
+.stats-top { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.8; letter-spacing: 0.5px; margin-bottom: 5px; }
+.stats-big-num { font-size: 28px; font-weight: 700; z-index: 2; position: relative; }
+.wave-wrapper { position: absolute; bottom: -10px; left: 0; width: 100%; height: 60px; opacity: 0.3; }
+
+/* Avg Grade */
+.grade-card { display: flex; align-items: center; gap: 15px; padding: 20px; }
+.grade-circle-wrapper { width: 60px; height: 60px; position: relative; }
+.circular-chart { display: block; margin: 0 auto; max-width: 100%; max-height: 250px; }
+.circle-bg { fill: none; stroke: #eee; stroke-width: 3.8; }
+.circle { fill: none; stroke-width: 2.8; stroke-linecap: round; stroke: var(--primary-dark); animation: progress 1s ease-out forwards; }
+.percentage { fill: #333; font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 0.5em; text-anchor: middle; }
+@keyframes progress { 0% { stroke-dasharray: 0 100; } }
+.grade-text h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.grade-text p { font-size: 10px; color: #888; }
+.label-gray { font-size: 10px; color: #999; }
+
+/* Milestone */
+.milestone-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+.timeline-container { border-left: 2px solid #e0e0e0; margin-left: 8px; padding-left: 20px; display: flex; flex-direction: column; gap: 20px; }
+.tl-item { position: relative; }
+.tl-dot, .tl-dot-ring, .tl-dot-hollow { position: absolute; left: -26px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: white; }
+.tl-item.done .tl-dot { background: #4caf50; border: 2px solid #4caf50; }
+.tl-item.current .tl-dot-ring { border: 2px solid #2196f3; box-shadow: 0 0 0 2px #dbeafe; }
+.tl-item.future .tl-dot-hollow { border: 2px solid #ccc; }
+.tl-content h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.tl-content p { font-size: 11px; color: #888; }
+.text-blue { color: #2196f3; }
+
+/* Insight */
+.insight-box-blue { background: #e3f2fd; border: 1px solid #bbdefb; border-radius: 15px; padding: 15px; font-size: 11px; color: #1565c0; line-height: 1.5; }
+.insight-icon { font-weight: 700; margin-bottom: 5px; display: flex; gap: 5px; align-items: center; }
+
+footer { text-align: center; font-size: 12px; color: #aaa; margin-top: 40px; padding-bottom: 20px; }
+
+/* ========================================= */
+/* 6. RESPONSIVE MEDIA QUERIES */
+/* ========================================= */
+@media (max-width: 1024px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .right-column { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .sidebar { width: 70px; padding: 20px 10px; }
+    .main-content { margin-left: 70px; width: calc(100% - 70px); }
+    .brand-logo span, .menu-category, .menu-item { display: none; } /* Hide text */
+    .menu-item::before { content: '•'; font-size: 20px; margin: 0 auto; display: block; text-align: center; }
 }
 
-.nav-menu ul {
-  display: flex;
-  list-style: none;
-  gap: 20px;
-}
-
-.nav-link {
-  font-weight: 600;
-  color: #666;
-  font-size: 0.95rem;
-  transition: color 0.3s;
-}
-
-.nav-link.active, .nav-link:hover {
-  color: var(--primary);
-}
-
-.btn-login {
-  padding: 8px 24px;
-  background-color: transparent;
-  border: 2px solid var(--primary);
-  border-radius: 50px;
-  color: var(--primary);
-  font-weight: 700;
-  transition: 0.3s;
-}
-
-.btn-login:hover {
-  background-color: var(--primary);
-  color: var(--white);
-}
-
-/* --- 2. HERO SECTION (Profesional) --- */
-.hero-section {
-  background-color: var(--primary);
-  padding: 60px 0 100px 0; /* Padding bawah lebih besar untuk efek overlap */
-  border-bottom-right-radius: 80px; /* Lengkungan halus di kanan bawah saja */
-  position: relative;
-}
-
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr; /* Teks lebih lebar dikit */
-  align-items: center;
-  gap: 40px;
-}
-
-.hero-content h1 {
-  color: var(--white);
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 15px;
-}
-
-.hero-content p {
-  color: var(--white);
-  font-size: 1.1rem;
-  opacity: 0.9;
-}
-
-.hero-image {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.hero-image img {
-  width: 100%;
-  max-width: 450px;
-  height: auto;
-  /* Efek floating yang halus */
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); 
-}
-
-
-/* --- 3. INFO & CARDS SECTION --- */
-.info-section {
-  margin-top: -60px; /* TEKNIK OVERLAP: Naik ke atas menimpa biru */
-  padding-bottom: 60px;
-  position: relative;
-  z-index: 10;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr; /* Kartu dapat area lebih luas */
-  gap: 40px;
-  align-items: center;
-}
-
-/* Teks di Kiri */
-.info-text {
-  padding-top: 60px; /* Kompensasi overlap */
-}
-
-.info-text h2 {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--primary);
-  margin-bottom: 10px;
-}
-
-.info-text p {
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.social-icons {
-  display: flex;
-  gap: 15px;
-}
-
-.social-icons i {
-  font-size: 1.5rem;
-  color: var(--primary);
-  transition: transform 0.2s;
-}
-
-.social-icons i:hover { transform: translateY(-3px); }
-
-/* Kartu-Kartu */
-.cards-wrapper {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 Kolom */
-  gap: 20px;
-}
-
-.feature-card {
-  background-color: var(--white);
-  padding: 30px 20px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.3s ease;
-  border: 1px solid rgba(0,0,0,0.03);
-}
-
-.feature-card:hover {
-  transform: translateY(-10px); /* Efek naik saat di-hover */
-}
-
-.icon-box {
-  font-size: 2.5rem;
-  color: var(--primary);
-  margin-bottom: 20px;
-}
-
-.feature-card h3 {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-dark);
-}
-
-
-/* Footer */
-.app-footer {
-  text-align: center;
-  padding: 40px 0;
-  color: #888;
-  font-size: 0.9rem;
-  border-top: 1px solid #eee;
-  margin-top: 40px;
-}
-
-/* === MODAL STYLES (Tetap, tidak diubah) === */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-.modal-content { background: white; padding: 40px; border-radius: 15px; width: 400px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-.close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; }
-.form-group { margin-bottom: 15px; }
-.form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; }
-.btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-.btn-google { width: 100%; padding: 12px; background: white; border: 1px solid #ccc; border-radius: 8px; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; color: #555; }
-.btn-google img { width: 20px; }
-.text-small { text-align: center; margin-top: 15px; font-size: 0.8rem; }
-
-/* RESPONSIVE (Agar rapi di HP) */
-@media (max-width: 900px) {
-  .hero-grid { grid-template-columns: 1fr; text-align: center; gap: 30px; }
-  .hero-image { justify-content: center; }
-  .hero-section { border-bottom-right-radius: 0; border-bottom-left-radius: 50px; } /* Ganti lengkungan di HP */
-  
-  .info-grid { grid-template-columns: 1fr; text-align: center; }
-  .info-text { padding-top: 0; margin-bottom: 30px; }
-  .social-icons { justify-content: center; }
-  
-  .cards-wrapper { grid-template-columns: 1fr; /* Kartu jadi vertikal di HP */ }
-  .nav-menu ul { display: none; } /* Sembunyikan menu di HP (perlu hamburger menu sebenarnya, tapi ini keep simple) */
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); width: 260px; z-index: 999; }
+    .sidebar.active { transform: translateX(0); }
+    .sidebar .menu-item { display: block; }
+    .brand-logo span, .menu-category { display: block; }
+    .menu-item::before { content: none; }
+    .main-content { margin-left: 0; width: 100%; padding: 20px; }
+    .right-column { grid-template-columns: 1fr; }
+    .middle-row-grid { grid-template-columns: 1fr; }
+    .hamburger-btn { display: block; }
+    .close-sidebar-btn { display: block; }
 }

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dicoding Learning Dashboard</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-body">
+
+    <aside class="sidebar">
+        <a href="index.html" style="text-decoration:none; color:white;">
+            <div class="brand">
+                <i class="fa-solid fa-code"></i> Dicoding
+            </div>
+        </a>
+
+        <div class="menu-category">LEARNING</div>
+        <a href="#" class="menu-item active">Dashboard</a>
+        <a href="#" class="menu-item">My Progress</a>
+        <a href="#" class="menu-item">Dicoding Mentoring</a>
+
+        <div class="menu-category">DOCUMENT</div>
+        <a href="#" class="menu-item">Student Portal</a>
+        <a href="#" class="menu-item">Announcement</a>
+        <a href="#" class="menu-item">Capstone Project</a>
+        <a href="#" class="menu-item">Newsletter</a>
+    </aside>
+
+    <div class="checkin-overlay" id="checkinModal">
+        <div class="checkin-box">
+            <div class="checkin-header">
+                <h3>Daily Check-in</h3>
+                <span class="close-checkin" onclick="closeCheckin()">×</span>
+            </div>
+
+            <div class="emoji-container">
+                <div class="emoji-item" onclick="selectMood(this, 'bad')">
+                    <div class="emoji-icon">🤯</div>
+                    <span>Bad</span>
+                </div>
+                <div class="emoji-item" onclick="selectMood(this, 'neutral')">
+                    <div class="emoji-icon">🙂</div>
+                    <span>Netral</span>
+                </div>
+                <div class="emoji-item" onclick="selectMood(this, 'great')">
+                    <div class="emoji-icon">🤩</div>
+                    <span>Great</span>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <label>Your Progress</label>
+                <textarea id="progressText" placeholder="Ceritakan progres belajarmu hari ini..."></textarea>
+            </div>
+
+            <button class="btn-submit-checkin" onclick="submitCheckin()">Submit</button>
+        </div>
+    </div>
+    
+    <main class="main-content">
+        <header class="dash-header">
+            <div class="header-left">
+                <h1>HALLO HAECHAN</h1>
+                <p>Let's continue your learning journey today.</p>
+            </div>
+            <div class="header-right">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass" style="color:#aaa;"></i>
+                    <input type="text" placeholder="Search course">
+                </div>
+                <div class="notif-btn">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="left-col">
+                
+                <div class="dash-card hero-card">
+                    <div>
+                        <span class="tag-rec">Recommended Next Step</span>
+                        <h2 class="hero-title">Mastering React Hooks & Custom Logic</h2>
+                        <p class="hero-desc">Berdasarkan hasil kuis Modul 3, Anda siap untuk materi lanjutan. Tingkatkan skill manajemen state Anda sekarang.</p>
+                        <a href="#" class="btn-continue">
+                            <i class="fa-solid fa-play"></i> Lanjut Belajar
+                        </a>
+                        <span style="font-size: 12px; color: #888; margin-left: 10px;">~45 min left</span>
+                    </div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" class="hero-img" alt="React">
+                </div>
+
+                <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 0;">
+                    
+                    <div class="dash-card checkin-card" onclick="openCheckin()">
+                        <div class="checkin-top">
+                            <div class="checkin-title-group">
+                                <h3>Daily Check-in</h3>
+                                <p id="currentMonthYear">Loading...</p>
+                            </div>
+                            <span class="btn-pill" id="checkinStatusBtn">Loading...</span>
+                        </div>
+
+                        <div class="checkin-row">
+                            <div class="day-pill">
+                                <span class="day-name">Senin</span>
+                                <span class="day-num">1</span>
+                            </div>
+                            <div class="day-pill active">
+                                <span class="day-name">Selasa</span>
+                                <span class="day-num">2</span>
+                            </div>
+                            <div class="day-pill active">
+                                <span class="day-name">Rabu</span>
+                                <span class="day-num">3</span>
+                            </div>
+                            <div class="day-pill">
+                                <span class="day-name">Kamis</span>
+                                <span class="day-num">4</span>
+                            </div>
+                            <div class="day-pill">
+                                <span class="day-name">Jumat</span>
+                                <span class="day-num">5</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dash-card">
+                        <div style="display:flex; justify-content:space-between;">
+                            <h3 style="font-size: 14px;">My Schedule</h3>
+                            <a href="monitoring.html" style="font-size:11px; color:#085f73;">View all</a>
+                        </div>
+                        
+                        <div class="schedule-item">
+                            <div class="schedule-info">
+                                <h4>ILT-FE1: Front-End Web Dasar</h4>
+                                <span>08.00 s.d. 10.00 WIB</span>
+                            </div>
+                            <button class="btn-small blue">Join Session</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-card">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                        <h3>Current Modules</h3>
+                        <a href="#" style="font-size:12px; color:#085f73;">View curriculum</a>
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-icon"></div>
+                        <div class="module-info">
+                            <div style="display:flex; justify-content:space-between;">
+                                <h4>Fundamental Front-End Web Development</h4>
+                                <span style="font-weight:700;">98</span>
+                            </div>
+                            <div class="progress-bar">
+                            <div class="progress-fill" data-width="98%" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-icon" style="background:#085f73;"></div>
+                        <div class="module-info">
+                            <div style="display:flex; justify-content:space-between;">
+                                <h4>Building Interactive Apps with React</h4>
+                                <span style="font-weight:700; color:#085f73;">70</span>
+                            </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-width="70%" style="width: 0%; background:#2196f3;"></div>
+                    </div>
+                        </div>
+                    </div>
+
+                    <div class="module-item" style="border:none; margin-bottom:0;">
+                        <div class="module-icon" style="background:#333;"></div>
+                        <div class="module-info">
+                            <div style="display:flex; justify-content:space-between;">
+                                <h4 style="color:#888;">Automated Testing & CI/CD Pipelines</h4>
+                                <span style="font-size:10px; background:#eee; padding:2px 8px; border-radius:10px;">Locked</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="0%" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dash-card">
+                    <h3 style="margin-bottom:20px;">Skill Analysis (Cohort vs You)</h3>
+                    <div class="radar-chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="right-col">
+                
+                <div class="stat-card" style="margin-bottom:25px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <div>
+                            <div class="stat-title">TOTAL STUDY TIME</div>
+                            <div class="stat-value">42.5 hrs</div>
+                        </div>
+                        <i class="fa-regular fa-clock" style="font-size:20px; opacity:0.5;"></i>
+                    </div>
+                    <div class="chart-mini-container">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="dash-card" style="text-align:center;">
+                    <div class="grade-circle" style="border-color:#003e52; color:#003e52;">89</div>
+                    <h4 style="margin-top:10px;">Excellent!</h4>
+                    <p style="font-size:11px; color:#888;">You are in top 10% of class.</p>
+                </div>
+
+                <div class="dash-card">
+                    <h3 style="margin-bottom:20px;">Learning Milestone</h3>
+                    <div class="timeline">
+                        <div class="timeline-item active">
+                            <div class="timeline-title">Web Dasar</div>
+                            <div class="timeline-desc">HTML, CSS, Layouting</div>
+                        </div>
+                        <div class="timeline-item active">
+                            <div class="timeline-title">JavaScript Core</div>
+                            <div class="timeline-desc">ES6, DOM, Async</div>
+                        </div>
+                        <div class="timeline-item active">
+                            <div class="timeline-title" style="color:#2196f3;">Front-End Expert</div>
+                            <div class="timeline-desc">React, PWA, Testing</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-title" style="color:#aaa;">Back-End Basics</div>
+                            <div class="timeline-desc">NodeJS, Hapi, REST API</div>
+                        </div>
+                        <div class="timeline-item" style="margin-bottom:0;">
+                            <div class="timeline-title" style="color:#aaa;">Capstone Project</div>
+                            <div class="timeline-desc">Final Application</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight-box">
+                    <i class="fa-solid fa-chart-line" style="margin-right:5px;"></i> <b>Insight</b><br>
+                    You are 20% faster than the class average in the "Front-End Expert" milestone. Keep it up!
+                </div>
+
+            </div>
+        </div>
+
+        <footer>
+            © 2025 Dicoding Indonesia
+        </footer>
+    </main>
+
+    <script>
+        // --- 1. LOGIKA DAILY CHECK-IN ---
+        function openCheckin() {
+            document.getElementById('checkinModal').style.display = 'flex';
+        }
+
+        function closeCheckin() {
+            document.getElementById('checkinModal').style.display = 'none';
+            resetForm();
+        }
+
+        let selectedMood = '';
+
+        function selectMood(element, mood) {
+            document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedMood = mood;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+        // Tunggu sebentar (100ms) agar transisi CSS siap
+        setTimeout(function() {
+            const progressFills = document.querySelectorAll('.progress-fill');
+            
+            progressFills.forEach(fill => {
+                // Ambil target lebar dari atribut data-width
+                const targetWidth = fill.getAttribute('data-width');
+                // Setel lebar style agar CSS transition berjalan
+                fill.style.width = targetWidth;
+            });
+        }, 100);
+    });
+        function submitCheckin() {
+            const text = document.getElementById('progressText').value;
+
+            if (!selectedMood) {
+                alert("Silakan pilih mood Anda hari ini (Emoji)!");
+                return;
+            }
+            if (text.trim() === "") {
+                alert("Silakan isi progres Anda!");
+                return;
+            }
+            
+            alert(`Check-in Berhasil!\nMood: ${selectedMood}\nProgress: ${text}`);
+            closeCheckin();
+        }
+
+        function resetForm() {
+            document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
+            document.getElementById('progressText').value = "";
+            selectedMood = '';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('checkinModal');
+            if (event.target == modal) {
+                closeCheckin();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+        // Tunggu sebentar (100ms) agar transisi CSS siap
+        setTimeout(function() {
+            const progressFills = document.querySelectorAll('.progress-fill');
+            
+            progressFills.forEach(fill => {
+                // Ambil target lebar dari atribut data-width
+                const targetWidth = fill.getAttribute('data-width');
+                // Setel lebar style agar CSS transition berjalan
+                fill.style.width = targetWidth;
+            });
+        }, 100);
+    });
+
+        // --- 2. CHART CONFIGURATION ---
+        // Radar Chart
+        const ctxRadar = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['HTML/CSS', 'JavaScript', 'React', 'Testing', 'DevOps', 'Soft Skills'],
+                datasets: [{
+                    label: 'You',
+                    data: [90, 85, 88, 60, 40, 75],
+                    fill: true,
+                    backgroundColor: 'rgba(33, 150, 243, 0.2)',
+                    borderColor: 'rgb(33, 150, 243)',
+                    pointBackgroundColor: 'rgb(33, 150, 243)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(33, 150, 243)'
+                }, {
+                    label: 'Class Avg',
+                    data: [70, 75, 60, 50, 45, 65],
+                    fill: true,
+                    backgroundColor: 'rgba(200, 200, 200, 0.2)',
+                    borderColor: 'rgba(200, 200, 200, 0.5)',
+                    pointBackgroundColor: 'rgba(200, 200, 200, 1)',
+                    pointBorderColor: '#fff'
+                }]
+            },
+            options: {
+                elements: { line: { borderWidth: 2 } },
+                scales: {
+                    r: {
+                        angleLines: { display: false },
+                        suggestedMin: 0, suggestedMax: 100,
+                        grid: { color: '#f0f0f0' },
+                        pointLabels: { font: { size: 10 } }
+                    }
+                },
+                plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, font: { size: 10 } } } }
+            }
+        });
+
+        // Line Chart
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    data: [2, 4, 3, 5, 4.5, 6, 5],
+                    borderColor: '#4dd0e1',
+                    backgroundColor: 'rgba(77, 208, 225, 0.2)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+    </script>
+</body>
+</html>

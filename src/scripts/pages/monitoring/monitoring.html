@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dicoding Mentoring Schedule</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="mentoring-body">
+
+    <aside class="sidebar">
+        <a href="index.html" style="text-decoration:none; color:white;">
+            <div class="brand">
+                <h1 style="font-size: 28px; font-weight: 700;">dicoding</h1>
+            </div>
+        </a>
+        <div class="menu-category">LEARNING</div>
+        <a href="learning-dashboard.html" class="menu-item">Dashboard</a>
+        <a href="#" class="menu-item">My Progress</a>
+        <a href="#" class="menu-item active">Dicoding Mentoring</a>
+        <div class="menu-category">DOCUMENT</div>
+        <a href="#" class="menu-item">Student Portal</a>
+        <a href="#" class="menu-item">Announcement</a>
+        <a href="#" class="menu-item">Capstone Project</a>
+        <a href="#" class="menu-item">Newsletter</a>
+    </aside>
+
+    <main class="mentoring-content">
+        
+        <div class="schedule-toggle-container">
+            <button class="toggle-btn active" onclick="switchTab('schedule')">My Schedule</button>
+            <button class="toggle-btn" onclick="switchTab('reschedule')">Reschedule</button>
+        </div>
+
+        <div class="filter-bar">
+            <select class="filter-input"><option>All Types</option><option>ILTs</option><option>1-on-1</option></select>
+            <input type="date" class="filter-input">
+            <div class="search-wrapper">
+                <input type="text" placeholder="Search" class="filter-input search-input">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </div>
+        </div>
+
+        <div id="view-my-schedule" class="schedule-grid">
+            
+            <div class="schedule-card">
+                <div class="card-badge completed">Session Completed</div>
+                <div class="card-body">
+                    <h3>ILT-SS6-A-AA</h3>
+                    <h2>Personal Branding: Be The Best Version of Yourself</h2>
+                    <div class="people-info">
+                        <img src="https://i.pravatar.cc/150?u=jennie" alt="Instructor" class="avatar">
+                        <div><p class="role-label">Instructor</p><p class="person-name">Jennie Kim</p></div>
+                    </div>
+                    <div class="people-info">
+                        <div style="width: 40px;"></div>
+                        <div><p class="role-label">Mentor</p><p class="person-name">Soultan Amirul Mukminin</p></div>
+                    </div>
+                    <div class="meta-info">
+                        <p><strong>Date and time</strong><br>Sun, November 2, 2025 18:30 PM</p>
+                    </div>
+                    <div class="feedback-status text-green">Feedback status<br><strong>Submitted</strong></div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn-join">Join Session</button>
+                    <button class="btn-feedback">Feedback</button>
+                </div>
+            </div>
+
+            <div class="schedule-card">
+                <div class="card-badge upcoming">Upcoming Session</div>
+                <div class="card-body">
+                    <h3>ILT-SS6-A-AA</h3>
+                    <h2>Personal Branding: Be The Best Version of Yourself</h2>
+                    <div class="people-info">
+                        <img src="https://i.pravatar.cc/150?u=taehyung" alt="Instructor" class="avatar">
+                        <div><p class="role-label">Instructor</p><p class="person-name">Kim Taehyung</p></div>
+                    </div>
+                    <div class="meta-info">
+                        <p><strong>Date and time</strong><br>Sun, November 9, 2025 18:30 PM</p>
+                    </div>
+                    <div class="feedback-status text-red">Feedback status<br><strong>Not Submitted</strong></div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn-join">Join Session</button>
+                    <button class="btn-feedback">Feedback</button>
+                </div>
+            </div>
+
+            <div class="schedule-card">
+                <div class="card-badge upcoming">Upcoming Session</div>
+                <div class="card-body">
+                    <h3>ILT-SS6-A-AA</h3>
+                    <h2>Personal Branding: Be The Best Version of Yourself</h2>
+                    <div class="people-info">
+                        <img src="https://i.pravatar.cc/150?u=eunwoo" alt="Instructor" class="avatar">
+                        <div><p class="role-label">Instructor</p><p class="person-name">Cha Eun Woo</p></div>
+                    </div>
+                    <div class="meta-info">
+                        <p><strong>Date and time</strong><br>Sun, November 16, 2025 18:30 PM</p>
+                    </div>
+                    <div class="feedback-status text-red">Feedback status<br><strong>Not Submitted</strong></div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn-join">Join Session</button>
+                    <button class="btn-feedback">Feedback</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-reschedule" class="schedule-grid" style="display: none;">
+            
+            <div class="schedule-card" style="border: 2px solid #f59e0b;"> <div class="card-badge upcoming" style="background-color: #fff7ed; color: #c2410c;">Eligible for Reschedule</div>
+                <div class="card-body">
+                    <h3>1-on-1 Mentoring</h3>
+                    <h2>Code Review: Front-End Submission 1</h2>
+                    <div class="people-info">
+                        <img src="https://i.pravatar.cc/150?u=mentor1" alt="Mentor" class="avatar">
+                        <div><p class="role-label">Mentor</p><p class="person-name">Agus Kopling</p></div>
+                    </div>
+                    <div class="meta-info">
+                        <p><strong>Current Schedule</strong><br>Mon, Nov 10, 2025 10:00 AM</p>
+                    </div>
+                    
+                    <div style="margin-top: 20px; background: #f9fafb; padding: 15px; border-radius: 10px; border: 1px solid #eee;">
+                        <label style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 5px;">Select New Date:</label>
+                        <input type="datetime-local" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 10px;">
+                        
+                        <label style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 5px;">Reason:</label>
+                        <select style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                            <option>Schedule Conflict</option>
+                            <option>Health Issue</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn-join" style="background-color: #f59e0b;">Request Reschedule</button>
+                </div>
+            </div>
+
+            <div class="schedule-card" style="border: 2px solid #f59e0b;">
+                <div class="card-badge upcoming" style="background-color: #fff7ed; color: #c2410c;">Eligible for Reschedule</div>
+                <div class="card-body">
+                    <h3>ILT-FE-02</h3>
+                    <h2>React Lifecycle & State Management</h2>
+                    <div class="people-info">
+                        <img src="https://i.pravatar.cc/150?u=mentor2" alt="Instructor" class="avatar">
+                        <div><p class="role-label">Instructor</p><p class="person-name">Siti Callback</p></div>
+                    </div>
+                    <div class="meta-info">
+                        <p><strong>Current Schedule</strong><br>Wed, Nov 12, 2025 13:00 PM</p>
+                    </div>
+                    
+                    <div style="margin-top: 20px; background: #f9fafb; padding: 15px; border-radius: 10px; border: 1px solid #eee;">
+                        <label style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 5px;">Select New Date:</label>
+                        <input type="datetime-local" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 10px;">
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn-join" style="background-color: #f59e0b;">Request Reschedule</button>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="mentoring-footer">
+            2025 Dicoding Indonesia
+        </footer>
+    </main>
+
+    <script src="mentoring.js"></script>
+</body>
+</html>
