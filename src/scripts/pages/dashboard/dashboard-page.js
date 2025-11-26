@@ -25,14 +25,6 @@ const DashboardPage = {
                 <a href="#" class="menu-item">Dicoding Mentoring</a>
             </div>
 
-            <div class="menu-group">
-                <div class="menu-category">DOCUMENT</div>
-                <a href="#" class="menu-item">Student Portal</a>
-                <a href="#" class="menu-item">Announcement</a>
-                <a href="#" class="menu-item">Capstone Project</a>
-                <a href="#" class="menu-item">Newsletter</a>
-            </div>
-            
             <div class="menu-group" style="margin-top:auto;">
                 <a href="javascript:void(0)" id="logoutDashBtn" class="menu-item" style="color:#ef5350;">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
