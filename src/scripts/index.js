@@ -140,236 +140,448 @@ function clearErrors() {
 }
 
 
-/* --- LOGIKA DAILY CHECK-IN --- */
+/**
+ * SCRIPT.JS - ALL IN ONE
+ * Mengatur logika Dashboard, Notifikasi, Profil, dan Tema dalam satu file.
+ */
+
+// =========================================
+// 1. KONFIGURASI & STATE GLOBAL
+// =========================================
+const CHECKIN_STORAGE_KEY = 'dicoding_checkins_v1';
+const THEME_STORAGE_KEY = 'theme';
+
+let state = {
+    darkMode: localStorage.getItem(THEME_STORAGE_KEY) === 'dark',
+    expandedModuleId: null,
+    isChartVisible: false,
+    checkins: JSON.parse(localStorage.getItem(CHECKIN_STORAGE_KEY)) || {}
+};
+
+// Helper untuk mengambil elemen
+const el = id => document.getElementById(id);
+
+// Variabel Chart Global
+let skillRadarChartInstance = null;
+let studyChartInstance = null;
+
+
+// =========================================
+// 2. INISIALISASI (ROUTER)
+// =========================================
+document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. Buka Modal
-    function openCheckin() {
-        const today = new Date().toISOString().split('T')[0];
-        if (localStorage.getItem('checkin_' + today)) {
-            alert("Anda sudah melakukan daily check-in hari ini. Tidak bisa mengisi lagi.");
-            return;
-        }
-        document.getElementById('checkinModal').style.display = 'flex';
+    // A. Init Icon Lucide (Wajib)
+    if (window.lucide) lucide.createIcons();
+
+    // B. Fitur Global (Tema & Navigasi)
+    setupDarkMode();
+    setupGlobalInteractions();
+    updateGlobalBadge(); // Update angka notif di sidebar
+
+    // C. Cek Halaman Apa yang Aktif?
+    
+    // -> Jika Halaman Dashboard (Ada Chart)
+    if (document.getElementById('skillRadarChart')) {
+        initDashboard();
     }
 
-    // 2. Tutup Modal
-    function closeCheckin() {
-        document.getElementById('checkinModal').style.display = 'none';
-        resetForm(); // Reset pilihan saat ditutup
+    // -> Jika Halaman Notifikasi (Ada List Notif)
+    if (document.getElementById('notif-list')) {
+        initNotificationPage();
     }
 
-    // 3. Pilih Mood (Emoji)
-    let selectedMood = '';
+    // -> Jika Halaman Profil (Ada Container Kursus)
+    if (document.getElementById('courseContainer')) {
+        initProfilePage();
+    }
+});
 
-    function selectMood(element, mood) {
-        // Hapus kelas 'selected' dari semua emoji
-        document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
-        
-        // Tambah kelas 'selected' ke elemen yang diklik
-        element.classList.add('selected');
-        selectedMood = mood;
+
+// =========================================
+// 3. FITUR GLOBAL (TEMA & NAVBAR)
+// =========================================
+
+function setupDarkMode() {
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+    
+    // 1. Terapkan tema saat load
+    if (state.darkMode) {
+        htmlElement.classList.add('dark');
+    } else {
+        htmlElement.classList.remove('dark');
     }
 
-    // 4. Submit Data
+    // 2. Handle Klik Tombol
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            state.darkMode = !state.darkMode;
+            htmlElement.classList.toggle('dark');
 
-function submitCheckin() {
-    // Cek apakah hari ini sudah daily check-in (green)
-    const today = new Date().toISOString().split('T')[0];
-    if (localStorage.getItem('checkin_' + today)) {
-        alert("Anda sudah melakukan daily check-in hari ini. Tidak bisa mengisi lagi.");
-        return;
+            // Simpan State
+            localStorage.setItem(THEME_STORAGE_KEY, state.darkMode ? 'dark' : 'light');
+
+            // Update Chart Warna (Jika di dashboard)
+            if (typeof updateChartTheme === 'function') updateChartTheme();
+            
+            // Refresh Icon (Matahari/Bulan)
+            if (window.lucide) lucide.createIcons();
+        });
     }
-
-    const text = document.getElementById('progressText').value;
-
-    if (!selectedMood) {
-        alert("Silakan pilih mood Anda hari ini (Emoji)!");
-        return;
-    }
-    if (text.trim() === "") {
-        alert("Silakan isi progres Anda!");
-        return;
-    }
-
-    // Simpan ke localStorage agar kotak berubah hijau
-    const data = {
-        date: today,
-        mood: selectedMood,
-        progress: text,
-        timestamp: new Date().toISOString()
-    };
-    localStorage.setItem('checkin_' + today, JSON.stringify(data));
-
-    alert(`Check-in Berhasil!\nMood: ${selectedMood}\nProgress: ${text}`);
-
-    closeCheckin();
-
-    // Update tampilan kalender jadi hijau untuk hari ini
-    renderWeeklyCheckin();
 }
 
-    // 5. Reset Form Helper
-    function resetForm() {
-        document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
-        document.getElementById('progressText').value = "";
-        selectedMood = '';
+function setupGlobalInteractions() {
+    // Dropdown Notifikasi & Profil di Navbar
+    const notifBtn = document.getElementById('notif-menu-btn');
+    const notifDrop = document.getElementById('notif-dropdown');
+    const profileBtn = document.getElementById('profile-menu-btn');
+    const profileDrop = document.getElementById('profile-dropdown');
+
+    // Klik tombol notif
+    if (notifBtn && notifDrop) {
+        notifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notifDrop.classList.toggle('hidden');
+            if (profileDrop) profileDrop.classList.add('hidden');
+        });
     }
 
-    // Tutup modal jika klik di luar kotak (area gelap)
-    window.onclick = function(event) {
-        const modal = document.getElementById('checkinModal');
-        if (event.target == modal) {
-            closeCheckin();
+    // Klik tombol profil
+    if (profileBtn && profileDrop) {
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDrop.classList.toggle('hidden');
+            if (notifDrop) notifDrop.classList.add('hidden');
+        });
+    }
+
+    // Klik di luar (Tutup semua)
+    document.addEventListener('click', (e) => {
+        if (notifBtn && notifDrop && !notifBtn.contains(e.target) && !notifDrop.contains(e.target)) {
+            notifDrop.classList.add('hidden');
         }
+        if (profileBtn && profileDrop && !profileBtn.contains(e.target) && !profileDrop.contains(e.target)) {
+            profileDrop.classList.add('hidden');
+        }
+    });
+}
+
+function updateGlobalBadge() {
+    // Update badge merah di sidebar jika ada notif unread
+    const badge = document.getElementById('sidebar-badge');
+    // Hitung jumlah .unread di halaman notifikasi (jika ada) atau pakai dummy
+    const count = document.querySelectorAll('.notif-item.unread').length || 3; 
+    if (badge) {
+        badge.innerText = count;
+        badge.style.display = count === 0 ? 'none' : 'inline-block';
     }
+}
 
-    // --- LOGIKA CERDAS DAILY CHECK-IN ---
 
-    document.addEventListener("DOMContentLoaded", function() {
-        renderWeeklyCheckin();
+// =========================================
+// 4. HALAMAN DASHBOARD
+// =========================================
+
+function initDashboard() {
+    // Render Komponen
+    renderMilestones();
+    renderModules();
+    renderCheckinGrid();
+    renderSkillBreakdown();
+    initCharts();
+
+    // Listener Modal Check-in
+    if(el('close-checkin-modal')) el('close-checkin-modal').addEventListener('click', closeCheckinModal);
+    if(el('checkin-backdrop')) el('checkin-backdrop').addEventListener('click', closeCheckinModal);
+    if(el('view-checkin-btn')) el('view-checkin-btn').addEventListener('click', () => openCheckinModal(new Date().toISOString().split('T')[0]));
+    if(el('reset-checkin-btn')) el('reset-checkin-btn').addEventListener('click', () => { 
+        if(confirm("Reset data check-in?")) { localStorage.removeItem(CHECKIN_STORAGE_KEY); state.checkins = {}; renderCheckinGrid(); } 
+    });
+}
+
+// --- DATA DUMMY DASHBOARD ---
+const milestones = [
+    { title: "Web Dasar", desc: "HTML, CSS, Layouting", status: "completed" },
+    { title: "JavaScript Core", desc: "ES6, DOM, Async", status: "completed" },
+    { title: "Front-End Expert", desc: "React, PWA, Testing", status: "current" },
+    { title: "Back-End Basics", desc: "NodeJS, Hapi, REST API", status: "locked" },
+    { title: "Capstone Project", desc: "Final Application", status: "locked", isLast: true }
+];
+
+const modulesData = [
+    { id: 1, title: "Fundamental Front-End Web Development", score: 98, category: "Core Path", progress: 100, status: "Completed", colorClass: "bg-green-500", lessons: [{ title: "HTML5 & Semantic Elements", type: "video" }, { title: "CSS3 Flexbox Layouts", type: "quiz" }, { title: "Submission: Landing Page", type: "code" }] },
+    { id: 2, title: "Building Interactive Apps with React", score: null, category: "Specialization", progress: 75, status: "In Progress", colorClass: "bg-blue-500", lessons: [{ title: "React Component Lifecycle", type: "video" }, { title: "State Management (Hooks)", type: "video" }, { title: "Submission: Bookshelf App", type: "code" }] },
+    { id: 3, title: "Automated Testing & CI/CD Pipelines", score: null, category: "DevOps", progress: 0, status: "Locked", colorClass: "bg-slate-400", lessons: [] }
+];
+
+const skillDetails = [
+    { name: 'HTML & CSS', score: 92, avg: 75, level: 'Expert', icon: 'layout' },
+    { name: 'JavaScript', score: 88, avg: 70, level: 'Advanced', icon: 'file-code-2' },
+    { name: 'React', score: 85, avg: 60, level: 'Advanced', icon: 'atom' },
+    { name: 'Testing', score: 65, avg: 50, level: 'Intermediate', icon: 'test-tube-2' },
+    { name: 'DevOps', score: 55, avg: 45, level: 'Intermediate', icon: 'git-merge' },
+    { name: 'Soft Skills', score: 80, avg: 75, level: 'Advanced', icon: 'users' }
+];
+
+// --- RENDERER DASHBOARD ---
+function renderMilestones() {
+    const container = el('milestone-container');
+    if(!container) return;
+    container.innerHTML = milestones.map(m => {
+        const isCompleted = m.status === 'completed';
+        const isCurrent = m.status === 'current';
+        const isLocked = m.status === 'locked';
+        let dotClass = isCompleted ? 'bg-green-500 border-green-500 shadow-[0_0_0_4px_rgba(34,197,94,0.2)]' : isCurrent ? 'bg-white border-dicodingBlue shadow-[0_0_0_4px_rgba(37,99,235,0.2)] scale-110' : (state.darkMode ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-200');
+        let textClass = isCurrent ? 'text-dicodingBlue' : isCompleted ? (state.darkMode ? 'text-white' : 'text-slate-800') : 'text-slate-400';
+        return `<div class="relative group cursor-pointer ${isLocked ? 'opacity-50' : 'opacity-100'}"><div class="absolute -left-[25px] top-0 w-3 h-3 rounded-full border-2 z-10 transition-all duration-300 ${dotClass}"></div><div class="flex flex-col ${!m.isLast ? 'mb-2' : ''}"><h4 class="text-xs font-bold transition-colors ${textClass}">${m.title}</h4><p class="text-[10px] text-slate-500">${m.desc}</p></div></div>`;
+    }).join('');
+}
+
+function renderModules() {
+    const container = el('modules-dynamic-container');
+    if(!container) return;
+    container.innerHTML = modulesData.map(m => {
+        const isExpanded = state.expandedModuleId === m.id;
+        const isLocked = m.status === 'Locked';
+        const expandClass = isExpanded ? 'slide-down' : 'slide-up';
+        const containerClass = isExpanded ? 'bg-slate-50 dark:bg-slate-800/50 ring-2 ring-blue-100 dark:ring-slate-700' : 'bg-white dark:bg-slate-800 hover:shadow-md';
+        
+        // Lessons HTML
+        const lessonsHtml = m.lessons.map(l => `<div class="flex items-center justify-between p-2 rounded-lg hover:bg-white dark:hover:bg-slate-800 transition-colors"><div class="flex items-center gap-3"><i data-lucide="${l.type === 'video' ? 'play-circle' : 'file-code'}" class="w-4 h-4 text-slate-400"></i><span class="text-xs font-medium text-slate-700 dark:text-slate-300">${l.title}</span></div>${m.status === 'Completed' ? '<i data-lucide="check" class="w-3 h-3 text-green-500"></i>' : ''}</div>`).join('');
+
+        return `<div class="rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden transition-all duration-300 ${containerClass}"><div class="p-4 flex items-center gap-4 cursor-pointer" onclick="toggleModule(${m.id})"><div class="w-12 h-12 bg-navy rounded-xl flex-shrink-0 flex items-center justify-center text-white font-bold text-xs shadow-sm">${m.title.substring(0,2).toUpperCase()}</div><div class="flex-1 min-w-0"><div class="flex justify-between mb-1"><h4 class="text-sm font-bold text-navy dark:text-white truncate ${m.status === 'In Progress' ? 'text-blue-600 dark:text-blue-400' : ''}">${m.title}</h4><div class="flex items-center gap-2">${m.score ? `<span class="font-bold text-navy dark:text-white">${m.score}</span>` : ''}<i data-lucide="${isLocked ? 'lock' : (m.score ? 'check-circle-2' : 'play-circle')}" class="w-4 h-4 ${isLocked ? 'text-slate-300' : (m.score ? 'text-green-500' : 'text-blue-500')}"></i></div></div><p class="text-[10px] text-slate-400 mb-2">${m.category} ${isExpanded ? '' : '• Click to expand'}</p><div class="flex items-center gap-3"><div class="flex-1 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden"><div class="h-full ${m.colorClass} rounded-full transition-all duration-1000" style="width: ${m.progress}%"></div></div><span class="text-xs font-bold text-slate-400">${m.progress}%</span></div></div></div><div class="${expandClass} bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700"><div class="p-4 space-y-3"><p class="text-xs font-bold text-slate-500 uppercase">Syllabus</p>${lessonsHtml}<div class="pt-2 flex justify-end"><button class="px-4 py-2 bg-dicodingBlue hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">Lanjut Belajar <i data-lucide="arrow-right" class="w-3 h-3"></i></button></div></div></div></div>`;
+    }).join('');
+    if(window.lucide) lucide.createIcons();
+}
+
+function renderSkillBreakdown() {
+    const container = el('skill-breakdown-container');
+    if(!container) return;
+    container.innerHTML = skillDetails.map(skill => {
+        let colorClass = skill.score >= 80 ? 'bg-dicodingBlue' : skill.score >= 70 ? 'bg-pinkText' : 'bg-yellow-500';
+        let badgeClass = skill.level === 'Expert' ? 'badge-expert' : skill.level === 'Advanced' ? 'badge-advanced' : 'badge-intermediate';
+        return `<div class="group p-3 rounded-xl bg-slate-50 dark:bg-slate-700/30 border border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-800 transition-all hover:shadow-sm"><div class="flex justify-between items-start mb-2"><div class="flex items-center gap-3"><div class="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm text-slate-500 dark:text-slate-300"><i data-lucide="${skill.icon}" class="w-4 h-4"></i></div><div><h4 class="text-sm font-bold text-navy dark:text-white leading-none mb-1">${skill.name}</h4><span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${badgeClass}">${skill.level}</span></div></div><div class="text-right"><span class="text-lg font-extrabold text-navy dark:text-white">${skill.score}</span><span class="text-[10px] text-slate-400 block">/ 100</span></div></div><div class="space-y-1.5"><div class="flex items-center gap-2"><span class="text-[10px] font-bold text-slate-500 w-6">You</span><div class="flex-1 h-2 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden"><div class="h-full ${colorClass} rounded-full skill-bar-fill" style="width: ${skill.score}%"></div></div></div><div class="flex items-center gap-2"><span class="text-[10px] font-bold text-slate-400 w-6">Avg</span><div class="flex-1 h-1.5 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden"><div class="h-full bg-slate-400 rounded-full" style="width: ${skill.avg}%"></div></div></div></div></div>`;
+    }).join('');
+    if(window.lucide) lucide.createIcons();
+}
+
+function renderCheckinGrid() {
+    const container = el('daily-checkin-grid');
+    if(!container) return;
+    const today = new Date();
+    const getMonday = (d) => { d = new Date(d); var day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1); return new Date(d.setDate(diff)); }
+    const monday = getMonday(new Date());
+    const dayNames = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+    let html = '';
+    
+    for (let i = 0; i < 5; i++) {
+        const currentDay = new Date(monday);
+        currentDay.setDate(monday.getDate() + i);
+        const dateKey = currentDay.toISOString().split('T')[0];
+        const isToday = today.toISOString().split('T')[0] === dateKey;
+        const isPast = currentDay < today && !isToday;
+        const isCheckedIn = state.checkins[dateKey];
+        let containerClass = "bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 opacity-60 cursor-default";
+        let textClass = "text-slate-500 dark:text-slate-400";
+        let numberClass = "text-slate-600 dark:text-slate-400";
+        let onclick = "";
+
+        if (isCheckedIn) {
+            containerClass = "bg-greenAccent border-green-200 cursor-default"; textClass = "text-greenText"; numberClass = "text-greenText";
+        } else if (isToday) {
+            containerClass = "bg-pinkAccent border-2 border-pinkText shadow-sm transform scale-105 cursor-pointer hover:shadow-md transition-all"; textClass = "text-pinkText"; numberClass = "text-pinkText"; onclick = `openCheckinModal('${dateKey}')`;
+        } else if (isPast) {
+            containerClass = "bg-red-50 border border-red-200 opacity-80 cursor-default"; textClass = "text-red-500"; numberClass = "text-red-500";
+        }
+        html += `<div class="flex flex-col items-center p-3 rounded-2xl border ${containerClass}" onclick="${onclick}"><span class="text-[10px] font-bold ${textClass} mb-1">${dayNames[i]}</span><span class="text-xl font-bold ${numberClass}">${currentDay.getDate()}</span>${isCheckedIn ? '<i data-lucide="check" class="w-3 h-3 mt-1 text-green-600"></i>' : ''}</div>`;
+    }
+    container.innerHTML = html;
+    const dateDisplay = el('current-date-display');
+    if(dateDisplay) dateDisplay.innerHTML = `<span class="block font-bold text-navy dark:text-slate-300">${today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</span><span class="text-right block text-xs opacity-70">Week ${Math.ceil((((today - new Date(Date.UTC(today.getFullYear(),0,1))) / 86400000) + 1)/7)}</span>`;
+    if(window.lucide) lucide.createIcons();
+}
+
+function initCharts() {
+    if (!el('skillRadarChart')) return;
+    const ctxSkill = el('skillRadarChart').getContext('2d');
+    const isDark = state.darkMode;
+    
+    skillRadarChartInstance = new Chart(ctxSkill, {
+        type: 'radar',
+        data: {
+            labels: skillDetails.map(s => s.name),
+            datasets: [
+                { label: 'You', data: skillDetails.map(s => s.score), backgroundColor: 'rgba(0, 102, 255, 0.4)', borderColor: '#0066FF', borderWidth: 2 },
+                { label: 'Avg', data: skillDetails.map(s => s.avg), backgroundColor: 'rgba(203, 213, 225, 0.3)', borderColor: '#94a3b8', borderWidth: 2, borderDash: [5, 5] }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: { color: isDark ? '#334155' : '#E2E8F0' },
+                    grid: { color: isDark ? '#334155' : '#E2E8F0' },
+                    pointLabels: { color: isDark ? '#cbd5e1' : '#64748B', font: { size: 10, weight: '700' } },
+                    ticks: { display: false, backdropColor: 'transparent' }
+                }
+            },
+            plugins: { legend: { display: false } }
+        }
     });
 
-    // 1. Fungsi Render Kalender Mingguan
-    function renderWeeklyCheckin() {
-        const container = document.getElementById('checkinContainer');
-        const statusBtn = document.getElementById('checkinStatusBtn');
-        const monthLabel = document.getElementById('currentMonthYear');
-        
-        container.innerHTML = ""; // Bersihkan isi lama
-        
-        const today = new Date();
-        today.setHours(0,0,0,0); // Reset jam agar perbandingan tanggal akurat
+    if(el('studyActivityChart')) {
+        const ctxStudy = el('studyActivityChart').getContext('2d');
+        studyChartInstance = new Chart(ctxStudy, {
+            type: 'bar',
+            data: {
+                labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+                datasets: [{ label: 'Hours', data: [2, 4.5, 3, 6, 4, 8, 2], backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 4, barThickness: 12 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { display: false } } }
+        });
+    }
+}
 
-        // Update Label Bulan & Tahun
-        const options = { year: 'numeric', month: 'long' };
-        monthLabel.innerText = today.toLocaleDateString('id-ID', options);
+function updateChartTheme() {
+    if (skillRadarChartInstance) {
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? '#334155' : '#E2E8F0';
+        const labelColor = isDark ? '#cbd5e1' : '#64748B';
+        skillRadarChartInstance.options.scales.r.angleLines.color = gridColor;
+        skillRadarChartInstance.options.scales.r.grid.color = gridColor;
+        skillRadarChartInstance.options.scales.r.pointLabels.color = labelColor;
+        skillRadarChartInstance.update();
+    }
+}
 
-        // Cari hari Senin minggu ini
-        const currentDay = today.getDay(); // 0=Minggu, 1=Senin, ...
-        const distanceToMonday = currentDay === 0 ? -6 : 1 - currentDay;
-        const mondayDate = new Date(today);
-        mondayDate.setDate(today.getDate() + distanceToMonday);
+// --- ACTIONS DASHBOARD ---
+window.toggleModule = function(id) { state.expandedModuleId = state.expandedModuleId === id ? null : id; renderModules(); };
+window.toggleStudyChart = function() {
+    state.isChartVisible = !state.isChartVisible;
+    const sSummary = el('study-summary');
+    const sChart = el('study-chart-container');
+    if(sSummary && sChart) {
+        if (state.isChartVisible) { sSummary.classList.add('opacity-0', 'scale-95'); sChart.classList.remove('opacity-0', 'pointer-events-none', 'scale-95'); sChart.classList.add('opacity-100', 'scale-100', 'pointer-events-auto'); }
+        else { sSummary.classList.remove('opacity-0', 'scale-95'); sChart.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto'); sChart.classList.add('opacity-0', 'pointer-events-none', 'scale-95'); }
+    }
+};
+window.openCheckinModal = function(dateKey) { const modal = el('checkin-modal'); if(modal) { modal.classList.remove('hidden'); setTimeout(() => modal.classList.add('opacity-100'), 10); } };
+window.closeCheckinModal = function() { const modal = el('checkin-modal'); if(modal) { modal.classList.remove('opacity-100'); setTimeout(() => modal.classList.add('hidden'), 300); } };
+window.selectMood = function(btn, color, bg) {
+    document.querySelectorAll('.mood-btn').forEach(b => { b.classList.remove('border-red-400', 'bg-red-50', 'border-yellow-400', 'bg-yellow-50', 'border-green-400', 'bg-green-50', 'ring-2'); const e = b.querySelector('.emoji'); if(e) { e.style.filter = 'grayscale(100%)'; e.style.transform = 'scale(1)'; } });
+    btn.classList.add('border-' + color, 'bg-' + bg.replace('bg-',''), 'ring-2'); const activeEmoji = btn.querySelector('.emoji'); if(activeEmoji) { activeEmoji.style.filter = 'grayscale(0%)'; activeEmoji.style.transform = 'scale(1.2)'; }
+};
 
-        let isTodayDone = false;
 
-        // Loop 5 Hari (Senin - Jumat)
-        for (let i = 0; i < 5; i++) {
-            const loopDate = new Date(mondayDate);
-            loopDate.setDate(mondayDate.getDate() + i);
-            
-            // Format tanggal untuk ID Storage (YYYY-MM-DD)
-            const dateKey = loopDate.toISOString().split('T')[0];
-            
-            // Cek Data di LocalStorage
-            const checkinData = localStorage.getItem('checkin_' + dateKey);
-            
-            // Buat Elemen HTML
-            const pill = document.createElement('div');
-            pill.className = 'day-pill';
-            
-            // Nama Hari (Senin, Selasa...)
-            const dayName = loopDate.toLocaleDateString('id-ID', { weekday: 'long' });
-            const dayNum = loopDate.getDate();
+// =========================================
+// 5. HALAMAN NOTIFIKASI
+// =========================================
 
-            let statusClass = '';
-            let onclickAttr = '';
+function initNotificationPage() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const emptyState = el('empty-state');
+    const items = document.querySelectorAll('.notif-item');
 
-            // --- LOGIKA PENENTUAN WARNA ---
-            
-            if (checkinData) {
-                // KASUS 1: SUDAH DIISI (Apapun harinya) -> HIJAU
-                statusClass = 'done';
-                if (loopDate.getTime() === today.getTime()) isTodayDone = true;
-            } 
-            else if (loopDate.getTime() < today.getTime()) {
-                // KASUS 2: HARI SUDAH LEWAT & BELUM ISI -> MERAH
-                statusClass = 'missed';
-            } 
-            else if (loopDate.getTime() === today.getTime()) {
-                // KASUS 3: HARI INI & BELUM ISI -> AKTIF (Bisa diklik)
-                statusClass = 'today-active';
-                onclickAttr = 'openCheckin()'; // Hanya hari ini yang bisa buka modal
-            } 
-            else {
-                // KASUS 4: HARI ESOK -> NORMAL (Abu-abu)
-                statusClass = ''; 
-            }
+    // 1. Filter Function
+    window.filterNotifications = function(filter) {
+        tabBtns.forEach(btn => {
+            if(btn.dataset.filter === filter) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
 
-            // Pasang Class & Konten
-            pill.className = `day-pill ${statusClass}`;
-            pill.innerHTML = `
-                <span class="day-name">${dayName}</span>
-                <span class="day-num">${dayNum}</span>
-            `;
-            
-            // Pasang Event Klik (Jika boleh diklik)
-            if (onclickAttr) {
-                pill.setAttribute('onclick', onclickAttr);
-                pill.style.cursor = 'pointer';
-            }
+        let visibleCount = 0;
+        items.forEach(item => {
+            let show = false;
+            if (filter === 'all') show = true;
+            else if (filter === 'unread' && item.classList.contains('unread')) show = true;
+            else if (filter === 'system' && item.classList.contains('system')) show = true;
 
-            container.appendChild(pill);
+            item.style.display = show ? 'flex' : 'none';
+            if(show) visibleCount++;
+        });
+
+        if(emptyState) {
+            emptyState.classList.toggle('hidden', visibleCount > 0);
+            emptyState.style.display = visibleCount === 0 ? 'flex' : 'none';
         }
+    };
 
-        // Update Tombol Status di Pojok Kanan
-        if (isTodayDone) {
-            statusBtn.className = "btn-pill success";
-            statusBtn.innerText = "Completed ✔";
-            // Matikan fungsi klik di card utama jika sudah selesai
-            document.querySelector('.checkin-card').removeAttribute('onclick');
-        } else {
-            statusBtn.className = "btn-pill";
-            statusBtn.innerText = "Click to fill";
-            statusBtn.onclick = openCheckin;
+    // 2. Mark Read Function
+    window.markRead = function(element) {
+        if (element.classList.contains('unread')) {
+            element.classList.remove('unread');
+            element.classList.add('read');
+            const dot = element.querySelector('.unread-dot');
+            if (dot) dot.remove();
+            updateGlobalBadge();
         }
+    };
+
+    // 3. Mark All Read
+    window.markAllRead = function() {
+        document.querySelectorAll('.notif-item.unread').forEach(item => markRead(item));
+    };
+
+    // 4. Delete Function
+    window.deleteNotif = function(event, btn) {
+        event.stopPropagation();
+        const item = btn.closest('.notif-item');
+        item.style.transform = 'translateX(100%)';
+        item.style.opacity = '0';
+        setTimeout(() => {
+            item.remove();
+            updateGlobalBadge();
+            const activeBtn = document.querySelector('.tab-btn.active');
+            if(activeBtn) filterNotifications(activeBtn.dataset.filter);
+        }, 300);
+    };
+}
+
+
+// =========================================
+// 6. HALAMAN PROFIL
+// =========================================
+
+function initProfilePage() {
+    const courses = [
+        { title: "Memulai Dasar Pemrograman untuk Menjadi Pengembang Software", image: "https://placehold.co/150x150/png?text=Software", hours: 9, rating: 4.88, level: "Dasar", status: "Lulus" },
+        { title: "Belajar Dasar Cloud dan Gen AI di AWS", image: "https://placehold.co/150x150/png?text=AWS", hours: 10, rating: 4.82, level: "Dasar", status: "Lulus" },
+        { title: "Belajar Fundamental Front-End Web Development", image: "https://placehold.co/150x150/png?text=FrontEnd", hours: 80, rating: 4.89, level: "Menengah", status: "Lulus" },
+        { title: "Memulai Pemrograman dengan Python", image: "https://placehold.co/150x150/png?text=Python", hours: 60, rating: 4.82, level: "Dasar", status: "Lulus" }
+    ];
+
+    const courseContainer = el('courseContainer');
+    if(courseContainer) {
+        courseContainer.innerHTML = courses.map(course => `
+            <div class="course-card">
+                <div class="course-img"><img src="${course.image}" alt="${course.title}"></div>
+                <div class="course-info">
+                    <div><div class="status-badge status-passed"><i data-lucide="check-circle-2"></i><span class="status-text">${course.status}</span></div><h3 class="course-title">${course.title}</h3></div>
+                    <div class="course-meta"><div class="meta-item"><i data-lucide="clock"></i> ${course.hours} Jam</div><div class="meta-item"><i data-lucide="star" style="color: #facc15; fill: currentColor;"></i> ${course.rating}</div><div class="meta-item tag-badge"><i data-lucide="bar-chart-2"></i> ${course.level}</div></div>
+                </div>
+            </div>
+        `).join('');
     }
 
-    // 2. Logika Submit (Update)
-    // Pastikan fungsi submitCheckin Anda diupdate seperti ini:
-    function submitCheckin() {
-        const text = document.getElementById('progressText').value;
-        
-        // Validasi (Pastikan selectedMood didefinisikan di script global Anda)
-        if (typeof selectedMood === 'undefined' || !selectedMood) {
-            alert("Silakan pilih mood Anda hari ini!");
-            return;
-        }
-        if (text.trim() === "") {
-            alert("Silakan isi progres Anda!");
-            return;
-        }
-
-        // --- SIMPAN KE LOCAL STORAGE ---
-        const today = new Date();
-        const dateKey = today.toISOString().split('T')[0]; // Key: "2025-11-24"
-        
-        const data = {
-            date: dateKey,
-            mood: selectedMood,
-            progress: text,
-            timestamp: new Date().toISOString()
-        };
-
-        localStorage.setItem('checkin_' + dateKey, JSON.stringify(data));
-
-        // Notifikasi & Refresh Tampilan
-        alert("Check-in berhasil! Tetap semangat! 🔥");
-        closeCheckin();
-        renderWeeklyCheckin(); // Refresh kotak-kotak jadi hijau
-    }
-
-    // --- (Fungsi Modal Bawaan Anda Tetap Sama) ---
-    function openCheckin() { document.getElementById('checkinModal').style.display = 'flex'; }
-    function closeCheckin() { document.getElementById('checkinModal').style.display = 'none'; resetForm(); }
+    // Tab Logic Profil
+    const tabs = document.querySelectorAll('.tab-item');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
     
-    let selectedMood = '';
-    function selectMood(element, mood) {
-        document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
-        element.classList.add('selected');
-        selectedMood = mood;
-    }
-    
-    function resetForm() {
-        document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
-        document.getElementById('progressText').value = "";
-        selectedMood = '';
+    if(window.lucide) lucide.createIcons();
+}
+
+
+
+
+
+
+
+
+
+

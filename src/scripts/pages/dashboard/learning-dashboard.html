@@ -1,406 +1,405 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dicoding Learning Dashboard</title>
+    <title>Dicoding Professional Student Dashboard</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body class="dashboard-body">
-
-    <aside class="sidebar">
-        <a href="index.html" style="text-decoration:none; color:white;">
-            <div class="brand">
-                <i class="fa-solid fa-code"></i> Dicoding
-            </div>
-        </a>
-
-        <div class="menu-category">LEARNING</div>
-        <a href="#" class="menu-item active">Dashboard</a>
-        <a href="#" class="menu-item">My Progress</a>
-        <a href="#" class="menu-item">Dicoding Mentoring</a>
-
-        <div class="menu-category">DOCUMENT</div>
-        <a href="#" class="menu-item">Student Portal</a>
-        <a href="#" class="menu-item">Announcement</a>
-        <a href="#" class="menu-item">Capstone Project</a>
-        <a href="#" class="menu-item">Newsletter</a>
-    </aside>
-
-    <div class="checkin-overlay" id="checkinModal">
-        <div class="checkin-box">
-            <div class="checkin-header">
-                <h3>Daily Check-in</h3>
-                <span class="close-checkin" onclick="closeCheckin()">×</span>
-            </div>
-
-            <div class="emoji-container">
-                <div class="emoji-item" onclick="selectMood(this, 'bad')">
-                    <div class="emoji-icon">🤯</div>
-                    <span>Bad</span>
-                </div>
-                <div class="emoji-item" onclick="selectMood(this, 'neutral')">
-                    <div class="emoji-icon">🙂</div>
-                    <span>Netral</span>
-                </div>
-                <div class="emoji-item" onclick="selectMood(this, 'great')">
-                    <div class="emoji-icon">🤩</div>
-                    <span>Great</span>
-                </div>
-            </div>
-
-            <div class="input-area">
-                <label>Your Progress</label>
-                <textarea id="progressText" placeholder="Ceritakan progres belajarmu hari ini..."></textarea>
-            </div>
-
-            <button class="btn-submit-checkin" onclick="submitCheckin()">Submit</button>
-        </div>
-    </div>
-    
-    <main class="main-content">
-        <header class="dash-header">
-            <div class="header-left">
-                <h1>HALLO HAECHAN</h1>
-                <p>Let's continue your learning journey today.</p>
-            </div>
-            <div class="header-right">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass" style="color:#aaa;"></i>
-                    <input type="text" placeholder="Search course">
-                </div>
-                <div class="notif-btn">
-                    <i class="fa-regular fa-bell"></i>
-                </div>
-            </div>
-        </header>
-
-        <div class="dashboard-grid">
-            <div class="left-col">
-                
-                <div class="dash-card hero-card">
-                    <div>
-                        <span class="tag-rec">Recommended Next Step</span>
-                        <h2 class="hero-title">Mastering React Hooks & Custom Logic</h2>
-                        <p class="hero-desc">Berdasarkan hasil kuis Modul 3, Anda siap untuk materi lanjutan. Tingkatkan skill manajemen state Anda sekarang.</p>
-                        <a href="#" class="btn-continue">
-                            <i class="fa-solid fa-play"></i> Lanjut Belajar
-                        </a>
-                        <span style="font-size: 12px; color: #888; margin-left: 10px;">~45 min left</span>
-                    </div>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" class="hero-img" alt="React">
-                </div>
-
-                <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 0;">
-                    
-                    <div class="dash-card checkin-card" onclick="openCheckin()">
-                        <div class="checkin-top">
-                            <div class="checkin-title-group">
-                                <h3>Daily Check-in</h3>
-                                <p id="currentMonthYear">Loading...</p>
-                            </div>
-                            <span class="btn-pill" id="checkinStatusBtn">Loading...</span>
-                        </div>
-
-                        <div class="checkin-row">
-                            <div class="day-pill">
-                                <span class="day-name">Senin</span>
-                                <span class="day-num">1</span>
-                            </div>
-                            <div class="day-pill active">
-                                <span class="day-name">Selasa</span>
-                                <span class="day-num">2</span>
-                            </div>
-                            <div class="day-pill active">
-                                <span class="day-name">Rabu</span>
-                                <span class="day-num">3</span>
-                            </div>
-                            <div class="day-pill">
-                                <span class="day-name">Kamis</span>
-                                <span class="day-num">4</span>
-                            </div>
-                            <div class="day-pill">
-                                <span class="day-name">Jumat</span>
-                                <span class="day-num">5</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dash-card">
-                        <div style="display:flex; justify-content:space-between;">
-                            <h3 style="font-size: 14px;">My Schedule</h3>
-                            <a href="monitoring.html" style="font-size:11px; color:#085f73;">View all</a>
-                        </div>
-                        
-                        <div class="schedule-item">
-                            <div class="schedule-info">
-                                <h4>ILT-FE1: Front-End Web Dasar</h4>
-                                <span>08.00 s.d. 10.00 WIB</span>
-                            </div>
-                            <button class="btn-small blue">Join Session</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dash-card">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                        <h3>Current Modules</h3>
-                        <a href="#" style="font-size:12px; color:#085f73;">View curriculum</a>
-                    </div>
-
-                    <div class="module-item">
-                        <div class="module-icon"></div>
-                        <div class="module-info">
-                            <div style="display:flex; justify-content:space-between;">
-                                <h4>Fundamental Front-End Web Development</h4>
-                                <span style="font-weight:700;">98</span>
-                            </div>
-                            <div class="progress-bar">
-                            <div class="progress-fill" data-width="98%" style="width: 0%;"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="module-item">
-                        <div class="module-icon" style="background:#085f73;"></div>
-                        <div class="module-info">
-                            <div style="display:flex; justify-content:space-between;">
-                                <h4>Building Interactive Apps with React</h4>
-                                <span style="font-weight:700; color:#085f73;">70</span>
-                            </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" data-width="70%" style="width: 0%; background:#2196f3;"></div>
-                    </div>
-                        </div>
-                    </div>
-
-                    <div class="module-item" style="border:none; margin-bottom:0;">
-                        <div class="module-icon" style="background:#333;"></div>
-                        <div class="module-info">
-                            <div style="display:flex; justify-content:space-between;">
-                                <h4 style="color:#888;">Automated Testing & CI/CD Pipelines</h4>
-                                <span style="font-size:10px; background:#eee; padding:2px 8px; border-radius:10px;">Locked</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" data-width="0%" style="width: 0%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="dash-card">
-                    <h3 style="margin-bottom:20px;">Skill Analysis (Cohort vs You)</h3>
-                    <div class="radar-chart-container">
-                        <canvas id="radarChart"></canvas>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="right-col">
-                
-                <div class="stat-card" style="margin-bottom:25px;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <div>
-                            <div class="stat-title">TOTAL STUDY TIME</div>
-                            <div class="stat-value">42.5 hrs</div>
-                        </div>
-                        <i class="fa-regular fa-clock" style="font-size:20px; opacity:0.5;"></i>
-                    </div>
-                    <div class="chart-mini-container">
-                        <canvas id="lineChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="dash-card" style="text-align:center;">
-                    <div class="grade-circle" style="border-color:#003e52; color:#003e52;">89</div>
-                    <h4 style="margin-top:10px;">Excellent!</h4>
-                    <p style="font-size:11px; color:#888;">You are in top 10% of class.</p>
-                </div>
-
-                <div class="dash-card">
-                    <h3 style="margin-bottom:20px;">Learning Milestone</h3>
-                    <div class="timeline">
-                        <div class="timeline-item active">
-                            <div class="timeline-title">Web Dasar</div>
-                            <div class="timeline-desc">HTML, CSS, Layouting</div>
-                        </div>
-                        <div class="timeline-item active">
-                            <div class="timeline-title">JavaScript Core</div>
-                            <div class="timeline-desc">ES6, DOM, Async</div>
-                        </div>
-                        <div class="timeline-item active">
-                            <div class="timeline-title" style="color:#2196f3;">Front-End Expert</div>
-                            <div class="timeline-desc">React, PWA, Testing</div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-title" style="color:#aaa;">Back-End Basics</div>
-                            <div class="timeline-desc">NodeJS, Hapi, REST API</div>
-                        </div>
-                        <div class="timeline-item" style="margin-bottom:0;">
-                            <div class="timeline-title" style="color:#aaa;">Capstone Project</div>
-                            <div class="timeline-desc">Final Application</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="insight-box">
-                    <i class="fa-solid fa-chart-line" style="margin-right:5px;"></i> <b>Insight</b><br>
-                    You are 20% faster than the class average in the "Front-End Expert" milestone. Keep it up!
-                </div>
-
-            </div>
-        </div>
-
-        <footer>
-            © 2025 Dicoding Indonesia
-        </footer>
-    </main>
 
     <script>
-        // --- 1. LOGIKA DAILY CHECK-IN ---
-        function openCheckin() {
-            document.getElementById('checkinModal').style.display = 'flex';
-        }
-
-        function closeCheckin() {
-            document.getElementById('checkinModal').style.display = 'none';
-            resetForm();
-        }
-
-        let selectedMood = '';
-
-        function selectMood(element, mood) {
-            document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-            selectedMood = mood;
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-        // Tunggu sebentar (100ms) agar transisi CSS siap
-        setTimeout(function() {
-            const progressFills = document.querySelectorAll('.progress-fill');
-            
-            progressFills.forEach(fill => {
-                // Ambil target lebar dari atribut data-width
-                const targetWidth = fill.getAttribute('data-width');
-                // Setel lebar style agar CSS transition berjalan
-                fill.style.width = targetWidth;
-            });
-        }, 100);
-    });
-        function submitCheckin() {
-            const text = document.getElementById('progressText').value;
-
-            if (!selectedMood) {
-                alert("Silakan pilih mood Anda hari ini (Emoji)!");
-                return;
-            }
-            if (text.trim() === "") {
-                alert("Silakan isi progres Anda!");
-                return;
-            }
-            
-            alert(`Check-in Berhasil!\nMood: ${selectedMood}\nProgress: ${text}`);
-            closeCheckin();
-        }
-
-        function resetForm() {
-            document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
-            document.getElementById('progressText').value = "";
-            selectedMood = '';
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('checkinModal');
-            if (event.target == modal) {
-                closeCheckin();
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-        // Tunggu sebentar (100ms) agar transisi CSS siap
-        setTimeout(function() {
-            const progressFills = document.querySelectorAll('.progress-fill');
-            
-            progressFills.forEach(fill => {
-                // Ambil target lebar dari atribut data-width
-                const targetWidth = fill.getAttribute('data-width');
-                // Setel lebar style agar CSS transition berjalan
-                fill.style.width = targetWidth;
-            });
-        }, 100);
-    });
-
-        // --- 2. CHART CONFIGURATION ---
-        // Radar Chart
-        const ctxRadar = document.getElementById('radarChart').getContext('2d');
-        new Chart(ctxRadar, {
-            type: 'radar',
-            data: {
-                labels: ['HTML/CSS', 'JavaScript', 'React', 'Testing', 'DevOps', 'Soft Skills'],
-                datasets: [{
-                    label: 'You',
-                    data: [90, 85, 88, 60, 40, 75],
-                    fill: true,
-                    backgroundColor: 'rgba(33, 150, 243, 0.2)',
-                    borderColor: 'rgb(33, 150, 243)',
-                    pointBackgroundColor: 'rgb(33, 150, 243)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgb(33, 150, 243)'
-                }, {
-                    label: 'Class Avg',
-                    data: [70, 75, 60, 50, 45, 65],
-                    fill: true,
-                    backgroundColor: 'rgba(200, 200, 200, 0.2)',
-                    borderColor: 'rgba(200, 200, 200, 0.5)',
-                    pointBackgroundColor: 'rgba(200, 200, 200, 1)',
-                    pointBorderColor: '#fff'
-                }]
-            },
-            options: {
-                elements: { line: { borderWidth: 2 } },
-                scales: {
-                    r: {
-                        angleLines: { display: false },
-                        suggestedMin: 0, suggestedMax: 100,
-                        grid: { color: '#f0f0f0' },
-                        pointLabels: { font: { size: 10 } }
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { DEFAULT: '#003F52', light: '#005770', dark: '#002a38' },
+                        dicodingBlue: '#0066FF',
+                        pinkAccent: '#FFE4E6', pinkText: '#F43F5E',
+                        greenAccent: '#DCFCE7', greenText: '#166534'
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    keyframes: {
+                        dash: { '0%': { strokeDashoffset: '226' }, '100%': { strokeDashoffset: '30' } },
+                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(-10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        modalIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+                        bounceIn: { '0%': { opacity: '0', transform: 'scale(0.3)' }, '50%': { opacity: '1', transform: 'scale(1.05)' }, '70%': { transform: 'scale(0.9)' }, '100%': { transform: 'scale(1)' } }
+                    },
+                    animation: {
+                        dash: 'dash 1.5s ease-out forwards',
+                        fadeIn: 'fadeIn 0.2s ease-out forwards',
+                        modalIn: 'modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        bounceIn: 'bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards',
                     }
-                },
-                plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, font: { size: 10 } } } }
+                }
             }
-        });
-
-        // Line Chart
-        const ctxLine = document.getElementById('lineChart').getContext('2d');
-        new Chart(ctxLine, {
-            type: 'line',
-            data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [{
-                    data: [2, 4, 3, 5, 4.5, 6, 5],
-                    borderColor: '#4dd0e1',
-                    backgroundColor: 'rgba(77, 208, 225, 0.2)',
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { display: false }, y: { display: false } }
-            }
-        });
+        }
     </script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 font-sans transition-colors duration-300 overflow-hidden selection:bg-blue-500 selection:text-white dark:bg-slate-900 dark:text-white">
+
+    <div class="flex h-screen overflow-hidden relative">
+        
+        <aside class="w-20 lg:w-64 bg-navy text-white flex flex-col transition-all duration-300 z-30 shadow-2xl flex-shrink-0">
+            <div class="p-6 flex items-center gap-3 mb-6">
+                <div class="text-2xl font-bold tracking-tighter flex items-center gap-1">
+                    <span>dicoding</span>
+                    <div class="w-2 h-2 bg-white rounded-full mt-2"></div>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-6 overflow-y-auto" id="sidebar-nav">
+                <div>
+                    <h3 class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Learning</h3>
+                    <div class="space-y-1">
+                        <button class="w-full flex items-center gap-4 px-4 py-3 rounded-full transition-all duration-200 group relative text-left bg-white text-navy font-bold shadow-md">
+                            <span class="text-sm">Dashboard</span>
+                        </button>
+                        <button class="w-full flex items-center gap-4 px-4 py-3 rounded-full transition-all duration-200 group relative text-left text-slate-300 hover:text-white hover:bg-white/10">
+                            <span class="text-sm">My Progress</span>
+                        </button>
+                        <button class="w-full flex items-center gap-4 px-4 py-3 rounded-full transition-all duration-200 group relative text-left text-slate-300 hover:text-white hover:bg-white/10">
+                            <span class="text-sm">Dicoding Mentoring</span>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Document</h3>
+                    <div class="space-y-1">
+                        <button class="w-full flex items-center gap-4 px-4 py-3 rounded-full transition-all duration-200 group relative text-left text-slate-300 hover:text-white hover:bg-white/10">
+                            <span class="text-sm">Student Portal</span>
+                        </button>
+                        <button class="w-full flex items-center gap-4 px-4 py-3 rounded-full transition-all duration-200 group relative text-left text-slate-300 hover:text-white hover:bg-white/10">
+                            <span class="text-sm">Announcement</span>
+                        </button>
+                        <button class="w-full flex items-center gap-4 px-4 py-3 rounded-full transition-all duration-200 group relative text-left text-slate-300 hover:text-white hover:bg-white/10">
+                            <span class="text-sm">Capstone Project</span>
+                        </button>
+                        <button class="w-full flex items-center gap-4 px-4 py-3 rounded-full transition-all duration-200 group relative text-left text-slate-300 hover:text-white hover:bg-white/10">
+                            <span class="text-sm">Newsletter</span>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="flex-1 flex flex-col relative overflow-hidden bg-[#F8FAFC] dark:bg-slate-900 rounded-tl-[2.5rem] -ml-4 z-20 border-l-4 border-navy/10">
+            
+            <header class="sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-20 px-8 py-6 flex justify-between items-center">
+                <div>
+                    <h1 id="header-title" class="text-2xl font-extrabold text-navy dark:text-white uppercase tracking-tight">HALLO HAECHAN</h1>
+                    <p id="header-subtitle" class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">Let's continue your learning journey today.</p>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="relative hidden md:block group">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-blue-500 transition-colors"></i>
+                        <input type="text" placeholder="Search course..." class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-full text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white dark:placeholder-slate-500">
+                    </div>
+                    
+                    <div class="relative">
+                        <button id="notif-menu-btn" class="p-2 border rounded-full bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 relative group focus:outline-none active:scale-95 transition-transform">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 group-hover:animate-ping"></span>
+                            <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+                        </button>
+
+                        <div id="notif-dropdown" class="hidden absolute right-0 mt-3 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden z-50 transform origin-top-right dropdown-enter">
+                            <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-700/30 flex justify-between items-center">
+                                <p class="text-sm font-bold text-navy dark:text-white">Notifications</p>
+                                <a href="notifications.html" class="text-xs text-blue-500 hover:text-blue-600 font-medium">view all</a>
+                            </div>
+                            <div class="max-h-80 overflow-y-auto p-2 space-y-1">
+                                <div class="p-3 bg-blue-50/50 dark:bg-slate-700/30 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer group relative">
+                                    <div class="absolute top-4 right-3 w-2 h-2 bg-red-500 rounded-full" title="Unread"></div>
+                                    <div class="flex gap-3">
+                                        <div class="p-2 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full h-fit flex-shrink-0">
+                                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="text-sm font-bold text-navy dark:text-white">Submission Approved</h5>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">Your submission for "Landing Page" has been approved with 5 stars!</p>
+                                            <p class="text-[10px] text-slate-400 mt-1">10 min ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="theme-toggle" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 transition-colors">
+                        <i data-lucide="moon" class="dark:hidden w-5 h-5"></i>
+                        <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
+                    </button>
+
+                    <div class="relative ml-2">
+                        <button id="profile-menu-btn" class="flex items-center focus:outline-none transition-transform active:scale-95">
+                            <div class="relative">
+                                <img class="h-10 w-10 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-md" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Profile">
+                                <div class="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
+                            </div>
+                        </button>
+                        <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden z-50 transform origin-top-right dropdown-enter">
+                            <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-700/30">
+                                <p class="text-sm font-bold text-navy dark:text-white">Haechan</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate font-medium">haechan@dicoding.com</p>
+                            </div>
+                            <div class="p-2 space-y-1">
+                                <a href="profile.html" class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl transition-colors group">
+                                    <div class="p-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors"><i data-lucide="user" class="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400"></i></div> Edit Profile
+                                </a>
+                                <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors group">
+                                    <div class="p-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg group-hover:bg-red-100 dark:group-hover:bg-red-900/40 transition-colors"><i data-lucide="log-out" class="w-4 h-4 text-red-500"></i></div> Log Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </header>
+
+            <div id="main-scroll-area" class="flex-1 overflow-y-auto scroll-smooth p-6 md:p-8">
+                <div id="dashboard-view" class="max-w-7xl mx-auto space-y-6 fade-in">
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-8 bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group">
+                            <div class="flex justify-between items-start relative z-10">
+                                <div class="w-2/3">
+                                    <div class="inline-block px-3 py-1 bg-blue-50 text-dicodingBlue text-[10px] font-bold rounded-full uppercase tracking-wider mb-3">Recommended Next Step</div>
+                                    <h2 class="text-2xl font-bold text-navy dark:text-white mb-2 leading-tight">Mastering React Hooks <br/> & Custom Logic</h2>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-6 max-w-sm">Berdasarkan hasil kuis Modul 3, Anda siap untuk materi lanjutan. Tingkatkan skill manajemen state.</p>
+                                    <div class="flex items-center gap-3">
+                                        <button class="px-6 py-2.5 bg-navy hover:bg-navy-light text-white rounded-full font-bold text-sm transition-all shadow-lg flex items-center gap-2 transform hover:scale-105">
+                                            <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div> Lanjut Belajar
+                                        </button>
+                                        <span class="text-xs font-medium text-slate-400">~ 45 min left</span>
+                                    </div>
+                                </div>
+                                <div class="w-32 h-32 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-6 group-hover:rotate-12 transition-transform duration-500">
+                                    <i data-lucide="atom" class="w-16 h-16 text-white animate-spin-slow"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-4 space-y-4">
+                            <div id="study-time-card" class="bg-navy rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border border-white/5" onclick="toggleStudyChart()">
+                                <div id="study-summary" class="transition-all duration-300 opacity-100 transform translate-y-0 h-full flex flex-col justify-between relative z-10">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <div class="p-1.5 bg-white/10 rounded-lg backdrop-blur-sm">
+                                                    <i data-lucide="clock" class="w-4 h-4 text-blue-200"></i>
+                                                </div>
+                                                <p class="text-blue-200 text-[10px] font-bold uppercase tracking-widest">Study Time</p>
+                                            </div>
+                                            <h3 class="text-4xl font-bold tracking-tight">42.5 <span class="text-lg font-medium text-blue-300">hrs</span></h3>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="flex items-center gap-1 text-xs font-medium text-green-400 bg-green-400/10 px-2 py-1 rounded-full border border-green-400/20">
+                                                <i data-lucide="trending-up" class="w-3 h-3"></i> +12%
+                                            </span>
+                                            <span class="text-[10px] text-blue-300 mt-1">vs last week</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="absolute bottom-0 left-0 right-0 h-16 opacity-30 pointer-events-none">
+                                         <svg viewBox="0 0 100 25" class="w-full h-full text-blue-400 fill-current">
+                                            <path d="M0 25 L0 15 Q 10 5 20 15 T 40 15 T 60 10 T 80 15 T 100 5 V 25 Z" />
+                                         </svg>
+                                    </div>
+
+                                    <div class="mt-4 flex items-center justify-between text-xs text-blue-200/70 border-t border-white/10 pt-3">
+                                        <span>Total sessions: 12</span>
+                                        <span class="group-hover:text-white transition-colors flex items-center gap-1">View Details <i data-lucide="chevron-right" class="w-3 h-3"></i></span>
+                                    </div>
+                                </div>
+
+                                <div id="study-chart-container" class="absolute inset-0 p-6 bg-navy z-20 transition-all duration-300 opacity-0 pointer-events-none transform scale-95 flex flex-col">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <div>
+                                            <p class="text-[10px] font-bold uppercase text-blue-200 tracking-widest">Analytics</p>
+                                            <h4 class="text-lg font-bold">Activity</h4>
+                                        </div>
+                                        
+                                        <div class="flex items-center bg-black/20 rounded-lg p-1 gap-1 shrink-0 cursor-default" onclick="event.stopPropagation()">
+                                            <button onclick="updateStudyData('Weekly', this)" class="px-3 py-1.5 text-[10px] font-bold bg-[#0066FF] text-white rounded-md shadow-sm transition-all whitespace-nowrap" id="btn-weekly">
+                                                Week
+                                            </button>
+                                            <button onclick="updateStudyData('Monthly', this)" class="px-3 py-1.5 text-[10px] font-bold text-blue-200 hover:text-white hover:bg-white/5 rounded-md transition-all whitespace-nowrap" id="btn-monthly">
+                                                Month
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex-1 w-full relative">
+                                        <canvas id="studyActivityChart"></canvas>
+                                    </div>
+
+                                    <div class="mt-2 flex justify-between items-center text-[10px] text-blue-200">
+                                        <span>Avg: <span class="font-bold text-white">6.2 hrs</span>/day</span>
+                                        <button class="hover:text-white flex items-center gap-1" onclick="event.stopPropagation(); toggleStudyChart()">
+                                            <i data-lucide="x-circle" class="w-3 h-3"></i> Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-[2rem] p-5 shadow-sm flex items-center gap-4">
+                                <div class="relative w-14 h-14 flex items-center justify-center">
+                                    <svg class="w-full h-full transform -rotate-90">
+                                        <circle cx="28" cy="28" r="24" class="stroke-slate-100 dark:stroke-slate-700" stroke-width="6" fill="none"></circle>
+                                        <circle cx="28" cy="28" r="24" stroke="#003F52" stroke-width="6" fill="none" stroke-dasharray="150" stroke-dashoffset="10" stroke-linecap="round"></circle>
+                                    </svg>
+                                    <span class="absolute text-sm font-bold text-navy dark:text-white">93</span>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Avg. Grade</p>
+                                    <h3 class="text-lg font-bold text-navy dark:text-white">Excellent!</h3>
+                                    <p class="text-[10px] text-slate-500">You are in top 10%.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm border border-slate-100 dark:border-slate-700">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-navy dark:text-white">Daily Check-in</h3>
+                                <div class="flex items-center gap-2">
+                                     <div class="text-xs text-slate-500 text-right mr-2" id="current-date-display"></div>
+                                     <button id="view-checkin-btn" class="text-[10px] text-dicodingBlue font-bold hover:underline flex items-center gap-1">View All <i data-lucide="external-link" class="w-3 h-3"></i></button>
+                                </div>
+                            </div>
+                            <div id="daily-checkin-grid" class="grid grid-cols-5 gap-3"></div>
+                            <div class="mt-3 text-right"><span class="text-[10px] text-slate-400 cursor-pointer hover:text-red-500" id="reset-checkin-btn">Reset (Demo)</span></div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm border border-slate-100 dark:border-slate-700">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-navy dark:text-white">My Schedule</h3>
+                                <span class="text-xs text-slate-500 font-medium">Today, 4 November 2024</span>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-sky-50 dark:bg-sky-900/20 p-3 rounded-xl flex items-center justify-between border border-sky-100 dark:border-sky-800">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">07:00 - 08:00 WIB</p>
+                                        <p class="text-xs font-bold text-navy dark:text-white">07:00 WIB: Front-End Web Dasar</p>
+                                    </div>
+                                    <button class="px-3 py-1 bg-white dark:bg-slate-700 text-navy dark:text-white text-[10px] font-bold rounded-full border border-slate-200 hover:bg-slate-50 shadow-sm">Join Session</button>
+                                </div>
+                                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-xl flex items-center justify-between border border-blue-100 dark:border-blue-800">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Deadline</p>
+                                        <p class="text-xs font-bold text-navy dark:text-white">Ruang Interaksi App with React</p>
+                                        <p class="text-[10px] text-slate-500">23.59 WIB</p>
+                                    </div>
+                                    <button class="px-3 py-1 bg-white dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] font-bold rounded-full border border-slate-200">Submitted</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="flex justify-between items-end">
+                                <h3 class="text-lg font-bold text-navy dark:text-white">Current Modules</h3>
+                                <button class="text-xs text-blue-500 font-bold hover:underline">View curriculum</button>
+                            </div>
+                            <div id="modules-dynamic-container" class="space-y-4"></div>
+                            <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm border border-slate-100 dark:border-slate-700 transition-colors">
+                                <div class="flex justify-between items-center mb-6">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-navy dark:text-white">Detailed Skill Analysis</h3>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">Comparison vs Global Cohort</p>
+                                    </div>
+                                    <div class="flex gap-3 text-xs font-medium bg-slate-50 dark:bg-slate-700/50 p-2 rounded-lg">
+                                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-dicodingBlue"></span> You</div>
+                                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span> Avg</div>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-center">
+                                    <div class="relative h-[300px] w-full flex justify-center items-center">
+                                        <canvas id="skillRadarChart"></canvas>
+                                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
+                                            <i data-lucide="crosshair" class="w-32 h-32 text-slate-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4 h-[300px] overflow-y-auto pr-2 custom-scrollbar" id="skill-breakdown-container"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-1 space-y-6">
+                            <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 shadow-sm h-full transition-colors border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="text-lg font-bold text-navy dark:text-white mb-6">Learning Milestone</h3>
+                                    <div id="milestone-container" class="relative pl-4 border-l-2 border-slate-100 dark:border-slate-700 space-y-8"></div>
+                                </div>
+                                <div class="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+                                    <div class="flex items-center gap-2 mb-2 text-blue-600">
+                                        <i data-lucide="trending-up" class="w-4 h-4"></i>
+                                        <span class="text-xs font-bold">Insight</span>
+                                    </div>
+                                    <p class="text-xs text-blue-800 leading-relaxed">You are 20% faster than the class average in the "Front-End Expert" milestone. Keep it up!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <footer class="text-center py-6 text-sm font-bold text-slate-500 border-t border-slate-200 dark:border-slate-800 mt-4">2025 Dicoding Indonesia</footer>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="checkin-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" id="checkin-backdrop"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 w-full max-w-md shadow-2xl relative z-10 transform scale-95 transition-all animate-modalIn border border-slate-100 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-navy dark:text-white">Daily Check-in</h3>
+                <button id="close-checkin-modal" class="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="flex gap-4 justify-center mb-6">
+                <button class="mood-btn group flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-slate-100 dark:border-slate-700 hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all w-24" onclick="selectMood(this, 'red-400', 'bg-red-50')">
+                    <span class="text-4xl grayscale group-hover:grayscale-0 transition-all emoji">🤯</span>
+                    <span class="text-xs font-bold text-slate-500 group-hover:text-red-500">Bad</span>
+                </button>
+                <button class="mood-btn group flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-slate-100 dark:border-slate-700 hover:border-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-all w-24" onclick="selectMood(this, 'yellow-400', 'bg-yellow-50')">
+                    <span class="text-4xl grayscale group-hover:grayscale-0 transition-all emoji">😐</span>
+                    <span class="text-xs font-bold text-slate-500 group-hover:text-yellow-600">Netral</span>
+                </button>
+                <button class="mood-btn group flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-slate-100 dark:border-slate-700 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all w-24" onclick="selectMood(this, 'green-400', 'bg-green-50')">
+                    <span class="text-4xl grayscale group-hover:grayscale-0 transition-all emoji">🤩</span>
+                    <span class="text-xs font-bold text-slate-500 group-hover:text-green-600">Great</span>
+                </button>
+            </div>
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-slate-500 mb-2">Your Progress</label>
+                <textarea id="checkin-note" class="w-full h-32 p-4 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-dicodingBlue/50 text-sm text-navy dark:text-white placeholder-slate-400" placeholder="Tell us about your day..."></textarea>
+            </div>
+            <div class="flex justify-end">
+                <button class="bg-navy hover:bg-navy-light text-white px-8 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" onclick="submitCheckin()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300 translate-y-10 opacity-0">
+        <div class="bg-white dark:bg-slate-800 border-l-4 border-green-500 shadow-2xl rounded-xl p-4 flex items-center gap-4 pr-8">
+            <div class="p-2 bg-green-100 rounded-full text-green-600 animate-bounceIn"><i data-lucide="party-popper" class="w-6 h-6"></i></div>
+            <div>
+                <h4 class="font-bold text-navy dark:text-white text-sm">Check-in Berhasil!</h4>
+                <p id="toast-message" class="text-xs text-slate-500 dark:text-slate-400">Kamu keren abiez!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../index.js"></script>
 </body>
 </html>
