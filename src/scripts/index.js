@@ -1,288 +1,18 @@
 // --- VARIABEL GLOBAL ---
 const loginModal = document.getElementById('loginModal');
 const registerModal = document.getElementById('registerModal');
-const checkinModal = document.getElementById('checkinModal'); // Tambahkan
 const loginBtnNav = document.getElementById('loginLink');
-let selectedMood = ''; // Pindahkan inisialisasi ke atas
 
-// --- FUNGSI UTAMA (Diakses di Global) ---
-
-/**
- * Fungsi 2: Logout User
- */
-function logoutUser() {
-    // Hapus data login dari memori
-    localStorage.removeItem('statusLogin');
-    alert("Anda telah keluar.");
-    // Reload halaman untuk mereset tampilan
-    window.location.reload(); 
-}
-
-/**
- * Fungsi 3: Login Google (Simulasi)
- */
-function handleGoogleLogin(buttonId) {
-    const btn = document.getElementById(buttonId);
-    if (!btn) return;
-
-    const btnSpan = btn.querySelector('span');
-    const originalText = btnSpan ? btnSpan.innerText : 'Login with Google';
-
-    btn.disabled = true;
-    btn.style.opacity = "0.7";
-    btn.style.cursor = "not-allowed";
-    if (btnSpan) btnSpan.innerText = "Menghubungkan...";
-
-    setTimeout(() => {
-        // SIMPAN STATUS LOGIN KE BROWSER
-        localStorage.setItem('statusLogin', 'true');
-
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
-        if (btnSpan) btnSpan.innerText = originalText;
-
-        // Redirect ke dashboard
-        window.location.href = "profile.html"; 
-    }, 1500);
-}
-
-/**
- * Fungsi 4: Navigasi Modal Login/Register
- */
-function openLoginModal() {
-    if (registerModal) registerModal.style.display = "none";
-    if (loginModal) loginModal.style.display = "flex";
-    if (loginBtnNav) loginBtnNav.classList.add('nav-active');
-    clearErrors();
-}
-
-function switchToRegister() {
-    if (loginModal) loginModal.style.display = "none";
-    if (registerModal) registerModal.style.display = "flex";
-    if (loginBtnNav) loginBtnNav.classList.add('nav-active');
-    clearErrors();
-}
-
-function closeAllModals() {
-    if (loginModal) loginModal.style.display = "none";
-    if (registerModal) registerModal.style.display = "none";
-    if (loginBtnNav) loginBtnNav.classList.remove('nav-active');
-    clearErrors();
-}
-
-/**
- * Fungsi 5: Validasi/Utility (Clear Errors)
- */
-function clearErrors() {
-    const inputs = document.querySelectorAll('.input-group-reg input');
-    inputs.forEach(input => input.classList.remove('input-error'));
-    const msgs = document.querySelectorAll('.error-msg');
-    msgs.forEach(msg => msg.style.display = 'none');
-}
-
-/**
- * Fungsi Check-in 1 & 2: Buka/Tutup Modal Check-in
- */
-function openCheckin() {
-    const today = new Date().toISOString().split('T')[0];
-    if (localStorage.getItem('checkin_' + today)) {
-        alert("Anda sudah melakukan daily check-in hari ini. Tidak bisa mengisi lagi.");
-        return;
-    }
-    if (checkinModal) checkinModal.style.display = 'flex';
-}
-
-function closeCheckin() {
-    if (checkinModal) checkinModal.style.display = 'none';
-    resetForm(); // Reset pilihan saat ditutup
-}
-
-/**
- * Fungsi Check-in 3: Pilih Mood (Emoji)
- */
-function selectMood(element, mood) {
-    // Hapus kelas 'selected' dari semua emoji
-    document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
-    
-    // Tambah kelas 'selected' ke elemen yang diklik
-    element.classList.add('selected');
-    selectedMood = mood;
-}
-
-/**
- * Fungsi Check-in 4: Submit Data (Diperbarui/Diperbaiki)
- */
-function submitCheckin() {
-    const textElement = document.getElementById('progressText');
-
-    if (!textElement) {
-        console.error("progressText element not found.");
-        return;
-    }
-    const text = textElement.value;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const dateKey = today.toISOString().split('T')[0]; // Key: "YYYY-MM-DD"
-    
-    // Cek apakah hari ini sudah daily check-in
-    if (localStorage.getItem('checkin_' + dateKey)) {
-        alert("Anda sudah melakukan daily check-in hari ini. Tidak bisa mengisi lagi.");
-        closeCheckin();
-        return;
-    }
-
-    if (!selectedMood) {
-        alert("Silakan pilih mood Anda hari ini (Emoji)!");
-        return;
-    }
-    if (text.trim() === "") {
-        alert("Silakan isi progres Anda!");
-        return;
-    }
-
-    // SIMPAN KE LOCAL STORAGE
-    const data = {
-        date: dateKey,
-        mood: selectedMood,
-        progress: text,
-        timestamp: new Date().toISOString()
-    };
-
-    localStorage.setItem('checkin_' + dateKey, JSON.stringify(data));
-
-    // Notifikasi & Refresh Tampilan
-    alert("Check-in berhasil! Tetap semangat! 🔥");
-    closeCheckin();
-    renderWeeklyCheckin(); // Refresh kotak-kotak jadi hijau
-}
-
-/**
- * Fungsi Check-in 5: Reset Form Helper
- */
-function resetForm() {
-    document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
-    const progressTextElement = document.getElementById('progressText');
-    if (progressTextElement) progressTextElement.value = "";
-    selectedMood = '';
-}
-
-/**
- * Logika Cerdas Check-in 1: Render Kalender Mingguan
- */
-function renderWeeklyCheckin() {
-    const container = document.getElementById('checkinContainer');
-    const statusBtn = document.getElementById('checkinStatusBtn');
-    const monthLabel = document.getElementById('currentMonthYear');
-    
-    if (!container || !statusBtn || !monthLabel) return;
-    
-    container.innerHTML = ""; // Bersihkan isi lama
-    
-    const today = new Date();
-    today.setHours(0,0,0,0); // Reset jam agar perbandingan tanggal akurat
-
-    // Update Label Bulan & Tahun
-    const options = { year: 'numeric', month: 'long' };
-    monthLabel.innerText = today.toLocaleDateString('id-ID', options);
-
-    // Cari hari Senin minggu ini
-    const currentDay = today.getDay(); // 0=Minggu, 1=Senin, ...
-    const distanceToMonday = currentDay === 0 ? -6 : 1 - currentDay; // Koreksi untuk Minggu (0)
-    const mondayDate = new Date(today);
-    mondayDate.setDate(today.getDate() + distanceToMonday);
-
-    let isTodayDone = false;
-
-    // Loop 5 Hari (Senin - Jumat)
-    for (let i = 0; i < 5; i++) {
-        const loopDate = new Date(mondayDate);
-        loopDate.setDate(mondayDate.getDate() + i);
-        
-        // Format tanggal untuk ID Storage (YYYY-MM-DD)
-        const dateKey = loopDate.toISOString().split('T')[0];
-        
-        // Cek Data di LocalStorage
-        const checkinData = localStorage.getItem('checkin_' + dateKey);
-        
-        // Buat Elemen HTML
-        const pill = document.createElement('div');
-        pill.className = 'day-pill';
-        
-        // Nama Hari (Senin, Selasa...)
-        const dayName = loopDate.toLocaleDateString('id-ID', { weekday: 'long' });
-        const dayNum = loopDate.getDate();
-
-        let statusClass = '';
-        let onclickAttr = '';
-
-        // --- LOGIKA PENENTUAN WARNA ---
-        
-        const isSameDay = loopDate.getTime() === today.getTime();
-
-        if (checkinData) {
-            // KASUS 1: SUDAH DIISI (Apapun harinya) -> HIJAU
-            statusClass = 'done';
-            if (isSameDay) isTodayDone = true;
-        } 
-        else if (loopDate.getTime() < today.getTime()) {
-            // KASUS 2: HARI SUDAH LEWAT & BELUM ISI -> MERAH
-            statusClass = 'missed';
-        } 
-        else if (isSameDay) {
-            // KASUS 3: HARI INI & BELUM ISI -> AKTIF (Bisa diklik)
-            statusClass = 'today-active';
-            onclickAttr = 'openCheckin()'; // Hanya hari ini yang bisa buka modal
-        } 
-        else {
-            // KASUS 4: HARI ESOK/MASA DEPAN -> NORMAL (Abu-abu)
-            statusClass = ''; 
-        }
-
-        // Pasang Class & Konten
-        pill.className = `day-pill ${statusClass}`;
-        pill.innerHTML = `
-            <span class="day-name">${dayName}</span>
-            <span class="day-num">${dayNum}</span>
-        `;
-        
-        // Pasang Event Klik (Jika boleh diklik)
-        if (onclickAttr) {
-            pill.setAttribute('onclick', onclickAttr);
-            pill.style.cursor = 'pointer';
-        }
-
-        container.appendChild(pill);
-    }
-
-    // Update Tombol Status di Pojok Kanan
-    const checkinCard = document.querySelector('.checkin-card');
-    if (isTodayDone) {
-        statusBtn.className = "btn-pill success";
-        statusBtn.innerText = "Completed ✔";
-        // Matikan fungsi klik di card utama jika sudah selesai
-        if (checkinCard) checkinCard.removeAttribute('onclick');
-    } else {
-        statusBtn.className = "btn-pill";
-        statusBtn.innerText = "Click to fill";
-        statusBtn.onclick = openCheckin;
-        // Pastikan card utama bisa diklik jika belum check-in
-        if (checkinCard) checkinCard.setAttribute('onclick', 'openCheckin()');
-    }
-}
-
-
-// --- 1. LOGIKA CEK STATUS LOGIN & EVENT LISTENER (JALAN OTOMATIS SAAT WEB DIBUKA) ---
+// --- 1. LOGIKA CEK STATUS LOGIN (JALAN OTOMATIS SAAT WEB DIBUKA) ---
 document.addEventListener("DOMContentLoaded", function() {
     const isLoggedIn = localStorage.getItem('statusLogin') === 'true';
 
-    // --- LOGIKA STATUS LOGIN DI NAVBAR ---
-    if (loginBtnNav) {
-        if (isLoggedIn) {
-            // Jika user SUDAH login:
-            loginBtnNav.innerText = "Logout"; 
-            loginBtnNav.classList.remove('nav-active'); 
-            loginBtnNav.style.color = "red"; 
+    if (isLoggedIn) {
+        // Jika user SUDAH login:
+        if (loginBtnNav) {
+            loginBtnNav.innerText = "Logout";       // Ubah teks jadi Logout
+            loginBtnNav.classList.remove('nav-active'); // Hapus style biru jika ada
+            loginBtnNav.style.color = "red";        // (Opsional) Beri warna merah
             
             // Ubah fungsi tombol menjadi Logout
             loginBtnNav.onclick = function() {
@@ -290,18 +20,17 @@ document.addEventListener("DOMContentLoaded", function() {
             };
             
             // Opsional: Aktifkan link Dashboard agar bisa diklik
-            const dashboardLink = document.querySelector('nav a[data-link="dashboard"]'); 
+            const dashboardLink = document.querySelector('nav a[href="#"]'); 
             if(dashboardLink && dashboardLink.innerText === "Dashboard") {
                 dashboardLink.href = "profile.html";
             }
-        } else {
-            // Jika user BELUM login:
+        }
+    } else {
+        // Jika user BELUM login:
+        if (loginBtnNav) {
             loginBtnNav.innerText = "Login";
-            loginBtnNav.style.color = ""; // Reset warna
             loginBtnNav.onclick = function() {
-                const isModalOpen = (loginModal && loginModal.style.display === "flex") || 
-                                    (registerModal && registerModal.style.display === "flex");
-                if (isModalOpen) {
+                if (loginModal.style.display === "flex" || registerModal.style.display === "flex") {
                     closeAllModals();
                 } else {
                     openLoginModal();
@@ -309,12 +38,11 @@ document.addEventListener("DOMContentLoaded", function() {
             };
         }
     }
-
-    // --- EVENT LISTENER UNTUK SUBMIT LOGIN FORM ---
+    // Add event listener for login form submission
     const loginForm = document.querySelector('#loginModal form');
     if (loginForm) {
         loginForm.addEventListener('submit', function(event) {
-            event.preventDefault(); 
+            event.preventDefault(); // Prevent form default submit behavior
 
             const usernameInput = loginForm.querySelector('input[type="text"]');
             const passwordInput = loginForm.querySelector('input[type="password"]');
@@ -343,23 +71,305 @@ document.addEventListener("DOMContentLoaded", function() {
             window.location.href = 'profile.html';
         });
     }
+});
 
-    // --- LOGIKA CERDAS DAILY CHECK-IN (PANGGIL SAAT DOM LOAD) ---
+// --- 2. FUNGSI LOGOUT ---
+function logoutUser() {
+    // Hapus data login dari memori
+    localStorage.removeItem('statusLogin');
+    alert("Anda telah keluar.");
+    // Reload halaman untuk mereset tampilan
+    window.location.reload(); 
+}
+
+
+// --- 3. FUNGSI LOGIN GOOGLE (SIMULASI) ---
+function handleGoogleLogin(buttonId) {
+    const btn = document.getElementById(buttonId);
+    const originalText = btn.querySelector('span').innerText;
+
+    btn.disabled = true;
+    btn.style.opacity = "0.7";
+    btn.style.cursor = "not-allowed";
+    btn.querySelector('span').innerText = "Menghubungkan...";
+
+    setTimeout(() => {
+        // SIMPAN STATUS LOGIN KE BROWSER
+        localStorage.setItem('statusLogin', 'true');
+
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
+        btn.querySelector('span').innerText = originalText;
+
+        // Redirect ke dashboard
+        window.location.href = "profile.html"; 
+    }, 1500);
+}
+
+
+// --- 4. FUNGSI NAVIGASI MODAL (TETAP SAMA) ---
+function openLoginModal() {
+    registerModal.style.display = "none";
+    loginModal.style.display = "flex";
+    if(loginBtnNav) loginBtnNav.classList.add('nav-active');
+    clearErrors();
+}
+
+function switchToRegister() {
+    loginModal.style.display = "none";
+    registerModal.style.display = "flex";
+    if(loginBtnNav) loginBtnNav.classList.add('nav-active');
+    clearErrors();
+}
+
+function closeAllModals() {
+    loginModal.style.display = "none";
+    registerModal.style.display = "none";
+    if(loginBtnNav) loginBtnNav.classList.remove('nav-active');
+    clearErrors();
+}
+
+// --- 5. FUNGSI VALIDASI REGISTER (TETAP SAMA) ---
+// (Pastikan kode validasi form Anda sebelumnya tetap ada di bawah sini jika ingin dipakai)
+function clearErrors() {
+    const inputs = document.querySelectorAll('.input-group-reg input');
+    inputs.forEach(input => input.classList.remove('input-error'));
+    const msgs = document.querySelectorAll('.error-msg');
+    msgs.forEach(msg => msg.style.display = 'none');
+}
+
+
+/* --- LOGIKA DAILY CHECK-IN --- */
+    
+    // 1. Buka Modal
+    function openCheckin() {
+        const today = new Date().toISOString().split('T')[0];
+        if (localStorage.getItem('checkin_' + today)) {
+            alert("Anda sudah melakukan daily check-in hari ini. Tidak bisa mengisi lagi.");
+            return;
+        }
+        document.getElementById('checkinModal').style.display = 'flex';
+    }
+
+    // 2. Tutup Modal
+    function closeCheckin() {
+        document.getElementById('checkinModal').style.display = 'none';
+        resetForm(); // Reset pilihan saat ditutup
+    }
+
+    // 3. Pilih Mood (Emoji)
+    let selectedMood = '';
+
+    function selectMood(element, mood) {
+        // Hapus kelas 'selected' dari semua emoji
+        document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
+        
+        // Tambah kelas 'selected' ke elemen yang diklik
+        element.classList.add('selected');
+        selectedMood = mood;
+    }
+
+    // 4. Submit Data
+
+function submitCheckin() {
+    // Cek apakah hari ini sudah daily check-in (green)
+    const today = new Date().toISOString().split('T')[0];
+    if (localStorage.getItem('checkin_' + today)) {
+        alert("Anda sudah melakukan daily check-in hari ini. Tidak bisa mengisi lagi.");
+        return;
+    }
+
+    const text = document.getElementById('progressText').value;
+
+    if (!selectedMood) {
+        alert("Silakan pilih mood Anda hari ini (Emoji)!");
+        return;
+    }
+    if (text.trim() === "") {
+        alert("Silakan isi progres Anda!");
+        return;
+    }
+
+    // Simpan ke localStorage agar kotak berubah hijau
+    const data = {
+        date: today,
+        mood: selectedMood,
+        progress: text,
+        timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('checkin_' + today, JSON.stringify(data));
+
+    alert(`Check-in Berhasil!\nMood: ${selectedMood}\nProgress: ${text}`);
+
+    closeCheckin();
+
+    // Update tampilan kalender jadi hijau untuk hari ini
     renderWeeklyCheckin();
+}
+
+    // 5. Reset Form Helper
+    function resetForm() {
+        document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
+        document.getElementById('progressText').value = "";
+        selectedMood = '';
+    }
 
     // Tutup modal jika klik di luar kotak (area gelap)
     window.onclick = function(event) {
-        const modalCheckin = document.getElementById('checkinModal');
-        if (modalCheckin && event.target == modalCheckin) {
+        const modal = document.getElementById('checkinModal');
+        if (event.target == modal) {
             closeCheckin();
         }
-        const modalLogin = document.getElementById('loginModal');
-        if (modalLogin && event.target == modalLogin) {
-            closeAllModals();
+    }
+
+    // --- LOGIKA CERDAS DAILY CHECK-IN ---
+
+    document.addEventListener("DOMContentLoaded", function() {
+        renderWeeklyCheckin();
+    });
+
+    // 1. Fungsi Render Kalender Mingguan
+    function renderWeeklyCheckin() {
+        const container = document.getElementById('checkinContainer');
+        const statusBtn = document.getElementById('checkinStatusBtn');
+        const monthLabel = document.getElementById('currentMonthYear');
+        
+        container.innerHTML = ""; // Bersihkan isi lama
+        
+        const today = new Date();
+        today.setHours(0,0,0,0); // Reset jam agar perbandingan tanggal akurat
+
+        // Update Label Bulan & Tahun
+        const options = { year: 'numeric', month: 'long' };
+        monthLabel.innerText = today.toLocaleDateString('id-ID', options);
+
+        // Cari hari Senin minggu ini
+        const currentDay = today.getDay(); // 0=Minggu, 1=Senin, ...
+        const distanceToMonday = currentDay === 0 ? -6 : 1 - currentDay;
+        const mondayDate = new Date(today);
+        mondayDate.setDate(today.getDate() + distanceToMonday);
+
+        let isTodayDone = false;
+
+        // Loop 5 Hari (Senin - Jumat)
+        for (let i = 0; i < 5; i++) {
+            const loopDate = new Date(mondayDate);
+            loopDate.setDate(mondayDate.getDate() + i);
+            
+            // Format tanggal untuk ID Storage (YYYY-MM-DD)
+            const dateKey = loopDate.toISOString().split('T')[0];
+            
+            // Cek Data di LocalStorage
+            const checkinData = localStorage.getItem('checkin_' + dateKey);
+            
+            // Buat Elemen HTML
+            const pill = document.createElement('div');
+            pill.className = 'day-pill';
+            
+            // Nama Hari (Senin, Selasa...)
+            const dayName = loopDate.toLocaleDateString('id-ID', { weekday: 'long' });
+            const dayNum = loopDate.getDate();
+
+            let statusClass = '';
+            let onclickAttr = '';
+
+            // --- LOGIKA PENENTUAN WARNA ---
+            
+            if (checkinData) {
+                // KASUS 1: SUDAH DIISI (Apapun harinya) -> HIJAU
+                statusClass = 'done';
+                if (loopDate.getTime() === today.getTime()) isTodayDone = true;
+            } 
+            else if (loopDate.getTime() < today.getTime()) {
+                // KASUS 2: HARI SUDAH LEWAT & BELUM ISI -> MERAH
+                statusClass = 'missed';
+            } 
+            else if (loopDate.getTime() === today.getTime()) {
+                // KASUS 3: HARI INI & BELUM ISI -> AKTIF (Bisa diklik)
+                statusClass = 'today-active';
+                onclickAttr = 'openCheckin()'; // Hanya hari ini yang bisa buka modal
+            } 
+            else {
+                // KASUS 4: HARI ESOK -> NORMAL (Abu-abu)
+                statusClass = ''; 
+            }
+
+            // Pasang Class & Konten
+            pill.className = `day-pill ${statusClass}`;
+            pill.innerHTML = `
+                <span class="day-name">${dayName}</span>
+                <span class="day-num">${dayNum}</span>
+            `;
+            
+            // Pasang Event Klik (Jika boleh diklik)
+            if (onclickAttr) {
+                pill.setAttribute('onclick', onclickAttr);
+                pill.style.cursor = 'pointer';
+            }
+
+            container.appendChild(pill);
         }
-        const modalRegister = document.getElementById('registerModal');
-        if (modalRegister && event.target == modalRegister) {
-            closeAllModals();
+
+        // Update Tombol Status di Pojok Kanan
+        if (isTodayDone) {
+            statusBtn.className = "btn-pill success";
+            statusBtn.innerText = "Completed ✔";
+            // Matikan fungsi klik di card utama jika sudah selesai
+            document.querySelector('.checkin-card').removeAttribute('onclick');
+        } else {
+            statusBtn.className = "btn-pill";
+            statusBtn.innerText = "Click to fill";
+            statusBtn.onclick = openCheckin;
         }
     }
-});
+
+    // 2. Logika Submit (Update)
+    // Pastikan fungsi submitCheckin Anda diupdate seperti ini:
+    function submitCheckin() {
+        const text = document.getElementById('progressText').value;
+        
+        // Validasi (Pastikan selectedMood didefinisikan di script global Anda)
+        if (typeof selectedMood === 'undefined' || !selectedMood) {
+            alert("Silakan pilih mood Anda hari ini!");
+            return;
+        }
+        if (text.trim() === "") {
+            alert("Silakan isi progres Anda!");
+            return;
+        }
+
+        // --- SIMPAN KE LOCAL STORAGE ---
+        const today = new Date();
+        const dateKey = today.toISOString().split('T')[0]; // Key: "2025-11-24"
+        
+        const data = {
+            date: dateKey,
+            mood: selectedMood,
+            progress: text,
+            timestamp: new Date().toISOString()
+        };
+
+        localStorage.setItem('checkin_' + dateKey, JSON.stringify(data));
+
+        // Notifikasi & Refresh Tampilan
+        alert("Check-in berhasil! Tetap semangat! 🔥");
+        closeCheckin();
+        renderWeeklyCheckin(); // Refresh kotak-kotak jadi hijau
+    }
+
+    // --- (Fungsi Modal Bawaan Anda Tetap Sama) ---
+    function openCheckin() { document.getElementById('checkinModal').style.display = 'flex'; }
+    function closeCheckin() { document.getElementById('checkinModal').style.display = 'none'; resetForm(); }
+    
+    let selectedMood = '';
+    function selectMood(element, mood) {
+        document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedMood = mood;
+    }
+    
+    function resetForm() {
+        document.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
+        document.getElementById('progressText').value = "";
+        selectedMood = '';
