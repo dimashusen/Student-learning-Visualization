@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Learning Platform</title>
+    <title>Student Learning Platform - Dicoding</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
     
     <link rel="stylesheet" href="./styles/styles.css">
     
@@ -19,42 +22,60 @@
     <div id="app"></div>
 
     <script type="module">
+        // Import Halaman-halaman
         import HomePage from './scripts/pages/home/home-page.js';
         import DashboardPage from './scripts/pages/dashboard/dashboard-page.js';
+        import MyProgressPage from './scripts/pages/my-progress/my-progress-page.js';
 
-        // 1. Definisi Rute
+        // Definisi Rute (Mapping URL Hash ke Halaman)
         const routes = {
             '/': HomePage,
             '/home': HomePage,
             '/dashboard': DashboardPage,
+            '/my-progress': MyProgressPage,
         };
 
-        // 2. Fungsi Render Halaman
+        // Fungsi Router
         const router = async () => {
             const content = document.getElementById('app');
             
-            // Ambil hash dari URL (misal: #/dashboard), default ke '/'
+            // Ambil hash dari URL (contoh: #/dashboard), default ke '/'
+            // .slice(1) membuang tanda '#'
             let request = window.location.hash.slice(1).toLowerCase() || '/';
             
-            // Ambil halaman yang sesuai, jika tidak ada kembali ke Home
-            let page = routes[request] ? routes[request] : HomePage;
-            
-            // Cek Proteksi: Jika masuk dashboard tapi belum login, tendang ke home
+            // Cek apakah user sudah login
             const isLoggedIn = localStorage.getItem('statusLogin') === 'true';
-            if (request === '/dashboard' && !isLoggedIn) {
-                alert("Silakan login terlebih dahulu.");
-                window.location.hash = '/';
+
+            // --- PROTEKSI HALAMAN ---
+            // Daftar halaman yang butuh login
+            const protectedRoutes = ['/dashboard', '/my-progress'];
+
+            // Jika akses halaman rahasia tapi belum login -> Tendang ke Home
+            if (protectedRoutes.includes(request) && !isLoggedIn) {
+                alert("Silakan login terlebih dahulu untuk mengakses halaman ini.");
+                window.location.hash = '/'; // Redirect ke Home
                 return;
             }
 
-            // Render Halaman
+            // Ambil halaman yang sesuai, jika rute tidak ada, kembalikan ke HomePage
+            let page = routes[request] ? routes[request] : HomePage;
+            
+            // 1. Render HTML Halaman
             content.innerHTML = await page.render();
             
-            // Jalankan script halaman (seperti chart atau event listener)
+            // 2. Jalankan Script Halaman (Event Listener, Chart, dll)
             if (page.afterRender) await page.afterRender();
+
+            // 3. Inisialisasi Ulang Icon Lucide (Penting untuk Dashboard)
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+
+            // 4. Scroll ke atas setiap ganti halaman
+            window.scrollTo(0, 0);
         };
 
-        // 3. Event Listener (Saat hash berubah atau halaman dimuat)
+        // Event Listener: Jalankan router saat hash berubah atau halaman dimuat
         window.addEventListener('hashchange', router);
         window.addEventListener('load', router);
     </script>

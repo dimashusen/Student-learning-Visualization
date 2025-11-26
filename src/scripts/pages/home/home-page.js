@@ -3,28 +3,23 @@ const HomePage = {
     // 1. Cek apakah user sudah login
     const isLoggedIn = localStorage.getItem('statusLogin') === 'true';
 
-    // 2. Siapkan item menu navigasi berdasarkan status login
-    let navItemsHtml = '';
-
+    // 2. Siapkan tombol Login/Logout
+    let authBtnHtml = '';
     if (isLoggedIn) {
-        // --- TAMPILAN SETELAH LOGIN ---
-        // Munculkan Dashboard, Academy, dan tombol Logout
-        navItemsHtml = `
-            <li><a href="#" class="nav-item active">Home</a></li>
-            <li><a href="javascript:void(0)" id="navDashboard" class="nav-item">Dashboard</a></li>
-            <li><a href="javascript:void(0)" id="navAcademy" class="nav-item">Academy</a></li>
-            <li><a href="#" id="logoutBtn" class="nav-item" style="color: #ef5350;">Logout</a></li>
-        `;
+        authBtnHtml = `<li><a href="#" id="logoutBtn" class="nav-item" style="color: #ef5350;">Logout</a></li>`;
     } else {
-        // --- TAMPILAN SEBELUM LOGIN ---
-        // Hanya Home dan Login
-        navItemsHtml = `
-            <li><a href="#" class="nav-item active">Home</a></li>
-            <li><a href="#" id="loginBtn" class="nav-item">Login</a></li>
-        `;
+        authBtnHtml = `<li><a href="#" id="loginBtn" class="nav-item">Login</a></li>`;
     }
 
-    // 3. Render HTML Utuh
+    // 3. Menu Navigasi
+    const navItemsHtml = `
+        <li><a href="#" class="nav-item active">Home</a></li>
+        <li><a href="javascript:void(0)" id="navDashboard" class="nav-item">Dashboard</a></li>
+        <li><a href="javascript:void(0)" id="navAcademy" class="nav-item">Academy</a></li>
+        ${authBtnHtml}
+    `;
+
+    // 4. Render HTML Utuh
     return `
       <div class="home-container">
         
@@ -51,11 +46,19 @@ const HomePage = {
           <div class="info-left">
             <h2>Wujudkan<br>Mimpi Mu!!</h2>
             <p>Semoga aktivitas<br>belajarmu menyenangkan<br>dan bermanfaat.</p>
+            
             <div class="social-icons">
-              <a href="#"><i class="fas fa-envelope"></i></a>
-              <a href="#"><i class="fas fa-map-marker-alt"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="mailto:info@dicoding.com" title="Email">
+                <i class="fas fa-envelope"></i>
+              </a>
+              <a href="https://www.youtube.com/@DicodingIndonesia" target="_blank" title="YouTube Dicoding">
+                <i class="fab fa-youtube"></i>
+              </a>
+              <a href="https://www.instagram.com/dicoding/" target="_blank" title="Instagram Dicoding">
+                <i class="fab fa-instagram"></i>
+              </a>
             </div>
+
           </div>
 
           <div class="info-right-cards">
@@ -88,10 +91,19 @@ const HomePage = {
     const isLoggedIn = localStorage.getItem('statusLogin') === 'true';
     const modalContainer = document.getElementById('modal-container');
 
+    // --- FUNGSI HELPER: BUKA LOGIN MODAL ---
+    const openLoginModal = async () => {
+        try {
+            const { default: LoginPage } = await import('../../pages/auth/login-page.js');
+            modalContainer.innerHTML = await LoginPage.render();
+            await LoginPage.afterRender();
+        } catch (error) {
+            console.error("Gagal memuat login page:", error);
+        }
+    };
+
+    // --- 1. EVENT HANDLER TOMBOL AUTH (LOGIN / LOGOUT) ---
     if (isLoggedIn) {
-        // --- LOGIKA JIKA SUDAH LOGIN ---
-        
-        // 1. Event Logout
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', (e) => {
@@ -99,47 +111,51 @@ const HomePage = {
                 const confirmLogout = confirm("Apakah Anda yakin ingin keluar?");
                 if (confirmLogout) {
                     localStorage.removeItem('statusLogin');
-                    window.location.reload(); // Refresh halaman untuk reset menu
+                    window.location.reload(); 
                 }
             });
         }
-
-        // 2. Event Navigasi ke Dashboard (Manual Redirect)
-        const navDashboard = document.getElementById('navDashboard');
-        if (navDashboard) {
-            navDashboard.addEventListener('click', () => {
-                // Karena kita belum pakai router canggih, kita redirect manual
-                // Pastikan file dashboard.html atau logika load dashboard Anda siap
-                // Untuk sementara, kita alert atau reload ke hash dashboard jika ada router
-                 window.location.href = "dashboard-view.html"; // Asumsi Anda punya file ini dari langkah awal
-                 // Atau jika ingin load via JS: alert("Membuka Dashboard...");
-            });
-        }
-
-        const navAcademy = document.getElementById('navAcademy');
-        if (navAcademy) {
-            navAcademy.addEventListener('click', () => {
-                alert("Membuka Halaman Academy...");
-            });
-        }
-
     } else {
-        // --- LOGIKA JIKA BELUM LOGIN ---
-        
-        // Event Buka Modal Login
         const loginBtn = document.getElementById('loginBtn');
         if (loginBtn) {
-            loginBtn.addEventListener('click', async (e) => {
+            loginBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                try {
-                    const { default: LoginPage } = await import('../../pages/auth/login-page.js');
-                    modalContainer.innerHTML = await LoginPage.render();
-                    await LoginPage.afterRender();
-                } catch (error) {
-                    console.error("Gagal memuat login page:", error);
-                }
+                openLoginModal();
             });
         }
+    }
+
+    // --- 2. LOGIKA NAVIGASI ---
+    const navDashboard = document.getElementById('navDashboard');
+    const navAcademy = document.getElementById('navAcademy');
+
+    // Fungsi proteksi: Jika belum login, minta login dulu
+    const handleRestrictedAccess = (e, targetHash) => {
+        e.preventDefault();
+        if (isLoggedIn) {
+            if (targetHash) {
+                window.location.hash = targetHash; 
+            }
+        } else {
+            alert("Silakan login terlebih dahulu untuk mengakses halaman ini.");
+            openLoginModal();
+        }
+    };
+
+    // A. DASHBOARD -> Menuju Dashboard (Butuh Login)
+    if (navDashboard) {
+        navDashboard.addEventListener('click', (e) => {
+            handleRestrictedAccess(e, "/dashboard"); 
+        });
+    }
+
+    // B. ACADEMY -> Placeholder / Katalog (TIDAK KE MY PROGRESS)
+    if (navAcademy) {
+        navAcademy.addEventListener('click', (e) => {
+            e.preventDefault();
+            // REVISI: Jangan ke My Progress. Tampilkan alert saja.
+            alert("Halaman Academy (Katalog Kelas) akan segera hadir!");
+        });
     }
   },
 };

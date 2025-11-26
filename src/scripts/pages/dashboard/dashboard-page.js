@@ -1,11 +1,9 @@
 const DashboardPage = {
   async render() {
     // 1. AMBIL DATA USER DARI LOCALSTORAGE
-    // Jika tidak ada data (misal akses paksa), gunakan default "Guest"
     const userStr = localStorage.getItem('userInfo');
     const user = userStr ? JSON.parse(userStr) : { name: "Guest" };
     
-    // Format nama menjadi kapital agar terlihat bagus di header
     const displayName = user.name ? user.name.toUpperCase() : "GUEST";
 
     return `
@@ -21,7 +19,9 @@ const DashboardPage = {
             <div class="menu-group">
                 <div class="menu-category">LEARNING</div>
                 <a href="#/dashboard" class="menu-item active">Dashboard</a>
-                <a href="#" class="menu-item">My Progress</a>
+                
+                <a href="#/my-progress" class="menu-item">My Progress</a>
+                
                 <a href="#" class="menu-item">Dicoding Mentoring</a>
             </div>
 
@@ -274,11 +274,8 @@ const DashboardPage = {
         logoutBtn.addEventListener('click', () => {
              const confirmLogout = confirm("Yakin ingin logout?");
              if(confirmLogout) {
-                 // Hapus semua sesi
                  localStorage.removeItem('statusLogin');
                  localStorage.removeItem('userInfo');
-                 
-                 // Redirect ke Home
                  window.location.hash = '/';
              }
         });
