@@ -1,11 +1,33 @@
-import { getStudentData } from '../../user-data.js';
+import { getStudentData, getUsers } from '../../user-data.js';
 
 const DashboardPage = {
   async render() {
     // 1. AMBIL DATA USER DARI LOCALSTORAGE
     const userStr = localStorage.getItem('userInfo');
     const user = userStr ? JSON.parse(userStr) : { name: "Guest", email: "" };
-    const displayName = user.name ? user.name.toUpperCase() : "GUEST";
+
+    // Default displayName from localStorage, will try to enrich from CSV/API
+    let displayName = user.name ? user.name.toUpperCase() : "GUEST";
+
+    // Jika ada email, coba cari nama yang sesuai dari CSV / API lewat getUsers()
+    if (user && user.email) {
+        try {
+            const allUsers = await getUsers();
+            const matched = allUsers.find(u => u.email && u.email.toLowerCase() === user.email.toLowerCase());
+            if (matched && matched.name) {
+                displayName = matched.name.toUpperCase();
+                // Simpan kembali ke localStorage agar halaman lain juga menampilkan nama yang benar
+                try {
+                    const newUserInfo = { name: matched.name, email: matched.email };
+                    localStorage.setItem('userInfo', JSON.stringify(newUserInfo));
+                } catch (e) {
+                    console.warn('Gagal menyimpan userInfo ke localStorage', e);
+                }
+            }
+        } catch (err) {
+            console.warn('Gagal mengambil daftar user untuk enrich nama:', err);
+        }
+    }
 
     // --- LOGIKA TANGGAL & CHECK-IN (REAL-TIME) ---
     const today = new Date();
