@@ -121,6 +121,12 @@ const DashboardPage = {
         .module-row { cursor: pointer; transition: background-color 0.2s; }
         .module-row:hover { background-color: #f9f9f9; }
         .pct-text { font-size: 11px; color: #666; font-weight: 600; float: right; }
+
+        /* --- MODULE PROGRESS RING --- */
+        .module-progress { width: 46px; display:flex; align-items:center; justify-content:center; }
+        .progress-ring { transform: rotate(-90deg); transition: stroke-dashoffset 0.5s ease, stroke 0.4s ease, stroke-width 0.4s ease; }
+        .progress-ring circle { transition: stroke-dashoffset 0.4s ease, stroke 0.4s; }
+        .progress-ring-text { position: absolute; font-size:11px; font-weight:700; transform: translateY(1px); }
       </style>
 
       <div class="dashboard-body">
@@ -237,15 +243,23 @@ const DashboardPage = {
 
                     <div class="card skill-section">
                         <div class="card-header-row mb-20">
-                            <h3>Skill Analysis (Cohort vs You)</h3>
-                            <div class="chart-legend">
-                                <span class="legend-dot blue"></span> You
-                                <span class="legend-dot grey"></span> Class Avg
-                            </div>
+                            <h3>Visualisasi Progres (Progress Visualization)</h3>
+                            <!-- Legend removed (replaced with overall progress visualization) -->
                         </div>
                         <div class="radar-wrapper">
-                            <canvas id="radarChart"></canvas>
-                        </div>
+                                <div id="overallProgressWrapper" style="display:flex; align-items:center; gap:20px;">
+                                    <div style="position:relative; width:240px; height:240px;">
+                                        <svg id="overallProgressSvg" width="240" height="240" viewBox="0 0 240 240">
+                                            <circle cx="120" cy="120" r="96" stroke="#f0f0f0" stroke-width="16" fill="transparent" />
+                                            <circle id="overallProgressRing" class="progress-ring" cx="120" cy="120" r="96" stroke="#2196f3" stroke-width="16" stroke-linecap="round" fill="transparent" stroke-dasharray="603" stroke-dashoffset="603" transform="rotate(-90 120 120)" />
+                                        </svg>
+                                        <div id="overallProgressText" style="position:absolute; left:0; right:0; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700;">0%</div>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <!-- Heading intentionally removed to keep focus on the progress ring -->
+                                    </div>
+                                </div>
+                            </div>
                     </div>
 
                 </div> 
@@ -652,6 +666,8 @@ const DashboardPage = {
         
         const moduleContainer = document.getElementById('module-list-container');
         let moduleHtml = '';
+        const circleR = 14; // px
+        const circ = 2 * Math.PI * circleR;
         
         modulesToShow.forEach((mod, index) => {
             const totalTuts = parseInt(mod.active_tutorials, 10) || 1; 
@@ -671,10 +687,18 @@ const DashboardPage = {
             const safeTitle = mod.title.replace(/'/g, "\\'");
             const statusStr = mod.isCompleted ? 'Graduated' : 'In Progress';
             
-            moduleHtml += `
+                        const dashOffset = Math.round(circ * (1 - progressPct / 100));
+                        const strokeColor = progressPct === 100 ? '#2e7d32' : (progressPct > 0 ? '#ff9800' : '#cfcfcf');
+                        moduleHtml += `
             <div class="module-row" style="margin-right: 5px;" 
                  onclick="window.openModuleDetail('${safeTitle}', '${statusStr}', ${progressPct}, ${mod.score || 0}, ${completedTuts}, ${totalTuts})">
-                <div class="mod-icon" style="background:${progressPct === 100 ? '#003e52' : '#005060'};"></div>
+                                <div style="width:46px; height:46px; display:flex; align-items:center; justify-content:center; position:relative;">
+                                    <svg class="progress-ring" width="42" height="42" viewBox="0 0 42 42">
+                                        <circle cx="21" cy="21" r="${circleR}" stroke="#eee" stroke-width="4" fill="transparent" />
+                                        <circle cx="21" cy="21" r="${circleR}" stroke="${strokeColor}" stroke-width="4" stroke-linecap="round" fill="transparent" stroke-dasharray="${circ}" stroke-dashoffset="${dashOffset}" />
+                                    </svg>
+                                    <div class="progress-ring-text" style="position:absolute; font-size:11px; font-weight:700; color:#333;">${progressPct}%</div>
+                                </div>
                 <div class="mod-details">
                     <div class="mod-top">
                         <h4>${mod.title}</h4>
@@ -721,40 +745,31 @@ const DashboardPage = {
             return skillCounts[idx] > 0 ? Math.round(total / skillCounts[idx]) : 50;
         });
 
-        const ctxRadar = document.getElementById('radarChart');
-        if (ctxRadar) {
-            new Chart(ctxRadar.getContext('2d'), {
-                type: 'radar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'You', 
-                        data: finalSkillData,
-                        backgroundColor: 'rgba(33, 150, 243, 0.2)', 
-                        borderColor: '#2196f3', 
-                        borderWidth: 2,
-                        pointBackgroundColor: '#2196f3'
-                    }, {
-                        label: 'Class Avg', 
-                        data: [75, 70, 65, 60, 55, 80],
-                        backgroundColor: 'rgba(200, 200, 200, 0.2)', 
-                        borderColor: '#ccc', 
-                        borderWidth: 1,
-                        pointBackgroundColor: '#ccc'
-                    }]
-                },
-                options: {
-                    plugins: { legend: { display: false } },
-                    scales: { 
-                        r: { 
-                            ticks: { display: false, max: 100 }, 
-                            grid: { color: '#f0f0f0' }, 
-                            pointLabels: { font: { size: 9 } } 
-                        } 
-                    },
-                    maintainAspectRatio: false
-                }
-            });
+        // Compute overall progress across enrolled courses (weight by tutorials)
+        const totalTutorials = studentCourses.reduce((s, c) => s + (parseInt(c.active_tutorials, 10) || 0), 0);
+        const completedTutorials = studentCourses.reduce((s, c) => s + (parseInt(c.completed_tutorials, 10) || 0), 0);
+        const overallProgressPct = totalTutorials === 0 ? 0 : Math.round((completedTutorials / totalTutorials) * 100);
+        const overallProgressPctClamped = Math.min(100, Math.max(0, overallProgressPct));
+
+        // Render the large circular progress using the SVG we added to the markup
+        const overallRing = document.getElementById('overallProgressRing');
+        const overallText = document.getElementById('overallProgressText');
+        if (overallRing && overallText) {
+            const r = parseFloat(overallRing.getAttribute('r'));
+            const circumference = 2 * Math.PI * r;
+            overallRing.setAttribute('stroke-dasharray', circumference);
+            const offset = Math.round(circumference * (1 - overallProgressPctClamped / 100));
+            overallRing.setAttribute('stroke-dashoffset', offset);
+            overallText.innerText = `${overallProgressPctClamped}%`;
+            // If 100% set yellow and a filled look, else blue
+            if (overallProgressPctClamped === 100) {
+                overallRing.setAttribute('stroke', '#ffb400');
+                // Optionally make stroke slightly thicker when completed
+                overallRing.setAttribute('stroke-width', 18);
+            } else {
+                overallRing.setAttribute('stroke', '#2196f3');
+                overallRing.setAttribute('stroke-width', 16);
+            }
         }
 
     } catch (err) {
