@@ -40,19 +40,21 @@
         };
 
         // Fungsi to update the active sidebar link based on the current route
-        const updateActiveSidebar = (requestPath) => {
+            const updateActiveSidebar = (requestPath) => {
             try {
                 const sidebarLinks = document.querySelectorAll('.sidebar .menu-item');
                 if(!sidebarLinks) return;
-                sidebarLinks.forEach(link => {
-                    link.classList.remove('active');
-                    link.removeAttribute('aria-current');
-                    const href = link.getAttribute('href') || '';
-                    const route = href.slice(1).split('?')[0].toLowerCase();
-                    if(route === requestPath) {
-                        link.classList.add('active');
-                        link.setAttribute('aria-current', 'page');
-                    }
+                    const normalize = (p) => (p === '/' ? '/home' : p);
+                    const normReq = normalize(requestPath);
+                    sidebarLinks.forEach(link => {
+                        link.classList.remove('active');
+                        link.removeAttribute('aria-current');
+                        const href = link.getAttribute('href') || '';
+                        const route = normalize(href.slice(1).split('?')[0].toLowerCase());
+                        if(route === normReq) {
+                            link.classList.add('active');
+                            link.setAttribute('aria-current', 'page');
+                        }
                 });
             } catch (err) {
                 // No sidebar present on this page or other error - do nothing

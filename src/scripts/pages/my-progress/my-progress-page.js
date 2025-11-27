@@ -13,6 +13,7 @@ const MyProgressPage = {
         
             <div class="menu-group">
                 <div class="menu-category">LEARNING</div>
+                <a href="#/home" class="menu-item">Home</a>
                 <a href="#/dashboard" class="menu-item">Dashboard</a>
                 <a href="#/my-progress" class="menu-item">My Progres</a>
             </div>
@@ -20,6 +21,7 @@ const MyProgressPage = {
         </aside>
         <main class="main-content">
             <div class="progress-header">
+                <a href="#/home" class="home-icon-btn" title="Home"><i class="fa-solid fa-house"></i></a>
                 <div class="search-bar-wide">
                     <input type="text" placeholder="Apa yang ingin anda pelajari">
                 </div>

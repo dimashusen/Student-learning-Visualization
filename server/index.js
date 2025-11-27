@@ -14,6 +14,12 @@ app.get('/api/students', (req, res) => {
     const results = [];
     // Arahkan path ke lokasi file CSV yang ada di folder src/public/data
     const csvPath = path.join(__dirname, '../src/public/data/students.csv');
+    // Jika file CSV tidak ada, tangani lebih baik dan kembalikan JSON kosong
+    if (!fs.existsSync(csvPath)) {
+        console.warn('⚠️ CSV file not found at', csvPath);
+        // Response with empty array so frontend can continue gracefully
+        return res.json([]);
+    }
 
     fs.createReadStream(csvPath)
         .pipe(csv({ separator: ';' })) // PENTING: Gunakan titik koma sesuai format CSV Anda

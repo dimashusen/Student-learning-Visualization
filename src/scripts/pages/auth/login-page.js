@@ -102,7 +102,13 @@ const LoginPage = {
                   console.warn(`User tidak ditemukan: "${emailInput}"`);
                   console.log("Total user di sistem:", users.length);
                   
-                  alert("Login Gagal! Email tidak ditemukan di database CSV.\nSilakan cek Console (F12) > 'Daftar Email Terdaftar' untuk melihat email yang valid.");
+                    // Provide clearer guidance to the developer/user
+                    console.log('Daftar Email Terdaftar:', users.map(u => u.email));
+                    if (users.length <= 1) {
+                      alert("Login Gagal! Data pengguna tidak tersedia (server API mungkin tidak berjalan atau CSV tidak ditemukan).\nJalankan server API (jalankan `npm run server` di terminal) atau pastikan anda membuka folder `src/` melalui Live Server.\nLihat Console (F12) untuk daftar email yang terdaftar.");
+                    } else {
+                      alert("Login Gagal! Email tidak ditemukan di daftar pengguna.\nLihat Console (F12) untuk daftar email yang terdaftar dan detail error.");
+                    }
                   
                   btn.innerText = originalText;
                   btn.style.opacity = "1";

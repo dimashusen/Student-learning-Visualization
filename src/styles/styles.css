@@ -72,6 +72,11 @@ body.dashboard-body {
 .header-left h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 5px; }
 .header-left p { color: var(--text-grey); font-size: 14px; }
 
+/* Home icon button (small clickable area) */
+.home-icon-btn { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; background: rgba(255,255,255,0.08); border-radius:8px; color: #fff; text-decoration:none; margin-right:12px; }
+.home-icon-btn i { font-size:14px; }
+.home-icon-btn:hover { background: rgba(255,255,255,0.12); }
+
 .header-right { display: flex; align-items: center; gap: 20px; }
 .search-wrapper { background: white; border: 1px solid #eee; padding: 10px 20px; border-radius: 30px; display: flex; align-items: center; gap: 10px; width: 250px; }
 .search-wrapper input { border: none; outline: none; font-size: 13px; width: 100%; }

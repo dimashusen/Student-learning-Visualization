@@ -235,7 +235,13 @@ const CoursePage = {
     return `
       <div class="dashboard-body">
         <aside class="sidebar">
-            <div class="sidebar-header"><div class="brand-logo"><span>9</span></div></div>
+          <div class="sidebar-header"><div class="brand-logo"><span>9</span></div></div>
+          <div class="menu-group">
+            <div class="menu-category">LEARNING</div>
+            <a href="#/home" class="menu-item">Home</a>
+            <a href="#/dashboard" class="menu-item">Dashboard</a>
+            <a href="#/my-progress" class="menu-item">My Progres</a>
+          </div>
         </aside>
         <main class="main-content">
           <div class="card">
@@ -245,6 +251,7 @@ const CoursePage = {
                 <p style="color:#666; font-size:13px;">${total} Modul</p>
               </div>
               <div>
+                <a href="#/home" class="btn-outline-white" style="margin-right:8px;">Home</a>
                 <a href="#/my-progress" class="btn-primary">Kembali</a>
               </div>
             </div>

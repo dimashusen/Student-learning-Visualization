@@ -134,6 +134,7 @@ const DashboardPage = {
         
             <div class="menu-group">
                 <div class="menu-category">LEARNING</div>
+                <a href="#/home" class="menu-item">Home</a>
                 <a href="#/dashboard" class="menu-item">Dashboard</a>
                 <a href="#/my-progress" class="menu-item">My Progres</a>
             </div>
@@ -144,6 +145,7 @@ const DashboardPage = {
             
             <header class="dash-header">
                 <div class="header-left">
+                    <a href="#/home" class="home-icon-btn" title="Home"><i class="fa-solid fa-house"></i></a>
                     <h1>HALLO ${displayName}</h1>
                     <p>Let's continue your learning journey today.</p>
                 </div>

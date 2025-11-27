@@ -13,7 +13,7 @@ const HomePage = {
 
     // 3. Menu Navigasi
     const navItemsHtml = `
-        <li><a href="#" class="nav-item active">Home</a></li>
+      <li><a href="#/home" class="nav-item active">Home</a></li>
         <li><a href="javascript:void(0)" id="navDashboard" class="nav-item">Dashboard</a></li>
         <li><a href="javascript:void(0)" id="navAcademy" class="nav-item"></>dicoding</a></li>
         ${authBtnHtml}
