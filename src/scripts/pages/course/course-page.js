@@ -2,6 +2,18 @@ import { getStudentData } from '../../user-data.js';
 
 // Minimal modules mapping used to display module lists for courses.
 // For now it uses some of the module titles the customer provided.
+// Optional nested submodules mapping: module title -> array of subitems
+const SUBMODULES = {
+  'Pengenalan ke Back-End': [
+    { title: 'Apa itu Back-End', tag: 'Gratis' },
+    { title: 'Server', tag: 'Gratis' },
+    { title: 'Web Server dan Web Service', tag: 'Gratis' },
+    { title: 'Komunikasi Client-Server', tag: 'Gratis' },
+    { title: 'Latihan: Membuat Permintaan HTTP (HTTP Request)', tag: 'Latihan' },
+    { title: 'REST Web Service', tag: 'Gratis' }
+  ]
+};
+
 const MODULES = {
   'Belajar Dasar AI': [
     'Taksonomi AI',
@@ -193,6 +205,15 @@ const MODULES = {
     'Asynchronous JavaScript',
     'Fetch API'
   ],
+  'Belajar Back-End Pemula dengan JavaScript': [
+    'Pengenalan ke Back-End',
+    'Server',
+    'Web Server dan Web Service',
+    'Komunikasi Client-Server',
+    'Latihan: HTTP Request',
+    'REST Web Service',
+    'Ujian Akhir'
+  ],
   'Belajar Fundamental Aplikasi Android': [
     'Pengantar Android',
     'Create Project',
@@ -219,15 +240,19 @@ const CoursePage = {
   async render() {
     const query = parseHashQuery();
     const title = query.title || 'Course';
-    const modules = MODULES[title] || [];
+    // Only show the first 7 modules for the syllabus as requested
+    const modules = (MODULES[title] || []).slice(0, 7);
     const total = modules.length;
 
     // Prepare demo per-module progress: mark first 4 modules completed for sample
     const modulesData = modules.map((m, idx) => {
+      const title = typeof m === 'string' ? m : (m.title || 'Untitled');
       const isCompleted = idx < 4; // demo: first 4 completed
       const progress = isCompleted ? 100 : Math.round(Math.min(80, 20 + (idx % 5) * 15));
       const score = isCompleted ? 90 + (idx % 10) : null; // give sample score
-      return { title: m, isCompleted, progress, score };
+      const rawSubitems = SUBMODULES[title] || [];
+      const subitems = rawSubitems.map((si, sidx) => ({ title: si.title, tag: si.tag || '', isCompleted: sidx < 3 }));
+      return { title, isCompleted, progress, score, subitems };
     });
 
     const overallProgress = modulesData.length === 0 ? 0 : Math.round(modulesData.reduce((s,m) => s + m.progress, 0)/modulesData.length);
@@ -235,7 +260,9 @@ const CoursePage = {
     return `
       <div class="dashboard-body">
         <aside class="sidebar">
-          <div class="sidebar-header"><div class="brand-logo"><span>9</span></div></div>
+          <div class="brand-logo">
+                    <i class="fa-solid fa-code"></i> dicoding
+                </div>
           <div class="menu-group">
             <div class="menu-category">LEARNING</div>
             <a href="#/home" class="menu-item">Home</a>
@@ -278,8 +305,44 @@ const CoursePage = {
                           </div>
                           <div style="text-align:right; font-size:12px; color:#666; min-width:76px;">${m.score ? 'Score: ' + m.score + '/100' : ''}</div>
                         </div>
+                        ${m.subitems && m.subitems.length > 0 ? `
+                          <div class="module-subitems" style="margin-top:10px; padding-left:56px;">
+                            ${m.subitems.map((si, sidx) => `
+                              <div id="subitem-${idx}-${sidx}" style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
+                                <div id="subitem-dot-${idx}-${sidx}" style="width:22px; height:22px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:${si.isCompleted ? '#e8f5e9' : '#e9f7ff'}; color:${si.isCompleted ? '#2e7d32' : '#0288d1'}; font-weight:700; font-size:12px;">${si.isCompleted ? '\u2713' : ''}</div>
+                                <div style="flex:1; font-size:14px; color:#333;">${si.title} <span style="color:#888; font-size:12px;">(${si.tag || ''})</span></div>
+                                <div style="display:flex; gap:8px; align-items:center;">
+                                  <div style="font-size:12px; color:#555;">${si.tag || ''}</div>
+                                </div>
+                              </div>
+                            `).join('')}
+                          </div>
+                        `: ''}
                       </div>
                     `).join('')}
+                  </div>
+                  <!-- QUIZ MODAL (per subitem) -->
+                  
+                  <div id="final-submission-container" style="margin-top:14px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                      <div>
+                        <div style="font-weight:700;">Final Submission</div>
+                        <div style="font-size:12px; color:#777; margin-top:4px;">Kumpulkan tugas akhirmu di sini</div>
+                      </div>
+                      <div style="text-align:right;">
+                        <button id="btn-final-submit" class="btn-primary" style="padding:8px 12px;">Submit</button>
+                      </div>
+                    </div>
+                    <div id="finalSubmissionStatus" style="font-size:12px; color:#666; margin-top:8px;"></div>
+                      <div style="margin-top:12px; display:flex; align-items:center; gap:8px;">
+                      <div style="font-size:13px; color:#333; min-width:120px;">Submission Rating:</div>
+                      <div style="display:flex; flex-direction:column; gap:4px;">
+                        <div id="submission-rating" style="display:inline-flex; gap:6px; align-items:center;">
+                        <!-- Stars will be injected here -->
+                        </div>
+                        <div id="submission-rating-note" style="font-size:12px; color:#888;">-</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -301,6 +364,93 @@ const CoursePage = {
   },
   async afterRender() {
     // nothing dynamic yet; modules are static for now
+    // Setup FINAL SUBMISSION and RATING logic
+    const userStr = localStorage.getItem('userInfo');
+    const user = userStr ? JSON.parse(userStr) : null;
+    if(!user || !user.email) return;
+
+    try {
+      const studentCourses = await getStudentData(user.email);
+      const query = parseHashQuery();
+      const title = query.title || 'Course';
+      const myCourse = studentCourses.find(c => c.title === title) || {};
+      const initialRatingCSV = myCourse.submission_rating || 0;
+      // Create a deterministic dummy rating 3-5 based on user email + course title
+      function computeDummyRating(seed) {
+        let h = 0;
+        for (let i = 0; i < seed.length; i++) {
+          h = ((h << 5) - h) + seed.charCodeAt(i);
+          h |= 0; // convert to 32bit int
+        }
+        return 3 + (Math.abs(h) % 3); // 3,4,5
+      }
+      const dummyRating = computeDummyRating((user.email || '') + '::' + title);
+      const finalSubmissionCSV = myCourse.final_submission_id || '';
+
+      const submissionKey = `finalSubmission:${user.email.toLowerCase()}:${title}`;
+      // Ratings are provided by Dicoding (CSV/API). Do not allow local overrides – show CSV value read-only.
+      const initialRating = initialRatingCSV || 0;
+      const submissionInfo = (finalSubmissionCSV ? { id: finalSubmissionCSV, timestamp: 'from-csv' } : null) || JSON.parse(localStorage.getItem(submissionKey) || 'null');
+
+      const ratingContainer = document.getElementById('submission-rating');
+      const btnFinalSubmit = document.getElementById('btn-final-submit');
+
+      const renderStars = (rating) => {
+        if(!ratingContainer) return;
+        ratingContainer.innerHTML = '';
+        if(!rating || rating <= 0) {
+          ratingContainer.innerText = 'Belum dinilai';
+          return;
+        }
+        for(let i=1;i<=5;i++){
+          const star = document.createElement('i');
+          star.className = i <= rating ? 'fa-solid fa-star' : 'fa-regular fa-star';
+          star.style.color = i <= rating ? '#ffb400' : '#cfcfcf';
+          ratingContainer.appendChild(star);
+        }
+      };
+
+      // Use dummy rating (3-5) instead of CSV submission rating
+      renderStars(dummyRating);
+      const ratingNoteEl = document.getElementById('submission-rating-note');
+      if(ratingNoteEl) {
+        ratingNoteEl.innerText = `Dummy rating: ${dummyRating} / 5`;
+      }
+
+      if(btnFinalSubmit){
+        if(submissionInfo && submissionInfo.id){
+          btnFinalSubmit.innerText = 'Submitted';
+          btnFinalSubmit.disabled = true;
+          btnFinalSubmit.classList.add('btn-outline-white');
+        }
+        btnFinalSubmit.addEventListener('click', () => {
+          if(confirm('Yakin ingin submit tugas akhir?')){
+            const fakeId = `subm-${Math.random().toString(36).slice(2, 9)}`;
+            const data = { id: fakeId, timestamp: new Date().toISOString() };
+            localStorage.setItem(submissionKey, JSON.stringify(data));
+            btnFinalSubmit.innerText = 'Submitted';
+            btnFinalSubmit.disabled = true;
+            btnFinalSubmit.classList.add('btn-outline-white');
+            alert('✅ Final Submission berhasil. ID: ' + fakeId);
+          }
+        });
+      }
+
+      // Show final submission status (ID from CSV/API or local submission)
+      const finalSubmissionStatusEl = document.getElementById('finalSubmissionStatus');
+      if(finalSubmissionStatusEl){
+        if(submissionInfo && submissionInfo.id){
+          finalSubmissionStatusEl.innerText = `Submitted (ID: ${submissionInfo.id})`;
+        } else {
+          finalSubmissionStatusEl.innerText = 'Belum disubmit';
+        }
+      }
+
+      
+
+    } catch (err) {
+      console.error('Failed to load student submission data:', err);
+    }
   }
 };
 

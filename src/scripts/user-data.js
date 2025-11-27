@@ -90,7 +90,10 @@ export async function getStudentData(targetEmail) {
                 score: parseFloat(student.exam_score) || 0,
                 active_tutorials: parseInt(student.active_tutorials) || 0,
                 completed_tutorials: parseInt(student.completed_tutorials) || 0,
-                tutorials: parseInt(student.completed_tutorials) || 0
+                tutorials: parseInt(student.completed_tutorials) || 0,
+                // Additional fields to support final submission and rating
+                final_submission_id: student.final_submission_id || '',
+                submission_rating: student.submission_rating ? parseInt(student.submission_rating, 10) : 0
             }));
 
     } catch (error) {
