@@ -148,6 +148,13 @@ body.dashboard-body {
 .module-row { display: flex; align-items: center; gap: 15px; padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; }
 .module-row.border-none { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
 .mod-icon { width: 45px; height: 45px; border-radius: 12px; background-color: var(--primary-dark); }
+
+/* Course page module items */
+.module-item { list-style: none; }
+.module-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 10px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 10px; background: white; }
+.module-status { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; }
+.module-row.completed .module-status { background: #e8f5e9; color: #2e7d32; }
+.module-row.inprogress .module-status { background: #e9f7ff; color: #0288d1; }
 .mod-details { flex: 1; }
 .mod-top { display: flex; justify-content: space-between; margin-bottom: 2px; }
 .mod-top h4 { font-size: 13px; font-weight: 600; max-width: 250px; }
@@ -795,6 +802,12 @@ footer { text-align: center; font-size: 12px; color: #aaa; margin-top: 40px; pad
     background-color: #b2dfdb;
 }
 
+/* Small progress for course list row */
+.course-mini-progress { display:flex; align-items:center; gap:8px; margin-top:6px; }
+.mini-track { width: 160px; height: 8px; background: #f1f5f9; border-radius: 6px; overflow:hidden; }
+.mini-fill { height: 100%; background: #ff8a00; border-radius: 6px; }
+.mini-percent { font-size: 12px; color: #888; min-width:36px; text-align:right; }
+
 /* Recommendations */
 .recommendation-section {
     margin-bottom: 40px;
@@ -901,8 +914,210 @@ footer { text-align: center; font-size: 12px; color: #aaa; margin-top: 40px; pad
     background-color: #334155;
 }
 
+/* Certificate page layout */
+.certificate-card { max-width: 900px; margin: 30px auto; background: white; box-shadow: var(--card-shadow); border-radius: 12px; }
+.cert-title { font-size: 28px; color:#0e677d; }
+.cert-sub { color: #777; }
+.cert-name { color: #222; }
+
+/* Print rules to ensure only certificate is printed */
+@media print {
+    body * { visibility: hidden; }
+    .certificate-card, .certificate-card * { visibility: visible; }
+    .certificate-card { position: absolute; left: 0; top: 0; width: 100%; }
+}
+
 /* Tab Button Colors Override (Supaya Active = Biru Gelap) */
 .btn-tab.active {
     background-color: #0e7490; /* Cyan-700 / Teal Gelap sesuai gambar */
     color: white;
+}
+
+/* Styling Utama Halaman Progress */
+.progress-container {
+  padding: 2rem;
+  background-color: #121212; /* Background Gelap */
+  color: white;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Header Summary */
+.progress-header { margin-bottom: 2rem; }
+
+.progress-summary {
+  display: flex;
+  align-items: center;
+  background: #1E1E1E;
+  border: 1px solid #333;
+  padding: 1.5rem;
+  border-radius: 8px;
+  gap: 1.5rem;
+}
+
+.progress-summary p { margin: 0; white-space: nowrap; }
+
+.progress-bar-track {
+  width: 100%;
+  height: 8px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #00DBB5; /* Hijau Dicoding */
+}
+
+.percentage-text { font-weight: bold; color: #00DBB5; }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #333;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: #888;
+  padding: 10px 0;
+  cursor: pointer;
+  font-size: 16px;
+  position: relative;
+}
+
+.tab-btn.active {
+  color: #00DBB5;
+  font-weight: bold;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #00DBB5;
+}
+
+/* Banner */
+.info-banner {
+  background: #162430;
+  color: #64B5F6;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+/* Grid System */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Card Styling */
+.course-card {
+  background: #1E1E1E;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-image {
+  height: 140px;
+  background: #2D2D2D;
+}
+
+.course-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.badge-level {
+  background: #333;
+  color: #ccc;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.course-title {
+  font-size: 16px;
+  margin: 12px 0;
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* Card Progress Bar */
+.card-progress-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.card-track {
+  flex: 1;
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+}
+
+.card-fill {
+  height: 100%;
+  background: #00DBB5;
+}
+
+.card-percent {
+  font-size: 12px;
+  color: #888;
+}
+
+.completed-date {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 16px;
+}
+
+/* Action Buttons */
+.btn-action {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  box-sizing: border-box; /* Penting agar padding tidak merusak lebar */
+}
+
+.btn-continue {
+  border: 1px solid #00DBB5;
+  color: #00DBB5;
+  background: transparent;
+  transition: 0.3s;
+}
+
+.btn-continue:hover {
+  background: #00DBB5;
+  color: black;
+}
+
+.btn-completed-view {
+  background: #333;
+  color: white;
+  border: none;
 }

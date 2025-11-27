@@ -66,6 +66,7 @@ export async function getStudentData(targetEmail) {
         const dateIdx = headers.findIndex(h => h.includes('started_learning_at'));
         const scoreIdx = headers.findIndex(h => h.includes('exam_score'));
         const tutorIdx = headers.findIndex(h => h.includes('completed_tutorials'));
+        const activeIdx = headers.findIndex(h => h.includes('active_tutorials'));
 
         if (emailIdx === -1 || courseIdx === -1) return [];
 
@@ -83,6 +84,9 @@ export async function getStudentData(targetEmail) {
                 const title = cols[courseIdx]?.replace(/["']/g, '').trim();
                 const isCompleted = cols[gradIdx]?.trim() === '1';
                 const dateRaw = dateIdx !== -1 ? cols[dateIdx]?.replace(/["']/g, '').trim() : "";
+                const activeRaw = activeIdx !== -1 ? cols[activeIdx]?.replace(/["']/g, '').trim() : "";
+                const active = activeRaw ? parseInt(activeRaw) : 0;
+                const completedTutorials = tutorIdx !== -1 ? parseInt(cols[tutorIdx]?.replace(/["']/g, '').trim() || '0') : 0;
                 
                 // Parsing Nilai & Tutorial
                 let score = 0;
@@ -97,12 +101,34 @@ export async function getStudentData(targetEmail) {
                     tutorials = parseInt(t) || 0;
                 }
 
+                // Compute progress percentage (guard for zero active tutorials)
+                const progress = active > 0 ? Math.round((completedTutorials / active) * 100) : 0;
+
+                // Determine status (completed/in_progress)
+                const status = isCompleted || progress >= 100 ? 'completed' : 'in_progress';
+
+                // Level heuristics based on active tutorial counts
+                // <20 => Dasar, 20-60 => Pemula, 61-120 => Mahir, >120 => Profesional
+                let level = 'Dasar';
+                if (active > 120) level = 'Profesional';
+                else if (active > 60) level = 'Mahir';
+                else if (active > 20) level = 'Pemula';
+
+                // Build a search URL (external) to Dicoding for the course name
+                const url = `https://www.dicoding.com/search?q=${encodeURIComponent(title)}`;
+
                 studentCourses.push({
                     title: title,
                     isCompleted: isCompleted,
                     date: dateRaw,
                     score: score,
-                    tutorials: tutorials
+                    tutorials: tutorials,
+                    activeTutorials: active,
+                    completedTutorials: completedTutorials,
+                    progress: progress,
+                    status: status,
+                    level: level,
+                    url: url
                 });
             }
         }

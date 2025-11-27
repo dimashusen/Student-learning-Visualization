@@ -136,7 +136,6 @@ const DashboardPage = {
                 <div class="menu-category">LEARNING</div>
                 <a href="#/dashboard" class="menu-item active">Dashboard</a>
                 <a href="#/my-progress" class="menu-item">My Progress</a>
-                <a href="#" class="menu-item">Dicoding Mentoring</a>
             </div>
             
             <div class="menu-group" style="margin-top:auto;">

@@ -26,6 +26,8 @@
         import HomePage from './scripts/pages/home/home-page.js';
         import DashboardPage from './scripts/pages/dashboard/dashboard-page.js';
         import MyProgressPage from './scripts/pages/my-progress/my-progress-page.js';
+        import CoursePage from './scripts/pages/course/course-page.js';
+        import CertificatePage from './scripts/pages/certificate/certificate-page.js';
 
         // Definisi Rute (Mapping URL Hash ke Halaman)
         const routes = {
@@ -33,6 +35,8 @@
             '/home': HomePage,
             '/dashboard': DashboardPage,
             '/my-progress': MyProgressPage,
+            '/course': CoursePage,
+            '/certificate': CertificatePage,
         };
 
         // Fungsi Router
@@ -41,7 +45,8 @@
             
             // Ambil hash dari URL (contoh: #/dashboard), default ke '/'
             // .slice(1) membuang tanda '#'
-            let request = window.location.hash.slice(1).toLowerCase() || '/';
+            let rawRequest = window.location.hash.slice(1) || '/';
+            let request = rawRequest.split('?')[0].toLowerCase();
             
             // Cek apakah user sudah login
             const isLoggedIn = localStorage.getItem('statusLogin') === 'true';
