@@ -135,7 +135,7 @@ const DashboardPage = {
             <div class="menu-group">
                 <div class="menu-category">LEARNING</div>
                 <a href="#/dashboard" class="menu-item">Dashboard</a>
-                <a href="#/my-progress" class="menu-item active">My Progres</a>
+                <a href="#/my-progress" class="menu-item">My Progres</a>
             </div>
             <!-- Document links removed as requested -->
         </aside>
