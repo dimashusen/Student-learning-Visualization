@@ -4,19 +4,17 @@ const MyProgressPage = {
   async render() {
         return `
             <div class="dashboard-body">
-                <aside class="sidebar">
+ <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="brand-logo">
-                    <span style="font-size: 24px; font-weight: 700;">9</span>
+                    <i class="fa-solid fa-code"></i> dicoding
                 </div>
             </div>
-            <div class="menu-group">
-                <div class="menu-category" style="color:white; font-size: 14px; margin-bottom:10px;">Academy</div>
-            </div>
+        
             <div class="menu-group">
                 <div class="menu-category">LEARNING</div>
                 <a href="#/dashboard" class="menu-item">Dashboard</a>
-                <a href="#/my-progress" class="menu-item active">My Progress</a>
+                <a href="#/my-progress" class="menu-item active">My Progres</a>
             </div>
             <!-- Document links removed as requested -->
         </aside>
@@ -183,13 +181,13 @@ const MyProgressPage = {
                 let html = '';
                 coursesInProgress.forEach(course => {
                     const levelBadge = course.level ? `<span class="badge-level small">${course.level}</span>` : '';
-                    const progressBarSmall = `
-                        <div class="course-mini-progress">
-                            <div class="mini-track">
-                                <div class="mini-fill" style="width:${course.progress}%"></div>
-                            </div>
-                            <div class="mini-percent">${course.progress}%</div>
-                        </div>`;
+                                const progressBarSmall = `
+                                    <div class="course-mini-progress">
+                                        <div class="mini-track">
+                                            <div class="mini-fill" style="width:${course.progress}%"></div>
+                                        </div>
+                                        <div class="mini-percent">${course.progress}%</div>
+                                    </div>`;
                     const link = course.url ? course.url : '#';
                     html += `
                     <div class="course-item-row">

@@ -131,18 +131,13 @@ const DashboardPage = {
                     <i class="fa-solid fa-code"></i> dicoding
                 </div>
             </div>
-
+        
             <div class="menu-group">
                 <div class="menu-category">LEARNING</div>
-                <a href="#/dashboard" class="menu-item active">Dashboard</a>
-                <a href="#/my-progress" class="menu-item">My Progress</a>
+                <a href="#/dashboard" class="menu-item">Dashboard</a>
+                <a href="#/my-progress" class="menu-item active">My Progres</a>
             </div>
-            
-            <div class="menu-group" style="margin-top:auto;">
-                <a href="javascript:void(0)" id="logoutDashBtn" class="menu-item" style="color:#ef5350;">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
-                </a>
-            </div>
+            <!-- Document links removed as requested -->
         </aside>
 
         <main class="main-content">

@@ -4,9 +4,9 @@
 :root {
     --primary-dark: #003e52;
     --primary-blue: #2196f3;
-    --bg-main: #f5f9fa;
-    --text-dark: #333;
-    --text-grey: #888;
+    --bg-main: #003e52; /* App background color set to requested */
+    --text-dark: #f5f9fa; /* Light text over dark background */
+    --text-grey: #cfdfe6;
     --card-shadow: 0 4px 20px rgba(0,0,0,0.03);
 }
 
@@ -24,6 +24,12 @@ body.dashboard-body {
     min-height: 100vh;
     color: var(--text-dark);
 }
+
+/* Ensure content area contrasts with dark background */
+.main-content { background: transparent; }
+.card { background: white; color: #222; }
+.hero-card, .rec-card, .grade-card { background: white; color: #222; }
+.dash-footer { color: var(--text-grey); }
 
 /* ========================================= */
 /* 2. SIDEBAR (Khusus Dashboard) */
@@ -1045,12 +1051,13 @@ footer { text-align: center; font-size: 12px; color: #aaa; margin-top: 40px; pad
 }
 
 .badge-level {
-  background: #333;
-  color: #ccc;
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
+    background: var(--primary-dark);
+    color: white;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
 }
 
 .course-title {
