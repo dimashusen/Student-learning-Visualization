@@ -53,10 +53,10 @@ export async function getUsers() {
         }
 
         allStudents.forEach(student => {
-            if (student.email) {
+            if (student.email && student.name) {
                 const email = student.email.toLowerCase().trim();
-                const name = student.name || student.fullname || (student.name && student.name.trim()) || (student.title || 'Student');
-                usersMap.set(email, { name: name.trim ? name.trim() : name, email });
+                const name = student.name.trim();
+                usersMap.set(email, { name: name, email });
             }
         });
     } catch (error) {

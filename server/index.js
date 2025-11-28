@@ -21,9 +21,17 @@ app.get('/api/students', (req, res) => {
         return res.json([]);
     }
 
-    fs.createReadStream(csvPath)
+    fs.createReadStream(csvPath, { encoding: 'utf8' })
         .pipe(csv({ separator: ';' })) // PENTING: Gunakan titik koma sesuai format CSV Anda
-        .on('data', (data) => results.push(data))
+        .on('data', (data) => {
+            // Bersihkan BOM jika ada di field name
+            const cleanedData = {};
+            for (let key in data) {
+                let cleanKey = key.replace(/^\ufeff/, ''); // Hapus BOM
+                cleanedData[cleanKey] = data[key];
+            }
+            results.push(cleanedData);
+        })
         .on('end', () => {
             res.json(results); // Kirim hasil sebagai JSON
         })
