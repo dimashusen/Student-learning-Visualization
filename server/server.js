@@ -1,44 +1,74 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const csv = require('csv-parser');
+const mongoose = require('mongoose');
 const path = require('path');
+
+// Import Model (Pastikan nama file di folder models sudah benar)
+const Student = require('./models/Student');
+const Course = require('./models/Course');
+const LearningPath = require('./models/LearningPath');
+const Tutorial = require('./models/Tutorial');
 
 const app = express();
 const PORT = 3000;
 
-app.use(cors()); // Izinkan akses dari frontend
+// GANTI PASSWORD DAN URI SESUAI DATABASE ANDA
+const MONGO_URI = 'mongodb+srv://msadan:474747@students.jpwpnl5.mongodb.net/dicoding_db?retryWrites=true&w=majority&appName=Students';
 
-// Endpoint API untuk data siswa
-app.get('/api/students', (req, res) => {
-    const results = [];
-    // Arahkan path ke lokasi file CSV yang ada di folder src/public/data
-    const csvPath = path.join(__dirname, '../src/public/data/students.csv');
-    // Jika file CSV tidak ada, tangani lebih baik dan kembalikan JSON kosong
-    if (!fs.existsSync(csvPath)) {
-        console.warn('⚠️ CSV file not found at', csvPath);
-        // Response with empty array so frontend can continue gracefully
-        return res.json([]);
+app.use(cors());
+app.use(express.json());
+
+// --- SAJIKAN FRONTEND ---
+app.use(express.static(path.join(__dirname, '../src')));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../src/index.html'));
+});
+
+mongoose.connect(MONGO_URI)
+    .then(() => console.log('✅ Connected to MongoDB Atlas'))
+    .catch(err => console.error('❌ MongoDB Error:', err));
+
+// --- API ENDPOINTS ---
+
+// 1. Get All Students
+app.get('/api/students', async (req, res) => {
+    try {
+        const students = await Student.find();
+        res.json(students);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
+});
 
-    fs.createReadStream(csvPath, { encoding: 'utf8' })
-        .pipe(csv({ separator: ';' })) // PENTING: Gunakan titik koma sesuai format CSV Anda
-        .on('data', (data) => {
-            // Bersihkan BOM jika ada di field name
-            const cleanedData = {};
-            for (let key in data) {
-                let cleanKey = key.replace(/^\ufeff/, ''); // Hapus BOM
-                cleanedData[cleanKey] = data[key];
-            }
-            results.push(cleanedData);
-        })
-        .on('end', () => {
-            res.json(results); // Kirim hasil sebagai JSON
-        })
-        .on('error', (err) => {
-            console.error(err);
-            res.status(500).json({ error: 'Gagal membaca data CSV' });
-        });
+// 2. Get All Courses
+app.get('/api/courses', async (req, res) => {
+    try {
+        const courses = await Course.find();
+        res.json(courses);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 3. Get All Learning Paths
+app.get('/api/paths', async (req, res) => {
+    try {
+        const paths = await LearningPath.find();
+        res.json(paths);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 4. Get All Tutorials
+app.get('/api/tutorials', async (req, res) => {
+    try {
+        const tutorials = await Tutorial.find();
+        res.json(tutorials);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 app.listen(PORT, () => {
