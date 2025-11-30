@@ -172,6 +172,10 @@ const DashboardPage = {
                 .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
                 .header-left h1 { font-size: 24px; color: #1976d2; font-weight: 800; }
                 .header-left p { font-size: 14px; color: #666; margin-top: 5px; }
+                /* Learning path highlight */
+                #learning-path-sub { display: block; margin-top: 8px; font-size: 14px; color: #1976d2; font-weight: 600; }
+                #learning-path-sub .lp-label { color: #666; font-weight: 600; margin-right: 8px; font-size: 13px; }
+                #learning-path-sub .lp-name { display: inline-block; background: #e8f5ff; color: #0d47a1; padding: 6px 10px; border-radius: 12px; font-weight: 700; font-size: 13px; box-shadow: 0 2px 6px rgba(13,71,161,0.06); }
                 .header-right { display: flex; align-items: center; gap: 20px; }
                 .search-wrapper { position: relative; }
                 .search-wrapper input { padding: 8px 12px 8px 35px; border: 1px solid #ddd; border-radius: 20px; width: 200px; font-size: 14px; }
@@ -374,7 +378,7 @@ const DashboardPage = {
                     <header class="dash-header">
                         <div class="header-left">
                             <h1>HALLO ${displayName}</h1>
-                            <p>Let's continue your learning journey today.</p>
+                            <p id="learning-path-sub">Loading learning path...</p>
                         </div>
                         <div class="header-right">
                             <div class="search-wrapper">
@@ -664,7 +668,60 @@ const DashboardPage = {
         setTimeout(async () => {
             try {
                 const userStr = localStorage.getItem('userInfo');
-                const user = userStr ? JSON.parse(userStr) : { email: 'ari.gunawan93@example.com' }; 
+                const user = userStr ? JSON.parse(userStr) : { email: 'ari.gunawan93@example.com' };
+
+                // Update Learning Path subtitle using backend data (students -> learning_path_id -> paths)
+                (async () => {
+                    const lpEl = document.getElementById('learning-path-sub');
+                    const escapeHtml = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    try {
+                        const respStudents = await fetch('/api/students');
+                        if (!respStudents.ok) throw new Error('Failed to fetch students');
+                        const students = await respStudents.json();
+                        // There can be multiple rows for same email in CSV -> multiple student docs.
+                        // Prefer a student record that has learning_path_id and most recent started_learning_at.
+                        const matchedStudents = students.filter(s => (s.email || '').toString().trim() === (user.email || '').toString().trim());
+                        let studentRecord = null;
+                        if (matchedStudents.length === 1) {
+                            studentRecord = matchedStudents[0];
+                        } else if (matchedStudents.length > 1) {
+                            const withLP = matchedStudents.filter(s => s.learning_path_id && s.learning_path_id.toString().trim() !== '');
+                            if (withLP.length > 0) {
+                                studentRecord = withLP.sort((a, b) => {
+                                    const da = new Date(a.started_learning_at || 0).getTime() || 0;
+                                    const db = new Date(b.started_learning_at || 0).getTime() || 0;
+                                    return db - da;
+                                })[0];
+                            } else {
+                                studentRecord = matchedStudents.sort((a, b) => {
+                                    const da = new Date(a.started_learning_at || 0).getTime() || 0;
+                                    const db = new Date(b.started_learning_at || 0).getTime() || 0;
+                                    return db - da;
+                                })[0];
+                            }
+                        }
+
+                        let pathName = 'Learning Path';
+                        if (studentRecord && studentRecord.learning_path_id) {
+                            const respPaths = await fetch('/api/paths');
+                            if (respPaths.ok) {
+                                const paths = await respPaths.json();
+                                const studentLP = studentRecord.learning_path_id.toString().trim();
+                                const matched = paths.find(p => {
+                                    const pid = (p.learning_path_id || '').toString().trim();
+                                    const pidAlt = (p._id || '').toString().trim();
+                                    return pid === studentLP || pidAlt === studentLP;
+                                });
+                                if (matched) pathName = matched.learning_path_name || matched.name || matched.title || pathName;
+                            }
+                        }
+                        if (lpEl) lpEl.innerHTML = `<span class="lp-label">Learning Path:</span> <span class="lp-name">${escapeHtml(pathName)}</span>`;
+                    } catch (err) {
+                        if (lpEl) lpEl.innerHTML = `<span class="lp-label">Learning Path:</span> <span class="lp-name">Learning Path</span>`;
+                        console.warn('Could not load learning path', err);
+                    }
+                })();
+
                 const studentCourses = await getStudentData(user.email);
 
                 // A. Calculate Stats (Total Hours)
