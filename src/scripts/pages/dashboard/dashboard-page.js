@@ -3,7 +3,7 @@
 const getStudentData = async (email) => {
     // DATA ASLI DARI CSV (Resource Data Learning Progress Visualization.xlsx)
     // User: Ari Gunawan (ari.gunawan93@example.com)
-    return [
+    const rawData = [
         { 
             title: "Belajar Fundamental Aplikasi Android", 
             isCompleted: "1", 
@@ -69,7 +69,10 @@ const getStudentData = async (email) => {
             endDate: "-", 
             description: "Pahami konsep dasar jaringan komputer, protokol HTTP, DNS, dan cara kerja internet." 
         }
-    ].map(course => ({
+    ];
+
+    // Normalize data types
+    return rawData.map(course => ({
         ...course,
         isCompleted: course.isCompleted === "1",
         score: parseInt(course.score, 10) || 0,
@@ -273,7 +276,6 @@ const DashboardPage = {
                     font-size: 16px; 
                     pointer-events: none; 
                 }
-
                 .notif-btn { width: 44px; height: 44px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); cursor: pointer; color: var(--text-muted); border: 1px solid var(--border-light); transition: 0.2s; }
                 .notif-btn:hover { background: #f8fafc; color: var(--primary); }
                 
@@ -516,7 +518,6 @@ const DashboardPage = {
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="card">
                                     <div class="card-header-row">
                                         <h3>Today's Schedule</h3>
@@ -639,7 +640,6 @@ const DashboardPage = {
                             </div>
                         </div>
                     </div>
-
                 </main>
             </div>
         `;
@@ -892,9 +892,9 @@ const DashboardPage = {
                 // --- STATS & CHARTS CALCULATIONS (UPDATED WITH CSV LOGIC) ---
                 let totalStudyHours = 0;
                 allCourses.forEach(c => {
-                     const ratio = c.completed_tutorials / c.active_tutorials;
-                     // Use real 'hours' from CSV data logic
-                     totalStudyHours += (ratio > 1 ? 1 : ratio) * c.hours;
+                      const ratio = c.completed_tutorials / c.active_tutorials;
+                      // Use real 'hours' from CSV data logic
+                      totalStudyHours += (ratio > 1 ? 1 : ratio) * c.hours;
                 });
                 document.getElementById('total-study-time').innerText = `${Math.round(totalStudyHours)} hrs`;
 
