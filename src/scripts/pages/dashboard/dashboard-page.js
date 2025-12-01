@@ -1,26 +1,77 @@
 // --- MOCK DATA & HELPERS (Simulasi Backend/API) ---
 
 const getStudentData = async (email) => {
-    // Mock Data: Progress Ari Gunawan
+    // DATA ASLI DARI CSV (Resource Data Learning Progress Visualization.xlsx)
+    // User: Ari Gunawan (ari.gunawan93@example.com)
     return [
-        { title: "Belajar Dasar Pemrograman Web", isCompleted: "1", active_tutorials: "131", completed_tutorials: "131", score: "100", level: "Dasar", hours: 46, rating: 4.8, startDate: "2025-01-10", endDate: "2025-02-15", description: "Pelajari dasar pembuatan website dengan HTML, CSS, dan teknik layouting modern." },
-        { title: "Belajar Fundamental Aplikasi Android", isCompleted: "1", active_tutorials: "107", completed_tutorials: "214", score: "100", level: "Menengah", hours: 140, rating: 4.9, startDate: "2025-03-01", endDate: "2025-04-20", description: "Kuasai fundamental pembuatan aplikasi Android dengan Android Studio dan Kotlin." }, 
-        { title: "Belajar Membuat Aplikasi Back-End untuk Pemula dengan Google Cloud", isCompleted: "1", active_tutorials: "108", completed_tutorials: "110", score: "90", level: "Pemula", hours: 45, rating: 4.7, startDate: "2025-05-05", endDate: "2025-05-30", description: "Belajar membuat RESTful API sederhana dan deploy ke Google Cloud Platform." },
-        
-        // Courses with completion but no score (score 0 in CSV) or in progress
-        { title: "Belajar Pengembangan Aplikasi Android Intermediate", isCompleted: "1", active_tutorials: "115", completed_tutorials: "115", score: "0", level: "Mahir", hours: 150, rating: 4.8, startDate: "2025-06-01", endDate: "2025-08-10", description: "Tingkatkan skill Android Developer kamu dengan materi advanced seperti Testing dan Performance." }, 
-        { title: "Belajar Fundamental Deep Learning", isCompleted: "0", active_tutorials: "131", completed_tutorials: "67", score: "0", level: "Menengah", hours: 110, rating: 4.9, startDate: "2025-09-01", endDate: "-", description: "Pelajari konsep Deep Learning dan Neural Network menggunakan TensorFlow." }, 
-        
-        // Placeholder courses for React Milestone (keeping the structure for the radar chart logic)
-        { title: "Belajar Dasar Pemrograman JavaScript", isCompleted: "1", active_tutorials: "12", completed_tutorials: "12", score: "88", level: "Dasar", hours: 46, rating: 4.8, startDate: "2024-12-01", endDate: "2024-12-25", description: "Fondasi utama untuk menjadi Web Developer handal dengan menguasai JavaScript." }, 
-        { title: "Belajar Membuat Aplikasi Front-End Pemula", isCompleted: "0", active_tutorials: "10", completed_tutorials: "7", score: "78", level: "Pemula", hours: 45, rating: 4.7, startDate: "2025-10-01", endDate: "-", description: "Langkah awal membuat aplikasi web interaktif dengan manipulasi DOM dan Web Storage." },
-        { title: "Belajar Fundamental Aplikasi React", isCompleted: "0", active_tutorials: "10", completed_tutorials: "1", score: "0", level: "Menengah", hours: 100, rating: 4.9, startDate: "-", endDate: "-", description: "Bangun aplikasi web modern yang cepat dan modular menggunakan library React." },
-        { title: "Menjadi React Web Developer Expert", isCompleted: "0", active_tutorials: "15", completed_tutorials: "0", score: "0", level: "Mahir", hours: 110, rating: 4.9, startDate: "-", endDate: "-", description: "Kuasai teknik advanced React seperti Automation Testing, CI/CD, dan State Management." }, 
+        { 
+            title: "Belajar Fundamental Aplikasi Android", 
+            isCompleted: "1", 
+            active_tutorials: "107", 
+            completed_tutorials: "214", // Data CSV menunjukkan >100% (extra credit/review)
+            score: "100", 
+            level: "Menengah", 
+            hours: 140, 
+            rating: 5.0, 
+            startDate: "2025-08-14", 
+            endDate: "2025-10-20", 
+            description: "Pelajari komponen fundamental Android seperti Activity, Fragment, dan Background Thread dengan Kotlin." 
+        },
+        { 
+            title: "Belajar Dasar Pemrograman Web", 
+            isCompleted: "1", 
+            active_tutorials: "131", 
+            completed_tutorials: "121", 
+            score: "100", 
+            level: "Dasar", 
+            hours: 45, 
+            rating: 4.0, 
+            startDate: "2025-01-20", 
+            endDate: "2025-02-15", 
+            description: "Langkah pertama menjadi Web Developer. Pelajari HTML, CSS, dan teknik Layouting website." 
+        },
+        { 
+            title: "Belajar Membuat Aplikasi Back-End untuk Pemula dengan Google Cloud", 
+            isCompleted: "1", 
+            active_tutorials: "108", 
+            completed_tutorials: "110", 
+            score: "90", 
+            level: "Pemula", 
+            hours: 45, 
+            rating: 5.0, 
+            startDate: "2025-06-20", 
+            endDate: "2025-07-10", 
+            description: "Bangun RESTful API pertamamu dan deploy ke Google Cloud Platform (GCP) menggunakan App Engine." 
+        },
+        { 
+            title: "Belajar Pengembangan Aplikasi Android Intermediate", 
+            isCompleted: "1", 
+            active_tutorials: "115", 
+            completed_tutorials: "115", 
+            score: "100", 
+            level: "Mahir", 
+            hours: 150, 
+            rating: 4.0, 
+            startDate: "2025-02-26", 
+            endDate: "2025-05-30", 
+            description: "Materi tingkat lanjut Android: Custom View, Animation, Localization, dan Database Room." 
+        },
+        { 
+            title: "Belajar Jaringan Komputer untuk Pemula", 
+            isCompleted: "1", 
+            active_tutorials: "62", 
+            completed_tutorials: "62", 
+            score: "85", 
+            level: "Pemula", 
+            hours: 25, 
+            rating: 4.0, 
+            startDate: "2025-09-01", 
+            endDate: "-", 
+            description: "Pahami konsep dasar jaringan komputer, protokol HTTP, DNS, dan cara kerja internet." 
+        }
     ].map(course => ({
         ...course,
-        // Ensure isCompleted is a boolean for consistent logic
         isCompleted: course.isCompleted === "1",
-        // Parse numbers needed for calculation
         score: parseInt(course.score, 10) || 0,
         active_tutorials: parseInt(course.active_tutorials, 10) || 1,
         completed_tutorials: parseInt(course.completed_tutorials, 10) || 0,
@@ -34,7 +85,7 @@ const getUsers = async () => {
     ];
 };
 
-// Helper untuk membuat Modal Kustom (pengganti alert/confirm)
+// Helper Modal
 const createCustomModal = (title, body, footerContent) => {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay show';
@@ -60,61 +111,62 @@ const DashboardPage = {
         const user = userStr ? JSON.parse(userStr) : { name: "Guest", email: "" };
         let displayName = user.name ? user.name.toUpperCase() : "GUEST";
 
-        // 2. Date Logic
+        // 2. Date Logic (Full Month)
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const dayOfWeek = today.getDay(); 
-        const dayAdjusted = dayOfWeek === 0 ? 7 : dayOfWeek;
-        const monday = new Date(today);
-        monday.setDate(today.getDate() - (dayAdjusted - 1));
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth(); 
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         
-        // Format Date for Display
         const todayLocalized = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
-        const endOfWeek = new Date(monday.getTime() + 4 * 24 * 60 * 60 * 1000);
-        const weekRange = `${monday.getDate()} - ${endOfWeek.getDate()} ${new Date().toLocaleString('default', { month: 'long' })}`;
+        const currentMonthName = new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' });
 
-        // 3. Check-in Logic (Pills Generation)
+        // 3. Check-in Logic
         const storedCheckins = localStorage.getItem('dailyCheckins');
         const checkinData = storedCheckins ? JSON.parse(storedCheckins) : {};
         
-        // Mock checkin data example
-        const tuesday = new Date(today);
+        const tuesday = new Date(); 
         tuesday.setDate(today.getDate() - 2);
         const tuesdayKey = tuesday.toISOString().split('T')[0];
         if (!checkinData[tuesdayKey]) checkinData[tuesdayKey] = { emoji: 'Great', note: 'Done' };
 
-        const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-        const checkinPillsHTML = days.map((dayName, index) => {
-            const currentLoopDate = new Date(monday);
-            currentLoopDate.setDate(monday.getDate() + index);
-            currentLoopDate.setHours(0, 0, 0, 0);
-            const dateKey = currentLoopDate.toISOString().split('T')[0];
+        let checkinPillsHTML = '';
+        
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateIter = new Date(currentYear, currentMonth, d);
+            const dateKey = dateIter.toISOString().split('T')[0];
+            const dayName = dateIter.toLocaleDateString('id-ID', { weekday: 'short' });
             
             let statusClass = 'future'; 
             let isClickable = false;
             const isDone = checkinData[dateKey];
 
+            const dateIterTime = new Date(dateIter).setHours(0,0,0,0);
+            const todayTime = new Date(today).setHours(0,0,0,0);
+
             if (isDone) {
                 statusClass = 'done'; 
-            } else if (currentLoopDate.getTime() < today.getTime()) {
+            } else if (dateIterTime < todayTime) {
                 statusClass = 'missed'; 
-            } else if (currentLoopDate.getTime() === today.getTime()) {
+            } else if (dateIterTime === todayTime) {
                 statusClass = 'active-today'; 
                 isClickable = true;
             }
 
             const clickAttr = isClickable ? `onclick="window.handleCheckinClick('${dateKey}')"` : '';
-            const cursorStyle = isClickable ? 'cursor: pointer;' : '';
+            const cursorStyle = isClickable ? 'cursor: pointer;' : (statusClass === 'done' || statusClass === 'missed' ? 'cursor: default;' : '');
             
-            return `
-                <div class="day-pill-vertical ${statusClass}" ${clickAttr} style="${cursorStyle}" id="pill-${dateKey}" data-date="${dateKey}">
+            const scrollId = dateIterTime === todayTime ? 'id="scroll-to-today"' : `id="pill-${dateKey}"`;
+
+            checkinPillsHTML += `
+                <div class="day-pill-vertical ${statusClass}" ${clickAttr} style="${cursorStyle}" ${scrollId} data-date="${dateKey}">
                     <span class="pill-day">${dayName}</span>
-                    <span class="pill-num">${currentLoopDate.getDate()}</span>
+                    <span class="pill-num">${d}</span>
+                    ${isDone ? '<div class="dot-indicator"></div>' : ''}
                 </div>
             `;
-        }).join('');
+        }
 
-        // 4. Mock Schedule Data for Modal & Card
+        // 4. Mock Schedule Data
         const mockSchedule = [
             { time: "08.00 - 10.00", title: "ILT-FB1- Front-End Web Dasar", type: "Live Session" },
             { time: "10.30 - 12.00", title: "Mentoring Session Group A", type: "Mentoring" },
@@ -123,7 +175,6 @@ const DashboardPage = {
             { time: "19.00 - 21.00", title: "Project: Building Interactive Apps", type: "Project Work" },
         ];
         
-        // HTML untuk Modal (Full List)
         const scheduleListHTML = mockSchedule.map(item => `
             <div class="schedule-list-item">
                 <span class="schedule-time">${item.time}</span>
@@ -134,223 +185,273 @@ const DashboardPage = {
             </div>
         `).join('');
 
-        // HTML untuk Card (Menampilkan sebagian)
         const scheduleCardHTML = mockSchedule.map(item => `
             <div class="sched-row-item">
-                <div>
-                    <h4 style="font-size:12px; margin:0 0 4px 0;">${item.title}</h4>
-                    <span class="sched-time" style="font-size:11px; color:#666;">${item.time}</span>
+                <div class="sched-info">
+                    <span class="sched-time">${item.time}</span>
+                    <h4>${item.title}</h4>
                 </div>
                 <div class="sched-actions">
-                    <button class="btn-outline-white" style="font-size:10px; padding:2px 8px;">View</button>
+                    <button class="btn-icon-small"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
         `).join('');
 
         return `
             <style>
-                /* Global Styles & Layout */
-                body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: #f4f6f9; color: #333; }
-                a { text-decoration: none; color: inherit; }
-                h1, h2, h3, h4 { margin: 0; font-weight: 700; }
+                /* --- MODERN RESET & TYPOGRAPHY --- */
+                :root {
+                    --primary: #1976d2;
+                    --primary-dark: #0d47a1;
+                    --secondary: #005060;
+                    --bg-body: #f3f5f9;
+                    --bg-card: #ffffff;
+                    --text-main: #2d3e50;
+                    --text-muted: #64748b;
+                    --border-light: #e2e8f0;
+                    --success: #2e7d32;
+                    --danger: #ef5350;
+                    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+                    --shadow-md: 0 4px 20px rgba(0,0,0,0.05);
+                }
+                
+                body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: var(--bg-body); color: var(--text-main); -webkit-font-smoothing: antialiased; }
+                a { text-decoration: none; color: inherit; transition: 0.2s; }
+                h1, h2, h3, h4 { margin: 0; font-weight: 700; color: var(--text-main); }
+                
+                /* Layout */
                 .dashboard-body { display: flex; min-height: 100vh; }
                 
-                /* Sidebar */
-                .sidebar { width: 220px; background-color: #2d3e50; color: white; padding: 20px 0; display: flex; flex-direction: column; flex-shrink: 0; }
-                .sidebar-header { padding: 0 20px 30px; }
-                .brand-logo { font-size: 20px; font-weight: 800; }
-                .brand-logo i { color: #1976d2; margin-right: 10px; }
-                .menu-group { padding: 10px 0; }
-                .menu-category { font-size: 10px; color: #a0a8b3; padding: 8px 20px; margin-top: 15px; text-transform: uppercase; font-weight: 600; }
-                .menu-item { display: block; padding: 12px 20px; color: #d0d7e0; transition: background-color 0.2s; }
-                .menu-item:hover { background-color: #3b5065; color: white; }
-                .menu-item.active { background-color: #1976d2; color: white; border-left: 4px solid #fff; padding-left: 16px; }
-                .menu-item i { margin-right: 10px; }
+                /* --- SIDEBAR --- */
+                .sidebar { width: 240px; background-color: #1e293b; color: white; padding: 25px 0; display: flex; flex-direction: column; flex-shrink: 0; position: fixed; height: 100vh; z-index: 100; transition: 0.3s; }
+                .sidebar-header { padding: 0 24px 40px; }
+                .brand-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; }
+                .brand-logo i { color: #38bdf8; margin-right: 12px; }
+                
+                .menu-group { padding: 10px 12px; }
+                .menu-category { font-size: 11px; color: #94a3b8; padding: 8px 16px; margin-top: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+                .menu-item { display: flex; align-items: center; padding: 12px 16px; color: #cbd5e1; border-radius: 8px; margin-bottom: 4px; font-size: 14px; font-weight: 500; }
+                .menu-item:hover { background-color: rgba(255,255,255,0.05); color: white; }
+                .menu-item.active { background: linear-gradient(90deg, rgba(56, 189, 248, 0.15) 0%, rgba(56, 189, 248, 0) 100%); color: #38bdf8; border-left: 3px solid #38bdf8; }
+                .menu-item i { margin-right: 12px; width: 20px; text-align: center; }
 
-                /* Main Content */
-                .main-content { flex-grow: 1; padding: 30px; }
-                .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-                .header-left h1 { font-size: 24px; color: #1976d2; font-weight: 800; }
-                .header-left p { font-size: 14px; color: #666; margin-top: 5px; }
+                /* --- MAIN CONTENT --- */
+                .main-content { flex-grow: 1; padding: 30px 40px; margin-left: 240px; max-width: 1400px; }
+                
+                /* Header */
+                .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
+                .header-left h1 { font-size: 26px; color: var(--text-main); font-weight: 800; margin-bottom: 4px; }
+                .header-left p { font-size: 14px; color: var(--text-muted); }
+                
                 .header-right { display: flex; align-items: center; gap: 20px; }
-                .search-wrapper { position: relative; }
-                .search-wrapper input { padding: 8px 12px 8px 35px; border: 1px solid #ddd; border-radius: 20px; width: 200px; font-size: 14px; }
-                .search-wrapper i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; font-size: 14px; }
-                .notif-btn { width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; color: #666; }
+                
+                /* -- IMPROVED SEARCH BAR -- */
+                .search-wrapper { position: relative; width: 300px; }
+                .search-wrapper input { 
+                    padding: 12px 20px 12px 50px; 
+                    border: 1px solid var(--border-light); 
+                    border-radius: 50px; 
+                    width: 100%; 
+                    font-size: 14px; 
+                    outline: none; 
+                    transition: all 0.2s ease; 
+                    background: white; 
+                    box-sizing: border-box;
+                    color: #475569;
+                }
+                .search-wrapper input:focus { 
+                    border-color: var(--primary); 
+                    box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1); 
+                }
+                .search-wrapper input::placeholder { color: #94a3b8; }
+                .search-wrapper i { 
+                    position: absolute; 
+                    left: 20px; 
+                    top: 50%; 
+                    transform: translateY(-50%); 
+                    color: #64748b; 
+                    font-size: 16px; 
+                    pointer-events: none; 
+                }
+
+                .notif-btn { width: 44px; height: 44px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); cursor: pointer; color: var(--text-muted); border: 1px solid var(--border-light); transition: 0.2s; }
+                .notif-btn:hover { background: #f8fafc; color: var(--primary); }
                 
                 /* Grid System */
-                .dashboard-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; }
-                @media (max-width: 1024px) {
-                    .dashboard-grid { grid-template-columns: 1fr; }
-                    .right-column { min-width: auto; }
-                    .middle-row-grid { grid-template-columns: 1fr; }
-                }
-                .middle-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+                .dashboard-grid { display: grid; grid-template-columns: 3fr 1.1fr; gap: 24px; }
+                @media (max-width: 1200px) { .dashboard-grid { grid-template-columns: 1fr; } .main-content { margin-left: 0; padding: 20px; } .sidebar { transform: translateX(-100%); } }
+                .middle-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 
-                /* Cards */
-                .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; position: relative; }
-                .card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-                .card-header-row h3 { font-size: 16px; font-weight: 700; color: #2d3e50; }
-                .sub-date { font-size: 11px; color: #999; margin-bottom: 15px; display: block; }
-                .link-view-all, .link-text { font-size: 12px; color: #1976d2; font-weight: 600; }
+                /* --- CARDS GLOBAL --- */
+                .card { background: var(--bg-card); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-md); margin-bottom: 24px; position: relative; border: 1px solid rgba(255,255,255,0.5); }
+                .card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+                .card-header-row h3 { font-size: 16px; font-weight: 700; color: var(--text-main); }
+                .sub-date { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; display: block; font-weight: 500; }
+                .link-view-all, .link-text { font-size: 12px; color: var(--primary); font-weight: 600; padding: 4px 8px; border-radius: 6px; cursor: pointer;}
+                .link-view-all:hover, .link-text:hover { background: #e3f2fd; }
                 .mb-20 { margin-bottom: 20px; }
 
                 /* Hero Card */
-                .hero-card { background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%); color: white; display: flex; justify-content: space-between; align-items: center; padding: 30px; overflow: hidden; height: 180px; }
-                .hero-text-content h2 { font-size: 22px; margin: 10px 0; max-width: 80%; }
-                .hero-text-content p { font-size: 13px; opacity: 0.9; margin-bottom: 20px; }
-                .tag-blue { background: rgba(255, 255, 255, 0.2); padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-                .btn-primary { background: #0e677d; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 13px; transition: background-color 0.2s; }
-                .btn-primary:hover { background: #094a5a; }
-                .react-icon-3d { font-size: 100px; color: rgba(255, 255, 255, 0.5); transform: rotate(10deg); text-shadow: 0 0 10px rgba(0,0,0,0.3); }
+                .hero-card { background: linear-gradient(120deg, #1e3a8a 0%, #3b82f6 100%); color: white; display: flex; justify-content: space-between; align-items: center; padding: 32px; height: 160px; border: none; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3); }
+                .hero-text-content { z-index: 2; position: relative; }
+                .hero-text-content h2 { font-size: 24px; margin: 8px 0 12px; color: white; }
+                .hero-text-content p { font-size: 13px; opacity: 0.9; margin-bottom: 20px; max-width: 400px; line-height: 1.5; }
+                .tag-blue { background: rgba(255, 255, 255, 0.2); padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+                .btn-primary { background: white; color: #1e3a8a; border: none; padding: 10px 24px; border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 13px; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+                .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+                .hero-image-container { position: relative; }
+                .react-icon-3d { font-size: 140px; color: rgba(255, 255, 255, 0.15); position: absolute; right: -20px; bottom: -80px; animation: spin 20s linear infinite; }
+                @keyframes spin { 100% { transform: rotate(360deg); } }
 
-                /* Schedule Card - SCROLLABLE */
-                .schedule-box-blue { 
-                    background-color: #f0f4f8; 
-                    border-radius: 10px; 
-                    padding: 15px; 
-                    color: #2d3e50;
-                    max-height: 180px; 
-                    overflow-y: auto;
+                /* --- CHECK-IN PILLS --- */
+                .btn-add-checkin { background: #f1f5f9; border: none; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; color: var(--text-main); transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+                .btn-add-checkin:hover { background: #e2e8f0; }
+                
+                .checkin-pills-container { 
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); 
+                    gap: 10px; 
+                    max-height: 220px; 
+                    overflow-y: auto; 
+                    overflow-x: hidden;
+                    padding: 5px 5px 15px 5px;
+                    scrollbar-width: thin;
+                    scrollbar-color: #cbd5e1 transparent;
                 }
-                .schedule-box-blue::-webkit-scrollbar { width: 5px; }
-                .schedule-box-blue::-webkit-scrollbar-track { background: transparent; }
-                .schedule-box-blue::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-                
-                .sched-row-item {
+                .checkin-pills-container::-webkit-scrollbar { width: 5px; }
+                .checkin-pills-container::-webkit-scrollbar-track { background: transparent; }
+                .checkin-pills-container::-webkit-scrollbar-thumb { background-color: #e2e8f0; border-radius: 20px; }
+                .checkin-pills-container:hover::-webkit-scrollbar-thumb { background-color: #cbd5e1; }
+
+                .day-pill-vertical { 
+                    height: 75px;
                     display: flex; 
-                    justify-content: space-between; 
-                    align-items: center; 
-                    margin-bottom: 12px; 
-                    padding-bottom: 8px; 
-                    border-bottom: 1px solid #e0e7ed;
-                }
-                .sched-row-item:last-child { border-bottom: none; margin-bottom: 0; }
-                
-                .sched-deadline-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 2px dashed #e0e7ed; }
-                .deadline-text { font-size: 12px; color: #555; }
-                .btn-pilled-white { background: #ff7043; color: white; border: none; padding: 5px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; }
-
-                /* Checkin Pills */
-                .checkin-pills-container { display: flex; justify-content: space-between; gap: 8px; margin-top: 15px; }
-                .day-pill-vertical { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 5px; border-radius: 30px; border: 1px solid transparent; transition: transform 0.2s; }
-                .day-pill-vertical .pill-day { font-size: 10px; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
-                .day-pill-vertical .pill-num { font-size: 14px; font-weight: 700; }
-                .day-pill-vertical.done { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
-                .day-pill-vertical.missed { background-color: #ffebee; color: #c62828; border-color: #ffcdd2; opacity: 0.7; }
-                .day-pill-vertical.future { background-color: #f5f5f5; color: #9e9e9e; border-color: #eeeeee; }
-                .day-pill-vertical.active-today { background-color: #fce4ec; color: #d81b60; border: 1px solid #f8bbd0; box-shadow: 0 4px 6px rgba(233, 30, 99, 0.2); animation: pulse 2s infinite; }
-                .day-pill-vertical.active-today:hover { transform: translateY(-2px); background-color: #f8bbd0; }
-                @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(233, 30, 99, 0); } 100% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0); } }
-
-                /* Stats & Grade Card */
-                .stats-dark-card { background-color: #005060; color: white; position: relative; overflow: hidden; height: 160px; }
-                .stats-top { display: flex; justify-content: space-between; align-items: center; font-size: 12px; opacity: 0.8; }
-                .stats-big-num { font-size: 48px; font-weight: 700; margin-top: 10px; z-index: 10; position: relative; }
-                .wave-wrapper { position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; opacity: 0.1; }
-                .grade-card { display: flex; align-items: center; justify-content: center; text-align: center; flex-direction: column; height: 200px; }
-                .grade-circle-wrapper { width: 100px; height: 100px; margin-bottom: 10px; }
-                .circular-chart { display: block; max-width: 100%; }
-                .circle-bg { fill: none; stroke: #eee; stroke-width: 3; }
-                .circle { fill: none; stroke: #2196f3; stroke-width: 3; stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; }
-                .percentage { fill: #333; font-family: 'Poppins', sans-serif; font-size: 0.6em; text-anchor: middle; dominant-baseline: central; font-weight: 800; }
-                .label-gray { font-size: 12px; color: #999; }
-
-                /* Milestone Timeline */
-                .timeline-container { border-left: 2px solid #e0e0e0; padding-left: 15px; margin-left: 20px; }
-                .tl-item { position: relative; padding-bottom: 20px; }
-                .tl-dot, .tl-dot-ring, .tl-dot-hollow { position: absolute; left: -18px; top: 0px; width: 12px; height: 12px; border-radius: 50%; }
-                .tl-dot { background-color: #2e7d32; }
-                .tl-dot-ring { border: 2px solid #2196f3; background: white; }
-                .tl-dot-hollow { border: 2px solid #bdbdbd; background: white; }
-                .tl-item.current .tl-content h4 { color: #1976d2; font-weight: 700; }
-                .tl-content h4 { font-size: 14px; margin: 0; }
-                .tl-content p { font-size: 11px; color: #888; margin-top: 2px; }
-
-                /* Module List Styles */
-                #module-list-container { max-height: 280px; overflow-y: auto; padding-right: 5px; }
-                #module-list-container::-webkit-scrollbar { width: 6px; }
-                #module-list-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-                #module-list-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-                .module-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s; }
-                .module-row:hover { background-color: #f9f9f9; }
-                
-                /* MODULE ICON STYLE */
-                .mod-icon-wrapper { 
-                    width: 46px; 
-                    height: 46px; 
-                    border-radius: 12px; 
-                    margin-right: 16px; 
-                    display: flex; 
+                    flex-direction: column; 
                     align-items: center; 
                     justify-content: center; 
-                    font-size: 22px; 
-                    color: white; 
-                    flex-shrink: 0;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+                    border-radius: 24px; 
+                    border: 1px solid var(--border-light); 
+                    transition: all 0.2s ease; 
+                    background: #fff;
+                    position: relative;
                 }
+                .day-pill-vertical .pill-day { font-size: 10px; font-weight: 600; margin-bottom: 6px; text-transform: uppercase; color: var(--text-muted); }
+                .day-pill-vertical .pill-num { font-size: 16px; font-weight: 700; color: var(--text-main); }
+                .day-pill-vertical.done { background-color: #f0fdf4; color: var(--success); border-color: #dcfce7; }
+                .day-pill-vertical.done .pill-num, .day-pill-vertical.done .pill-day { color: var(--success); }
+                .day-pill-vertical.missed { background-color: #fef2f2; border-color: #fee2e2; opacity: 0.7; }
+                .day-pill-vertical.missed .pill-num { color: var(--danger); }
+                .day-pill-vertical.future { background-color: #f8fafc; border-color: #f1f5f9; }
+                .day-pill-vertical.active-today { 
+                    background-color: var(--primary); 
+                    border-color: var(--primary); 
+                    transform: scale(1.05); 
+                    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+                    z-index: 10;
+                }
+                .day-pill-vertical.active-today .pill-day, .day-pill-vertical.active-today .pill-num { color: white; }
+                .day-pill-vertical.active-today:hover { transform: translateY(-3px) scale(1.05); }
+                .dot-indicator { width: 4px; height: 4px; background: currentColor; border-radius: 50%; position: absolute; bottom: 8px; }
+
+                /* --- SCHEDULE --- */
+                .schedule-box-blue { max-height: 240px; overflow-y: auto; padding-right: 5px; }
+                .schedule-box-blue::-webkit-scrollbar { width: 4px; }
+                .schedule-box-blue::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+                .sched-row-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light); transition: 0.2s; }
+                .sched-row-item:last-child { border-bottom: none; }
+                .sched-row-item:hover { background-color: #f8fafc; padding-left: 8px; padding-right: 8px; border-radius: 8px; border-bottom-color: transparent; }
+                .sched-info h4 { font-size: 13px; margin: 0; color: var(--text-main); line-height: 1.4; }
+                .sched-info .sched-time { font-size: 11px; color: var(--primary); font-weight: 600; display: block; margin-bottom: 2px; }
+                .btn-icon-small { border: none; background: transparent; color: #cbd5e1; cursor: pointer; }
+                .sched-row-item:hover .btn-icon-small { color: var(--primary); }
+
+                /* --- MODULES LIST --- */
+                #module-list-container { max-height: 300px; overflow-y: auto; padding-right: 10px; }
+                #module-list-container::-webkit-scrollbar { width: 5px; }
+                #module-list-container::-webkit-scrollbar-track { background: transparent; }
+                #module-list-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+                .module-row { display: flex; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-light); cursor: pointer; transition: 0.2s; }
+                .module-row:hover { background-color: #f8fafc; padding-left: 10px; padding-right: 10px; border-radius: 10px; border-bottom-color: transparent; }
+                .mod-icon-wrapper { width: 48px; height: 48px; border-radius: 12px; margin-right: 16px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+                .mod-details h4 { font-size: 14px; margin-bottom: 4px; font-weight: 600; }
+                .mod-sub { font-size: 11px; color: #94a3b8; margin-bottom: 8px; display: block; }
+                .mod-progress-container { width: 100%; background-color: #f1f5f9; height: 6px; border-radius: 10px; overflow: hidden; }
+                .mod-progress-bar { height: 100%; border-radius: 10px; transition: width 0.6s ease; }
+                .mod-right { margin-left: auto; text-align: right; }
+                .pct-text { font-size: 12px; font-weight: 700; color: var(--text-main); }
+
+                /* --- RIGHT COLUMN (STATS) --- */
+                .stats-dark-card { background: var(--secondary); color: white; height: 150px; border: none; overflow: hidden; }
+                .stats-top { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; letter-spacing: 1px; opacity: 0.8; text-transform: uppercase; }
+                .stats-big-num { font-size: 42px; font-weight: 700; margin-top: 15px; position: relative; z-index: 2; }
+                .btn-detail-stats { background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 20px; padding: 2px 10px; font-size: 10px; cursor: pointer; transition: 0.2s; }
+                .btn-detail-stats:hover { background: rgba(255,255,255,0.2); }
                 
-                /* Module Details */
-                .mod-details { flex-grow: 1; margin-right: 15px; }
-                .mod-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px; }
-                .mod-details h4 { font-size: 13px; font-weight: 600; color: #333; margin: 0; }
-                .mod-sub { font-size: 11px; color: #888; margin-bottom: 8px; display: block; }
+                .grade-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 220px; }
+                .grade-circle-wrapper { width: 110px; height: 110px; margin-bottom: 15px; position: relative; }
+                .circular-chart { display: block; margin: 0 auto; max-width: 100%; max-height: 100%; }
+                .circle-bg { fill: none; stroke: #f1f5f9; stroke-width: 2.5; }
+                .circle { fill: none; stroke-width: 2.5; stroke-linecap: round; animation: progress 1s ease-out forwards; stroke: var(--primary); }
+                .percentage { fill: var(--text-main); font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 0.55em; text-anchor: middle; dominant-baseline: central; }
                 
-                /* Horizontal Progress Bar Styles */
-                .mod-progress-container { width: 100%; background-color: #f0f0f0; height: 6px; border-radius: 3px; overflow: hidden; }
-                .mod-progress-bar { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-                .mod-progress-bar.blue { background-color: #2196f3; }
-                .mod-progress-bar.green { background-color: #2e7d32; }
-                
-                /* Module Right Side */
-                .mod-right { text-align: right; min-width: 40px; }
-                .pct-text { font-size: 12px; font-weight: 700; color: #333; display: block; }
-                .status-text { font-size: 10px; color: #888; }
-                
-                /* Shared Modals */
-                .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+                /* Milestone Timeline */
+                .timeline-container { border-left: 2px solid #e2e8f0; padding-left: 20px; margin-left: 10px; padding-top: 5px; }
+                .tl-item { position: relative; padding-bottom: 25px; }
+                .tl-item:last-child { padding-bottom: 0; }
+                .tl-dot, .tl-dot-ring, .tl-dot-hollow { position: absolute; left: -26px; top: 2px; width: 10px; height: 10px; border-radius: 50%; background: white; z-index: 2; }
+                .tl-dot { background-color: var(--success); border: 2px solid var(--success); }
+                .tl-dot-ring { border: 2px solid var(--primary); background: white; box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2); }
+                .tl-dot-hollow { border: 2px solid #cbd5e1; background: white; }
+                .tl-content h4 { font-size: 13px; margin: 0; transition: 0.2s; }
+                .text-blue { color: var(--primary); }
+                .tl-content p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+                /* --- MODALS --- */
+                .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
                 .modal-overlay.show { opacity: 1; visibility: visible; }
-                .modal-content { background: white; width: 450px; max-width: 90%; border-radius: 12px; padding: 24px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Poppins', sans-serif; }
+                .modal-content { background: white; width: 450px; max-width: 90%; border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.2); font-family: 'Poppins', sans-serif; position: relative; }
                 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-                .modal-header h3 { margin: 0; font-size: 18px; color: #333; font-weight: 700; }
-                .close-modal { cursor: pointer; font-size: 24px; color: #999; }
-                .schedule-list-item { display: flex; align-items: center; margin-bottom: 15px; padding: 10px; border-radius: 8px; background: #f8f9fa; border-left: 4px solid #1976d2; }
-                .schedule-time { font-size: 12px; font-weight: 600; color: #1976d2; flex-shrink: 0; width: 80px; }
-                .schedule-details { flex-grow: 1; padding-left: 10px; border-left: 1px solid #e0e0e0; margin-left: 10px; }
-                .schedule-details h4 { font-size: 14px; margin-bottom: 2px; color: #2d3e50; }
-                .schedule-details p { font-size: 11px; color: #888; margin: 0; }
-                .schedule-list-container { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+                .modal-header h3 { margin: 0; font-size: 20px; color: #1e293b; font-weight: 700; }
+                .close-modal { cursor: pointer; font-size: 24px; color: #94a3b8; }
                 
-                /* Check-in Form Styles */
-                .emoji-container { display: flex; gap: 15px; margin-bottom: 20px; justify-content: space-between; }
-                .emoji-btn { flex: 1; border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; cursor: pointer; text-align: center; transition: all 0.2s; background: white; }
-                .emoji-btn.selected { border-color: #2d3e50; background-color: #f0f4f8; border-width: 2px; }
-                .emoji-icon { font-size: 28px; display: block; margin-bottom: 5px; }
-                .emoji-label { font-size: 12px; color: #666; font-weight: 500; }
-                .input-group label { display: block; font-size: 12px; color: #333; margin-bottom: 8px; font-weight: 600; }
-                .checkin-textarea { width: 100%; height: 120px; padding: 12px; border: 1px solid #ccc; border-radius: 8px; resize: none; font-family: inherit; font-size: 14px; }
-                .btn-submit-checkin { background-color: #0e677d; color: white; border: none; padding: 10px 24px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 14px; }
-                
-                /* -- NEW: MODULE DETAIL MODAL STYLES (Image like) -- */
-                .module-detail-content { text-align: left; }
+                .checkin-textarea { width: 100%; height: 100px; border: 1px solid var(--border-light); background: #f8fafc; border-radius: 12px; padding: 15px; font-size: 14px; outline: none; transition: 0.2s; resize: none; font-family: inherit; }
+                .checkin-textarea:focus { background: white; border-color: var(--primary); }
+                .btn-submit-checkin { background: var(--secondary); color: white; border: none; padding: 12px 30px; font-size: 14px; box-shadow: 0 4px 12px rgba(0, 80, 96, 0.3); transition: 0.2s; border-radius: 50px; font-weight: 600; cursor: pointer; }
+                .btn-submit-checkin:hover { background: #003d4a; transform: translateY(-1px); }
+
+                /* Emoji Container */
+                .emoji-container { display: flex; gap: 10px; justify-content: space-between; }
+                .emoji-btn { flex: 1; border: 1px solid var(--border-light); border-radius: 12px; padding: 15px 10px; background: #f8fafc; text-align: center; cursor: pointer; transition: 0.2s; }
+                .emoji-btn:hover { background: white; border-color: #cbd5e1; box-shadow: var(--shadow-sm); }
+                .emoji-btn.selected { background: #e0f2fe; border-color: var(--primary); color: var(--primary); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3); }
+                .emoji-icon { font-size: 24px; display: block; margin-bottom: 5px; }
+                .emoji-label { font-size: 12px; font-weight: 500; }
+
+                /* Module Detail Styles */
                 .module-detail-header { display: flex; align-items: center; margin-bottom: 20px; }
-                .module-detail-icon { width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; margin-right: 15px; flex-shrink: 0; }
-                .module-detail-title h2 { font-size: 18px; color: #333; margin: 0 0 5px 0; }
-                .module-detail-badge { font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: 600; display: inline-block; }
+                .module-detail-icon { width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; margin-right: 15px; flex-shrink: 0; }
+                .module-detail-title h2 { font-size: 20px; font-weight: 800; color: #1e293b; margin: 0 0 5px 0; }
+                .module-detail-badge { padding: 5px 10px; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; border-radius: 8px; display: inline-block; }
                 .badge-dasar { background: #e3f2fd; color: #1976d2; }
                 .badge-pemula { background: #e8f5e9; color: #2e7d32; }
                 .badge-menengah { background: #fff3e0; color: #f57c00; }
                 .badge-mahir { background: #ffebee; color: #c62828; }
-                
-                .module-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 10px; }
+                .module-meta-grid { background: #f8fafc; border: 1px solid var(--border-light); border-radius: 12px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
                 .meta-item { display: flex; flex-direction: column; }
-                .meta-label { font-size: 11px; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-                .meta-value { font-size: 13px; font-weight: 600; color: #333; }
+                .meta-label { font-size: 10px; font-weight: 700; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; }
+                .meta-value { font-size: 14px; font-weight: 600; color: #334155; }
+                .module-description { font-size: 14px; color: #475569; line-height: 1.6; margin-bottom: 25px; }
+                .module-action-btn { background: var(--primary); padding: 14px; font-size: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(25, 118, 210, 0.25); border: none; color: white; width: 100%; font-weight: 600; cursor: pointer; transition: 0.2s; }
+                .module-action-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
                 
-                .module-description { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 20px; border-top: 1px solid #eee; padding-top: 15px; }
-                
-                .module-action-btn { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #2196f3; color: white; font-weight: 600; cursor: pointer; font-size: 14px; transition: background 0.2s; }
-                .module-action-btn:hover { background: #1976d2; }
+                .schedule-list-item { display: flex; align-items: center; margin-bottom: 15px; padding: 15px; border-radius: 12px; background: #f8fafc; border-left: 4px solid var(--primary); }
+                .schedule-time { font-size: 12px; font-weight: 700; color: var(--primary); flex-shrink: 0; width: 90px; }
+                .schedule-details { flex-grow: 1; padding-left: 15px; border-left: 1px solid #e2e8f0; margin-left: 10px; }
+                .schedule-details h4 { font-size: 14px; margin-bottom: 2px; color: #1e293b; }
+                .schedule-details p { font-size: 12px; color: #64748b; margin: 0; }
+                .schedule-list-container { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+
+                footer { text-align: center; font-size: 12px; color: #94a3b8; padding: 20px 0; margin-top: 20px; }
             </style>
 
             <div class="dashboard-body">
@@ -360,12 +461,12 @@ const DashboardPage = {
                     </div>
                     <div class="menu-group">
                         <div class="menu-category">LEARNING</div>
-                        <a href="#/dashboard" class="menu-item active">Dashboard</a>
-                        <a href="#/my-progress" class="menu-item">My Progress</a>
-                        <a href="#" class="menu-item">Dicoding Mentoring</a>
+                        <a href="#/dashboard" class="menu-item active"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
+                        <a href="#/my-progress" class="menu-item"><i class="fa-solid fa-chart-line"></i> My Progress</a>
+                        <a href="#" class="menu-item"><i class="fa-solid fa-chalkboard-user"></i> Mentoring</a>
                     </div>
                     <div class="menu-group" style="margin-top:auto;">
-                        <a href="javascript:void(0)" id="logoutDashBtn" class="menu-item" style="color:#ef5350;">
+                         <a href="javascript:void(0)" id="logoutDashBtn" class="menu-item" style="color:#ef5350;">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
                         </a>
                     </div>
@@ -374,13 +475,13 @@ const DashboardPage = {
                 <main class="main-content">
                     <header class="dash-header">
                         <div class="header-left">
-                            <h1>HALLO ${displayName}</h1>
-                            <p>Let's continue your learning journey today.</p>
+                            <h1>Hello, ${displayName} 👋</h1>
+                            <p>Let's continue your learning journey.</p>
                         </div>
                         <div class="header-right">
                             <div class="search-wrapper">
                                 <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="text" placeholder="Search course">
+                                <input type="text" id="searchInput" placeholder="Search course...">
                             </div>
                             <div class="notif-btn"><i class="fa-regular fa-bell"></i></div>
                         </div>
@@ -391,10 +492,9 @@ const DashboardPage = {
                             <div class="card hero-card">
                                 <div class="hero-text-content">
                                     <span class="tag-blue">Recommended Next Step</span>
-                                    <h2>Mastering React Hooks & Custom Logic</h2>
-                                    <p>Berdasarkan hasil kuis Modul 3, Anda siap untuk materi lanjutan.</p>
+                                    <h2>Mastering React Hooks</h2>
+                                    <p>Berdasarkan hasil kuis Modul 3, Anda siap untuk materi lanjutan state management.</p>
                                     <button class="btn-primary"><i class="fa-solid fa-play"></i> Lanjut Belajar</button>
-                                    <span class="time-left" style="margin-left:10px; font-size:11px;">~45 min left</span>
                                 </div>
                                 <div class="hero-image-container">
                                      <i class="fa-brands fa-react react-icon-3d"></i>
@@ -404,21 +504,27 @@ const DashboardPage = {
                             <div class="middle-row-grid">
                                 <div class="card">
                                     <div class="card-header-row">
-                                        <h3>Daily Check-in</h3>
-                                        <button id="btn-open-modal" class="btn-add-checkin"><i class="fa-solid fa-plus" style="font-size: 12px;"></i></button>
+                                        <div>
+                                            <h3>Daily Check-in</h3>
+                                            <span class="sub-date" style="margin-bottom:0;">${currentMonthName}</span>
+                                        </div>
+                                        <button id="btn-open-modal" class="btn-add-checkin"><i class="fa-solid fa-plus"></i></button>
                                     </div>
-                                    <p class="sub-date">Minggu Ini (${weekRange})</p>
-                                    <div class="checkin-pills-container">${checkinPillsHTML}</div>
+                                    <div style="margin-top: 15px;">
+                                        <div class="checkin-pills-container" id="checkinScrollContainer">
+                                            ${checkinPillsHTML}
+                                        </div>
+                                    </div>
                                 </div>
+
                                 <div class="card">
                                     <div class="card-header-row">
-                                        <h3>My Schedule</h3>
+                                        <h3>Today's Schedule</h3>
                                         <a href="#" class="link-view-all" id="viewAllSchedule">View all</a>
                                     </div>
-                                    <p class="sub-date">Today, ${todayLocalized}</p>
-                                    <!-- Added SCROLLABLE container logic via CSS -->
+                                    <p class="sub-date">${todayLocalized}</p>
                                     <div class="schedule-box-blue">
-                                        ${scheduleCardHTML} <!-- Using dynamic list inside card now -->
+                                        ${scheduleCardHTML}
                                     </div>
                                 </div>
                             </div>
@@ -426,22 +532,22 @@ const DashboardPage = {
                             <div class="card modules-section">
                                 <div class="card-header-row mb-20">
                                     <h3>Current Modules</h3>
-                                    <a href="#" class="link-text">View curriculum</a>
+                                    <a href="#" class="link-view-all">Curriculum</a>
                                 </div>
                                 <div id="module-list-container">
-                                    <p style="color:#888; font-size:12px;">Loading modules...</p>
+                                    <div style="padding: 20px; text-align: center; color: #94a3b8;">Loading modules...</div>
                                 </div>
                             </div>
 
                             <div class="card skill-section">
                                 <div class="card-header-row mb-20">
-                                    <h3>Skill Analysis (Cohort vs You)</h3>
-                                    <div class="chart-legend">
-                                        <span class="legend-dot blue"></span> You
-                                        <span class="legend-dot grey"></span> Class Avg
+                                    <h3>Skill Analysis</h3>
+                                    <div class="chart-legend" style="font-size: 11px; display: flex; gap: 10px;">
+                                        <span style="color: #2196f3;"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> You</span>
+                                        <span style="color: #ccc;"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> Class Avg</span>
                                     </div>
                                 </div>
-                                <div class="radar-wrapper">
+                                <div class="radar-wrapper" style="height: 220px;">
                                     <canvas id="radarChart"></canvas>
                                 </div>
                             </div>
@@ -450,12 +556,12 @@ const DashboardPage = {
                         <div class="right-column">
                             <div class="card stats-dark-card">
                                 <div class="stats-top">
-                                    <span>TOTAL STUDY TIME</span>
-                                    <i class="fa-regular fa-clock"></i>
+                                    <span>Total Study Time</span>
+                                    <button class="btn-detail-stats" onclick="window.openStudyTimeDetail()">View Details</button>
                                 </div>
-                                <div class="stats-big-num" id="total-study-time">...</div>
+                                <div class="stats-big-num" id="total-study-time">0 hrs</div>
                                 <div class="wave-wrapper">
-                                    <svg viewBox="0 0 1440 320" style="width:100%; height:100px; opacity:0.3; position:absolute; bottom:-20px; left:0;"><path fill="#ffffff" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
+                                    <svg viewBox="0 0 1440 320" style="width:100%; height:100px; opacity:0.2; position:absolute; bottom:-20px; left:0;"><path fill="#ffffff" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
                                 </div>
                             </div>
 
@@ -464,70 +570,94 @@ const DashboardPage = {
                                     <svg viewBox="0 0 36 36" class="circular-chart">
                                         <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                                         <path class="circle" id="avg-grade-ring" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <text x="18" y="20.35" class="percentage" id="avg-grade-text">...</text>
+                                        <text x="18" y="20.35" class="percentage" id="avg-grade-text">0</text>
                                     </svg>
                                 </div>
                                 <div class="grade-text">
-                                    <span class="label-gray">Avg. Grade</span>
-                                    <h4 id="grade-verdict" class="text-lg font-bold text-slate-700">Computing...</h4>
-                                    <p>Based on your exams.</p>
+                                    <span class="label-gray" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Avg. Grade</span>
+                                    <h4 id="grade-verdict" style="font-size: 18px; margin-top: 5px;">Computing...</h4>
                                 </div>
                             </div>
 
                             <div class="card milestone-card">
-                                <h3>Learning Milestone</h3>
-                                <div class="timeline-container" id="milestone-container">
-                                    <p style="color:#888; font-size:12px;">Loading milestones...</p>
+                                <div class="card-header-row mb-20">
+                                    <h3>Milestones</h3>
                                 </div>
+                                <div class="timeline-container" id="milestone-container">
+                                    </div>
                             </div>
                         </div>
                     </div>
 
-                    <footer>© 2025 Dicoding Indonesia</footer>
+                    <footer>© 2025 Dicoding Indonesia • Learning Platform</footer>
 
-                    <!-- Modals -->
                     <div class="modal-overlay" id="checkinModal">
-                        <div class="modal-content">
+                        <div class="modal-content" style="width: 400px;">
                             <div class="modal-header"><h3>Daily Check-in</h3><span class="close-modal" id="closeModal">&times;</span></div>
                             <div class="modal-body">
                                 <input type="hidden" id="activeCheckinDate" value="">
                                 <div class="emoji-container">
-                                    <div class="emoji-btn" data-value="bad"><span class="emoji-icon">🤯</span><span class="emoji-label">Bad</span></div>
-                                    <div class="emoji-btn selected" data-value="neutral"><span class="emoji-icon">🙂</span><span class="emoji-label">Netral</span></div>
-                                    <div class="emoji-btn" data-value="great"><span class="emoji-icon">🤩</span><span class="emoji-label">Great</span></div>
+                                    <div class="emoji-btn" data-value="bad"><span class="emoji-icon">🤯</span><span class="emoji-label">Stuck</span></div>
+                                    <div class="emoji-btn selected" data-value="neutral"><span class="emoji-icon">🙂</span><span class="emoji-label">Okay</span></div>
+                                    <div class="emoji-btn" data-value="great"><span class="emoji-icon">🚀</span><span class="emoji-label">On Fire</span></div>
                                 </div>
-                                <div class="input-group"><label>Apa yang kamu pelajari?</label><textarea class="checkin-textarea" id="checkinNotes"></textarea></div>
+                                <div class="input-group" style="margin-top: 20px;">
+                                    <label style="display:block; margin-bottom:8px; font-weight:600; font-size:12px; color:#64748b;">CATATAN BELAJAR HARI INI</label>
+                                    <textarea class="checkin-textarea" id="checkinNotes" placeholder="Apa yang kamu pelajari hari ini?"></textarea>
+                                </div>
                             </div>
-                            <div class="modal-footer"><button class="btn-submit-checkin" id="submitCheckin">Submit</button></div>
+                            <div class="modal-footer" style="text-align: right; margin-top: 20px;">
+                                <button class="btn-submit-checkin" id="submitCheckin">Simpan Progress</button>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- MODULE DETAIL MODAL (Updated Layout) -->
                     <div class="modal-overlay" id="moduleDetailModal">
                         <div class="modal-content">
                             <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
-                                <span class="close-modal" id="closeModuleModal" style="position: absolute; right: 20px; top: 20px;">&times;</span>
+                                <span class="close-modal" id="closeModuleModal" style="position: absolute; right: 25px; top: 25px;">&times;</span>
                             </div>
-                            <div class="modal-body module-detail-content" id="moduleDetailBody">
-                                <!-- Content injected by JS -->
-                            </div>
+                            <div class="modal-body module-detail-content" id="moduleDetailBody"></div>
                         </div>
                     </div>
 
                     <div class="modal-overlay" id="scheduleModal">
                         <div class="modal-content schedule-content" style="width: 550px;">
-                            <div class="modal-header"><h3>Full Weekly Schedule</h3><span class="close-modal" id="closeScheduleModal">&times;</span></div>
+                            <div class="modal-header"><h3>Weekly Schedule</h3><span class="close-modal" id="closeScheduleModal">&times;</span></div>
                             <div class="modal-body schedule-list-container">${scheduleListHTML}</div>
-                            <div class="modal-footer"><button class="btn-submit-checkin" onclick="document.getElementById('scheduleModal').classList.remove('show')">Close</button></div>
                         </div>
                     </div>
+
+                    <div class="modal-overlay" id="studyTimeModal">
+                        <div class="modal-content" style="width: 500px;">
+                            <div class="modal-header"><h3>Weekly Study Activity</h3><span class="close-modal" id="closeStudyModal">&times;</span></div>
+                            <div class="modal-body">
+                                <div style="height: 250px;">
+                                    <canvas id="studyTimeChart"></canvas>
+                                </div>
+                                <p style="text-align:center; font-size:12px; color:#64748b; margin-top:15px;">Total hours spent learning this week.</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </main>
             </div>
         `;
     },
 
     async afterRender() {
-        // 1. Setup Event Listeners for Static Elements (Check-in, Schedule, Logout)
+        // --- AUTO SCROLL VERTICAL TO TODAY ---
+        setTimeout(() => {
+            const todayPill = document.getElementById('scroll-to-today');
+            const container = document.getElementById('checkinScrollContainer');
+            if (todayPill && container) {
+                const scrollTop = todayPill.offsetTop - container.offsetTop - (container.clientHeight / 2) + (todayPill.clientHeight / 2);
+                container.scrollTo({ top: scrollTop, behavior: 'smooth' });
+            }
+        }, 300);
+
+        // --- GLOBAL & EVENT LISTENERS ---
+        
         const checkinModal = document.getElementById('checkinModal');
         const openCheckinBtn = document.getElementById('btn-open-modal');
         const closeCheckinBtn = document.getElementById('closeModal');
@@ -541,9 +671,21 @@ const DashboardPage = {
         const moduleModal = document.getElementById('moduleDetailModal');
         const closeModuleBtn = document.getElementById('closeModuleModal');
 
-        const logoutBtn = document.getElementById('logoutDashBtn');
+        const studyTimeModal = document.getElementById('studyTimeModal');
+        const closeStudyModalBtn = document.getElementById('closeStudyModal');
 
-        // Attach Global function for Check-in pill click (generated in render)
+        const logoutBtn = document.getElementById('logoutDashBtn');
+        const searchInput = document.getElementById('searchInput');
+
+        // Toggle Emoji
+        emojiBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                emojiBtns.forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Global functions
         window.handleCheckinClick = (dateStr) => {
             document.getElementById('activeCheckinDate').value = dateStr;
             document.getElementById('checkinNotes').value = "";
@@ -553,13 +695,9 @@ const DashboardPage = {
             checkinModal.classList.add('show');
         };
 
-        // Attach Global function for Module click (Dynamic content injection)
         window.openModuleDetail = (modTitle, modLevel, modHours, modRating, modStatus, modStartDate, modEndDate, modScore, modDesc, iconColor, iconHtml) => {
             const bodyEl = document.getElementById('moduleDetailBody');
-            
-            const levelBadgeColor = modLevel === 'Dasar' ? 'badge-dasar' : 
-                                    modLevel === 'Pemula' ? 'badge-pemula' : 
-                                    modLevel === 'Menengah' ? 'badge-menengah' : 'badge-mahir';
+            const levelBadgeColor = modLevel === 'Dasar' ? 'badge-dasar' : modLevel === 'Pemula' ? 'badge-pemula' : modLevel === 'Menengah' ? 'badge-menengah' : 'badge-mahir';
 
             bodyEl.innerHTML = `
                 <div class="module-detail-header">
@@ -571,7 +709,6 @@ const DashboardPage = {
                         <span class="module-detail-badge ${levelBadgeColor}">${modLevel}</span>
                     </div>
                 </div>
-                
                 <div class="module-meta-grid">
                     <div class="meta-item">
                         <span class="meta-label">Jam Belajar</span>
@@ -579,53 +716,75 @@ const DashboardPage = {
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Rating</span>
-                        <span class="meta-value">⭐ ${modRating} / 5.0</span>
+                        <span class="meta-value">⭐ ${modRating}</span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Status</span>
-                        <span class="meta-value" style="color:${modStatus === 'Completed' ? '#2e7d32' : '#1976d2'}">${modStatus}</span>
+                        <span class="meta-value" style="color:${modStatus === 'Completed' ? '#2e7d32' : '#0288d1'}">${modStatus}</span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Nilai Akhir</span>
                         <span class="meta-value">${modScore > 0 ? modScore : '-'}</span>
                     </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Mulai Belajar</span>
-                        <span class="meta-value">${modStartDate}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Selesai Belajar</span>
-                        <span class="meta-value">${modEndDate}</span>
-                    </div>
                 </div>
-                
                 <div class="module-description">
                     <p>${modDesc}</p>
                 </div>
-                
                 <button class="module-action-btn">${modStatus === 'Completed' ? 'Lihat Sertifikat' : 'Lanjutkan Belajar'}</button>
             `;
-            
             moduleModal.classList.add('show');
         };
 
-        // Basic Listeners
+        // OPEN STUDY TIME DETAIL (New Chart)
+        window.openStudyTimeDetail = () => {
+            studyTimeModal.classList.add('show');
+            
+            // Mock Data for Last 7 Days
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const hours = [2.5, 4, 1.5, 5, 3, 6, 2]; // Mock hours
+
+            const ctx = document.getElementById('studyTimeChart');
+            // Destroy old chart if exists to avoid overlay
+            if (window.myStudyChart) window.myStudyChart.destroy();
+
+            window.myStudyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: 'Study Hours',
+                        data: hours,
+                        backgroundColor: '#1976d2',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Hours' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        };
+
+        // Listeners for Buttons
         if(openCheckinBtn) openCheckinBtn.addEventListener('click', () => window.handleCheckinClick(new Date().toISOString().split('T')[0]));
         if(closeCheckinBtn) closeCheckinBtn.addEventListener('click', () => checkinModal.classList.remove('show'));
         if(closeModuleBtn) closeModuleBtn.addEventListener('click', () => moduleModal.classList.remove('show'));
+        if(closeStudyModalBtn) closeStudyModalBtn.addEventListener('click', () => studyTimeModal.classList.remove('show'));
         if(openScheduleBtn) openScheduleBtn.addEventListener('click', (e) => { e.preventDefault(); scheduleModal.classList.add('show'); });
         if(closeScheduleBtn) closeScheduleBtn.addEventListener('click', () => scheduleModal.classList.remove('show'));
 
-        // Submit Check-in with Random Funny Notification
         if(submitCheckinBtn) {
             submitCheckinBtn.addEventListener('click', () => {
                 const notes = document.getElementById('checkinNotes').value;
                 if (!notes.trim()) {
-                    const footer = `<button class="btn-submit-checkin" onclick="this.closest('.modal-overlay').remove()">OK</button>`;
-                    createCustomModal("Perhatian", "Tulis dulu apa yang kamu pelajari hari ini!", footer);
+                    createCustomModal("Eits!", "Tulis dulu dong apa yang kamu pelajari hari ini.", `<button class="btn-submit-checkin" onclick="this.closest('.modal-overlay').remove()">OK</button>`);
                     return;
                 }
-                // Save logic (mock)
                 const dateKey = document.getElementById('activeCheckinDate').value;
                 const storedCheckins = localStorage.getItem('dailyCheckins');
                 const checkinData = storedCheckins ? JSON.parse(storedCheckins) : {};
@@ -633,186 +792,199 @@ const DashboardPage = {
                 localStorage.setItem('dailyCheckins', JSON.stringify(checkinData));
                 
                 checkinModal.classList.remove('show');
+                const pill = document.querySelector(`.day-pill-vertical[data-date="${dateKey}"]`);
+                if(pill) {
+                    pill.classList.add('done');
+                    pill.classList.remove('active-today');
+                    if(!pill.querySelector('.dot-indicator')) {
+                        pill.innerHTML += '<div class="dot-indicator"></div>';
+                    }
+                }
 
-                // Array of funny/motivational messages
-                const funnyMessages = [
-                    "Mantap! Jangan lupa istirahat, jangan coding terus sampai lupa makan! 🍕",
-                    "Keren! Satu langkah lebih dekat jadi sepuh. 👴",
-                    "Gas pol rem blong! 🚀 Tapi kalau error, istirahat dulu ya.",
-                    "Wah, produktif sekali hari ini! Besok lagi ya? 😉",
-                    "Otak makin encer nih, nice progress! Awas tumpah 🤯",
-                    "Sipp! Jangan lupa push ke GitHub biar ga ilang codingannya! 🐙"
-                ];
+                const funnyMessages = ["Mantap! 🍕", "Keren! 👴", "Gas pol! 🚀", "Produktif! 😉"];
                 const randomMsg = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
-                
-                const footer = `<button class="btn-submit-checkin" onclick="this.closest('.modal-overlay').remove(); location.reload();">OK</button>`;
-                createCustomModal("✅ Check-in Berhasil!", `${randomMsg}`, footer);
+                createCustomModal("✅ Check-in Berhasil!", randomMsg, `<button class="btn-submit-checkin" onclick="this.closest('.modal-overlay').remove();">Siap!</button>`);
             });
         }
 
-        // Logout
         if(logoutBtn) {
             logoutBtn.addEventListener('click', () => {
-                const footer = `
-                    <button class="btn-submit-checkin" style="background-color: #ef5350;" onclick="localStorage.removeItem('userInfo'); window.location.hash='/'; this.closest('.modal-overlay').remove();">Ya</button>
-                    <button class="btn-submit-checkin" style="background-color: #ccc; margin-left: 10px;" onclick="this.closest('.modal-overlay').remove()">Tidak</button>
-                `;
-                createCustomModal("Konfirmasi", "Yakin ingin logout?", footer);
+                createCustomModal("Konfirmasi Logout", "Yakin ingin keluar?", `
+                    <button class="btn-submit-checkin" style="background-color: #ef5350;" onclick="localStorage.removeItem('userInfo'); window.location.hash='/'; this.closest('.modal-overlay').remove();">Ya, Logout</button>
+                    <button class="btn-submit-checkin" style="background-color: #94a3b8; margin-left: 10px;" onclick="this.closest('.modal-overlay').remove()">Batal</button>
+                `);
             });
         }
 
-        // 2. FETCH DATA AND RENDER DYNAMIC CONTENT (Modules, Stats, Charts)
+        // --- FETCH DATA & RENDER MODULES + SEARCH LOGIC ---
         setTimeout(async () => {
             try {
                 const userStr = localStorage.getItem('userInfo');
                 const user = userStr ? JSON.parse(userStr) : { email: 'ari.gunawan93@example.com' }; 
-                const studentCourses = await getStudentData(user.email);
+                let allCourses = await getStudentData(user.email); // Store all courses
 
-                // A. Calculate Stats (Total Hours)
+                // --- Function to Render Modules (Reusable for Search) ---
+                const renderModules = (courses) => {
+                    const moduleContainer = document.getElementById('module-list-container');
+                    let moduleHtml = '';
+                    
+                    if(courses.length === 0) {
+                        moduleContainer.innerHTML = '<p style="text-align:center; padding:20px; color:#94a3b8;">No courses found.</p>';
+                        return;
+                    }
+
+                    // Sort: In Progress first
+                    const modulesToShow = courses.sort((a, b) => (a.isCompleted === b.isCompleted) ? 0 : (a.isCompleted ? 1 : -1));
+
+                    const getModuleIcon = (title) => {
+                        const t = title.toLowerCase();
+                        if (t.includes('web') || t.includes('front-end') || t.includes('javascript')) return '<i class="fa-solid fa-code"></i>';
+                        if (t.includes('android') || t.includes('kotlin')) return '<i class="fa-brands fa-android"></i>';
+                        if (t.includes('back-end') || t.includes('cloud') || t.includes('aws') || t.includes('google')) return '<i class="fa-solid fa-server"></i>';
+                        if (t.includes('ai') || t.includes('python')) return '<i class="fa-solid fa-brain"></i>';
+                        if (t.includes('react')) return '<i class="fa-brands fa-react"></i>';
+                        return '<i class="fa-solid fa-book"></i>';
+                    };
+                    
+                    modulesToShow.forEach(mod => {
+                        const pct = Math.round((mod.completed_tutorials / mod.active_tutorials) * 100) || 0;
+                        const progressPct = Math.min(100, pct);
+                        const safeTitle = mod.title.replace(/'/g, "\\'");
+                        const statusStr = mod.isCompleted ? 'Completed' : 'In Progress';
+                        const barColor = progressPct === 100 ? '#2e7d32' : '#2196f3';
+                        const iconBgColor = progressPct === 100 ? '#2e7d32' : '#1976d2';
+                        const moduleIcon = getModuleIcon(mod.title);
+                        const safeDesc = (mod.description || "").replace(/'/g, "\\'");
+                        const safeIconHtml = moduleIcon.replace(/"/g, "&quot;");
+
+                        moduleHtml += `
+                        <div class="module-row" onclick="window.openModuleDetail('${safeTitle}', '${mod.level}', ${mod.hours}, ${mod.rating}, '${statusStr}', '${mod.startDate}', '${mod.endDate}', ${mod.score}, '${safeDesc}', '${iconBgColor}', '${safeIconHtml}')">
+                            <div class="mod-icon-wrapper" style="background-color: ${iconBgColor}">
+                                ${moduleIcon}
+                            </div>
+                            <div class="mod-details" style="flex-grow:1;">
+                                <div class="mod-top" style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                    <h4>${mod.title}</h4>
+                                    <span class="pct-text">${progressPct}%</span>
+                                </div>
+                                <span class="mod-sub">Dicoding Academy</span>
+                                <div class="mod-progress-container">
+                                    <div class="mod-progress-bar" style="width: ${progressPct}%; background-color: ${barColor}"></div>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    moduleContainer.innerHTML = moduleHtml;
+                };
+
+                // Initial Render
+                renderModules(allCourses);
+
+                // --- SEARCH FILTER LOGIC ---
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        const keyword = e.target.value.toLowerCase();
+                        const filteredCourses = allCourses.filter(c => c.title.toLowerCase().includes(keyword));
+                        renderModules(filteredCourses);
+                    });
+                }
+
+                // --- STATS & CHARTS CALCULATIONS (UPDATED WITH CSV LOGIC) ---
                 let totalStudyHours = 0;
-                studentCourses.forEach(c => {
+                allCourses.forEach(c => {
                      const ratio = c.completed_tutorials / c.active_tutorials;
-                     totalStudyHours += (ratio > 1 ? 1 : ratio) * 40;
+                     // Use real 'hours' from CSV data logic
+                     totalStudyHours += (ratio > 1 ? 1 : ratio) * c.hours;
                 });
                 document.getElementById('total-study-time').innerText = `${Math.round(totalStudyHours)} hrs`;
 
-                // B. Calculate Avg Grade
-                const gradedCourses = studentCourses.filter(c => c.score > 0);
+                const gradedCourses = allCourses.filter(c => c.score > 0);
                 let avgScore = 0;
                 if (gradedCourses.length > 0) {
                     const totalScore = gradedCourses.reduce((acc, c) => acc + c.score, 0);
                     avgScore = Math.round(totalScore / gradedCourses.length);
                 }
-                
                 const avgGradeText = document.getElementById('avg-grade-text');
                 const avgRing = document.getElementById('avg-grade-ring');
                 if (avgGradeText) avgGradeText.innerText = avgScore;
                 if (avgRing) avgRing.setAttribute('stroke-dasharray', `${avgScore}, 100`);
-
                 const verdictEl = document.getElementById('grade-verdict');
                 if(verdictEl) {
                     verdictEl.innerText = avgScore >= 90 ? "Excellent!" : (avgScore >= 80 ? "Very Good!" : "Good");
-                    verdictEl.style.color = avgScore >= 80 ? "#2563eb" : "#ca8a04";
+                    verdictEl.style.color = avgScore >= 80 ? "#2196f3" : "#f57c00";
                 }
 
-                // C. Render Modules List (With Icons & Progress Bar)
-                const moduleContainer = document.getElementById('module-list-container');
-                let moduleHtml = '';
-                // Sort: In Progress first
-                const modulesToShow = studentCourses.sort((a, b) => (a.isCompleted === b.isCompleted) ? 0 : (a.isCompleted ? 1 : -1));
-
-                // Helper for icons
-                const getModuleIcon = (title) => {
-                    const t = title.toLowerCase();
-                    if (t.includes('web') || t.includes('front-end') || t.includes('react') || t.includes('javascript')) return '<i class="fa-solid fa-code"></i>';
-                    if (t.includes('android') || t.includes('kotlin')) return '<i class="fa-brands fa-android"></i>';
-                    if (t.includes('back-end') || t.includes('cloud') || t.includes('aws') || t.includes('google')) return '<i class="fa-solid fa-server"></i>';
-                    if (t.includes('ai') || t.includes('python') || t.includes('deep learning')) return '<i class="fa-solid fa-brain"></i>';
-                    if (t.includes('ios') || t.includes('swift')) return '<i class="fa-brands fa-apple"></i>';
-                    return '<i class="fa-solid fa-book"></i>';
-                };
-                
-                modulesToShow.forEach(mod => {
-                    const pct = Math.round((mod.completed_tutorials / mod.active_tutorials) * 100) || 0;
-                    const progressPct = Math.min(100, pct);
-                    const safeTitle = mod.title.replace(/'/g, "\\'");
-                    // const statusStr = mod.isCompleted ? 'Graduated' : 'In Progress'; -- OLD STATUS
-                    const statusStr = mod.isCompleted ? 'Completed' : 'In Progress'; // New Status for Modal
-                    
-                    // Color logic
-                    const barColor = progressPct === 100 ? 'green' : 'blue';
-                    const iconBgColor = progressPct === 100 ? '#2e7d32' : '#005060';
-                    const moduleIcon = getModuleIcon(mod.title);
-                    
-                    // Pass data to window.openModuleDetail
-                    // args: title, level, hours, rating, status, start, end, score, desc, color, icon
-                    // We need to escape single quotes in description for the onclick handler
-                    const safeDesc = (mod.description || "").replace(/'/g, "\\'");
-                    const safeIconHtml = moduleIcon.replace(/"/g, "&quot;"); // Encode double quotes for HTML attribute
-
-                    moduleHtml += `
-                    <div class="module-row" onclick="window.openModuleDetail('${safeTitle}', '${mod.level}', ${mod.hours}, ${mod.rating}, '${statusStr}', '${mod.startDate}', '${mod.endDate}', ${mod.score}, '${safeDesc}', '${iconBgColor}', '${safeIconHtml}')">
-                        <div class="mod-icon-wrapper" style="background-color: ${iconBgColor}">
-                            ${moduleIcon}
-                        </div>
-                        <div class="mod-details">
-                            <div class="mod-top">
-                                <h4>${mod.title}</h4>
-                                <span class="pct-text">${progressPct}%</span>
-                            </div>
-                            <span class="mod-sub">Academy Course</span>
-                            <div class="mod-progress-container">
-                                <div class="mod-progress-bar ${barColor}" style="width: ${progressPct}%;"></div>
-                            </div>
-                        </div>
-                    </div>`;
-                });
-                moduleContainer.innerHTML = moduleHtml;
-
-                // D. Render Milestone (Simple)
+                // --- MILESTONE LOGIC (UPDATED TO ANDROID PATH) ---
                 const milestoneContainer = document.getElementById('milestone-container');
-                const reactPath = [
-                    { title: "Belajar Dasar Pemrograman Web", level: "Dasar" },
-                    { title: "Belajar Dasar Pemrograman JavaScript", level: "Dasar" },
-                    { title: "Belajar Membuat Aplikasi Front-End Pemula", level: "Pemula" },
-                    { title: "Belajar Fundamental Aplikasi React", level: "Menengah" },
-                    { title: "Menjadi React Web Developer Expert", level: "Mahir" }
+                // Path Manual based on common Android Developer Roadmap in Dicoding
+                const androidPath = [
+                    { title: "Memulai Pemrograman dengan Kotlin", level: "Dasar" },
+                    { title: "Belajar Membuat Aplikasi Android untuk Pemula", level: "Pemula" },
+                    { title: "Belajar Fundamental Aplikasi Android", level: "Menengah" },
+                    { title: "Belajar Pengembangan Aplikasi Android Intermediate", level: "Mahir" },
+                    { title: "Menjadi Android Developer Expert", level: "Profesional" }
                 ];
+                
                 let milestoneHtml = '';
-                reactPath.forEach(path => {
-                    const course = studentCourses.find(c => c.title === path.title);
+                androidPath.forEach(path => {
+                    const course = allCourses.find(c => c.title === path.title);
                     let status = 'future';
                     if (course) {
                         if (course.isCompleted) status = 'done';
                         else if (course.completed_tutorials > 0) status = 'current';
                     }
-                    
                     const dotClass = status === 'done' ? 'tl-dot' : (status === 'current' ? 'tl-dot-ring' : 'tl-dot-hollow');
-                    const titleClass = status === 'current' ? 'text-blue' : '';
                     
                     milestoneHtml += `
-                        <div class="tl-item ${status}">
+                        <div class="tl-item">
                             <div class="${dotClass}"></div>
                             <div class="tl-content">
-                                <h4 class="${titleClass}">${path.title}</h4>
-                                <p>Level: ${path.level}</p>
+                                <h4 class="${status === 'current' ? 'text-blue' : ''}" style="color: ${status === 'done' ? '#2e7d32' : ''}">${path.title}</h4>
+                                <p>${path.level}</p>
                             </div>
                         </div>`;
                 });
                 milestoneContainer.innerHTML = milestoneHtml;
 
-                // E. Render Radar Chart (Skill Analysis)
+                // --- RADAR CHART (Skills based on Modules) ---
                 const ctxRadar = document.getElementById('radarChart');
                 if (ctxRadar && window.Chart) {
-                    const skillScores = [85, 80, 75, 60, 70, 80]; 
                     new Chart(ctxRadar, {
                         type: 'radar',
                         data: {
-                            labels: ['HTML/CSS', 'JavaScript', 'React', 'Testing', 'DevOps', 'Soft Skills'],
+                            labels: ['Android', 'Web Basics', 'Back-End', 'DevOps', 'Soft Skills', 'Kotlin'],
                             datasets: [{
                                 label: 'You',
-                                data: skillScores,
+                                // Scores estimated from completion: High Android, Good Web/BE, Moderate DevOps
+                                data: [95, 90, 85, 70, 80, 85], 
                                 backgroundColor: 'rgba(33, 150, 243, 0.2)',
                                 borderColor: '#2196f3',
                                 borderWidth: 2,
-                                pointBackgroundColor: '#2196f3'
+                                pointBackgroundColor: '#2196f3',
+                                pointRadius: 3
                             }, {
                                 label: 'Class Avg',
-                                data: [75, 70, 65, 60, 55, 80],
-                                backgroundColor: 'rgba(200, 200, 200, 0.2)', 
-                                borderColor: '#ccc', 
+                                data: [75, 70, 65, 60, 55, 60],
+                                backgroundColor: 'rgba(203, 213, 225, 0.3)', 
+                                borderColor: '#cbd5e1', 
                                 borderWidth: 1,
-                                pointBackgroundColor: '#ccc'
+                                pointRadius: 0
                             }]
                         },
                         options: {
                             plugins: { legend: { display: false } },
-                            scales: { r: { ticks: { display: false, max: 100 }, grid: { color: '#f0f0f0' }, pointLabels: { font: { size: 10, family: 'Poppins' } } } },
+                            scales: { 
+                                r: { 
+                                    ticks: { display: false, max: 100 }, 
+                                    grid: { color: '#f1f5f9' }, 
+                                    pointLabels: { font: { size: 10, family: 'Poppins' }, color: '#64748b' },
+                                    angleLines: { color: '#f1f5f9' }
+                                } 
+                            },
                             maintainAspectRatio: false
                         }
                     });
                 }
-
             } catch (e) {
                 console.error("Error loading dashboard data", e);
             }
