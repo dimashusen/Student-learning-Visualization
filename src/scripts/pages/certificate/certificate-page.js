@@ -26,13 +26,13 @@ const CertificatePage = {
     return `
       <div class="dashboard-body certificate-page">
         <aside class="sidebar">
-            <div class="sidebar-header"><div class="brand-logo">dicoding</div></div>
-            <div class="menu-group">
-                <div class="menu-category">LEARNING</div>
-                <a href="#/home" class="menu-item">Home</a>
-                <a href="#/dashboard" class="menu-item">Dashboard</a>
-                <a href="#/my-progress" class="menu-item">My Progres</a>
-            </div>
+          <div class="sidebar-header"><div class="brand-logo">dicoding</div></div>
+          <div class="menu-group">
+            <div class="menu-category">LEARNING</div>
+            <a href="#/home" class="menu-item">Home</a>
+            <a href="#/dashboard" class="menu-item">Dashboard</a>
+            <a href="#/my-progress" class="menu-item">My Progres</a>
+          </div>
         </aside>
         <main class="main-content">
           <div class="card certificate-card" id="certificate-card" style="padding:40px; text-align:center;">
@@ -54,8 +54,6 @@ const CertificatePage = {
             </div>
             <div style="margin-top:30px; text-align:center;">
               <button id="printBtn" class="btn-primary">Cetak Sertifikat</button>
-              <a href="#/home" style="margin-left:12px; display:inline-block;" class="btn-outline-white">Home</a>
-              <a href="#/my-progress" style="margin-left:12px; display:inline-block;" class="btn-outline-white">Kembali</a>
             </div>
           </div>
         </main>

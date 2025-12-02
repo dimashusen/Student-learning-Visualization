@@ -1,92 +1,6 @@
+import { getStudentRecord, getLearningPaths, getStudentData as fetchStudentData, getStudentRecords, getLpCourse } from '../../user-data.js';
+
 // --- MOCK DATA & HELPERS (Simulasi Backend/API) ---
-
-const getStudentData = async (email) => {
-    // DATA ASLI DARI CSV (Resource Data Learning Progress Visualization.xlsx)
-    // User: Ari Gunawan (ari.gunawan93@example.com)
-    const rawData = [
-        { 
-            title: "Belajar Fundamental Aplikasi Android", 
-            isCompleted: "1", 
-            active_tutorials: "107", 
-            completed_tutorials: "214", // Data CSV menunjukkan >100% (extra credit/review)
-            score: "100", 
-            level: "Menengah", 
-            hours: 140, 
-            rating: 5.0, 
-            startDate: "2025-08-14", 
-            endDate: "2025-10-20", 
-            description: "Pelajari komponen fundamental Android seperti Activity, Fragment, dan Background Thread dengan Kotlin." 
-        },
-        { 
-            title: "Belajar Dasar Pemrograman Web", 
-            isCompleted: "1", 
-            active_tutorials: "131", 
-            completed_tutorials: "121", 
-            score: "100", 
-            level: "Dasar", 
-            hours: 45, 
-            rating: 4.0, 
-            startDate: "2025-01-20", 
-            endDate: "2025-02-15", 
-            description: "Langkah pertama menjadi Web Developer. Pelajari HTML, CSS, dan teknik Layouting website." 
-        },
-        { 
-            title: "Belajar Membuat Aplikasi Back-End untuk Pemula dengan Google Cloud", 
-            isCompleted: "1", 
-            active_tutorials: "108", 
-            completed_tutorials: "110", 
-            score: "90", 
-            level: "Pemula", 
-            hours: 45, 
-            rating: 5.0, 
-            startDate: "2025-06-20", 
-            endDate: "2025-07-10", 
-            description: "Bangun RESTful API pertamamu dan deploy ke Google Cloud Platform (GCP) menggunakan App Engine." 
-        },
-        { 
-            title: "Belajar Pengembangan Aplikasi Android Intermediate", 
-            isCompleted: "1", 
-            active_tutorials: "115", 
-            completed_tutorials: "115", 
-            score: "100", 
-            level: "Mahir", 
-            hours: 150, 
-            rating: 4.0, 
-            startDate: "2025-02-26", 
-            endDate: "2025-05-30", 
-            description: "Materi tingkat lanjut Android: Custom View, Animation, Localization, dan Database Room." 
-        },
-        { 
-            title: "Belajar Jaringan Komputer untuk Pemula", 
-            isCompleted: "1", 
-            active_tutorials: "62", 
-            completed_tutorials: "62", 
-            score: "85", 
-            level: "Pemula", 
-            hours: 25, 
-            rating: 4.0, 
-            startDate: "2025-09-01", 
-            endDate: "-", 
-            description: "Pahami konsep dasar jaringan komputer, protokol HTTP, DNS, dan cara kerja internet." 
-        }
-    ];
-
-    // Normalize data types
-    return rawData.map(course => ({
-        ...course,
-        isCompleted: course.isCompleted === "1",
-        score: parseInt(course.score, 10) || 0,
-        active_tutorials: parseInt(course.active_tutorials, 10) || 1,
-        completed_tutorials: parseInt(course.completed_tutorials, 10) || 0,
-    }));
-};
-
-const getUsers = async () => {
-    return [
-        { name: "Ari Gunawan", email: "ari.gunawan93@example.com" },
-        { name: "Guest User", email: "guest@example.com" }
-    ];
-};
 
 // Helper Modal
 const createCustomModal = (title, body, footerContent) => {
@@ -113,6 +27,67 @@ const DashboardPage = {
         const userStr = localStorage.getItem('userInfo');
         const user = userStr ? JSON.parse(userStr) : { name: "Guest", email: "" };
         let displayName = user.name ? user.name.toUpperCase() : "GUEST";
+
+        // Try to resolve Learning Path name (from CSV/API) using student record or persisted user.learning_path_id
+        let learningPathName = '';
+        try {
+            const studentRec = await getStudentRecord(user.email || '');
+            const lps = await getLearningPaths();
+            const lpId = (studentRec && studentRec.learning_path_id) ? String(studentRec.learning_path_id).trim() : (user.learning_path_id ? String(user.learning_path_id).trim() : '');
+            if (lpId) {
+                const found = lps.find(p => String(p.learning_path_id) === String(lpId));
+                if (found && found.learning_path_name) learningPathName = found.learning_path_name;
+            }
+        } catch (err) {
+            console.warn('Failed to load learning path name', err);
+        }
+
+        // --- Recommended Next Step: determine from student's active course and lp+course.csv
+        let recommendedTitle = 'Mastering React Hooks';
+        let recommendedNote = 'Berdasarkan hasil kuis Modul 3, Anda siap untuk materi lanjutan state management.';
+        let recommendedLink = '#/course?title=' + encodeURIComponent('Mastering React Hooks');
+        try {
+            const studentCourses = await fetchStudentData(user.email || '');
+            const activeCourse = (studentCourses && studentCourses.find(c => !c.isCompleted)) || (studentCourses && studentCourses[0]) || null;
+            const lpCourseData = await getLpCourse();
+            const courseMap = (lpCourseData && lpCourseData.courseMap) ? lpCourseData.courseMap : (lpCourseData || {});
+            const lpOrder = (lpCourseData && lpCourseData.lpCourseOrder) ? lpCourseData.lpCourseOrder : {};
+
+            if (activeCourse && activeCourse.title) {
+                const courseName = activeCourse.title;
+                // Try to find the course in courseMap
+                const mapped = courseMap[courseName];
+                if (mapped) {
+                    const lpName = mapped.learning_path_name;
+                    // Try to find ordered list for this learning path
+                    const lpCourses = (lpOrder && lpOrder[lpName]) || [];
+                    const idx = lpCourses.indexOf(courseName);
+                    if (idx >= 0 && idx < lpCourses.length - 1) {
+                        // Next course exists in same learning path
+                        const nextCourse = lpCourses[idx + 1];
+                        recommendedTitle = nextCourse;
+                        recommendedLink = '#/course?title=' + encodeURIComponent(nextCourse);
+                        recommendedNote = `Lanjutkan kursus berikutnya: ${nextCourse}`;
+                    } else {
+                        // No next course in LP -> fallback to first tutorial of current course
+                        recommendedTitle = courseName;
+                        recommendedLink = '#/course?title=' + encodeURIComponent(courseName);
+                        if (mapped.tutorials && mapped.tutorials.length > 0) {
+                            recommendedNote = `Lanjutkan modul: ${mapped.tutorials[0]}`;
+                        } else {
+                            recommendedNote = `Lanjutkan kursus: ${courseName}`;
+                        }
+                    }
+                } else {
+                    // Course not found in lp+course mapping: default to course itself
+                    recommendedTitle = courseName;
+                    recommendedLink = '#/course?title=' + encodeURIComponent(courseName);
+                    recommendedNote = `Lanjutkan kursus: ${courseName}`;
+                }
+            }
+        } catch (err) {
+            console.warn('Failed to compute recommended next step', err);
+        }
 
         // 2. Date Logic (Full Month)
         const today = new Date();
@@ -204,18 +179,19 @@ const DashboardPage = {
             <style>
                 /* --- MODERN RESET & TYPOGRAPHY --- */
                 :root {
-                    --primary: #1976d2;
-                    --primary-dark: #0d47a1;
-                    --secondary: #005060;
-                    --bg-body: #f3f5f9;
+                    --primary: #0b66c3; /* refined blue */
+                    --primary-dark: #084e97;
+                    --accent: #06b6a4; /* teal accent for pills */
+                    --secondary: #064d58; /* deep teal for stats */
+                    --bg-body: #f5f7fb;
                     --bg-card: #ffffff;
-                    --text-main: #2d3e50;
+                    --text-main: #0f1724; /* darker for contrast */
                     --text-muted: #64748b;
-                    --border-light: #e2e8f0;
-                    --success: #2e7d32;
-                    --danger: #ef5350;
-                    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-                    --shadow-md: 0 4px 20px rgba(0,0,0,0.05);
+                    --border-light: #e6eef6;
+                    --success: #16a34a;
+                    --danger: #ef4444;
+                    --shadow-sm: 0 6px 18px rgba(16,24,40,0.06);
+                    --shadow-md: 0 18px 50px rgba(16,24,40,0.08);
                 }
                 
                 body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: var(--bg-body); color: var(--text-main); -webkit-font-smoothing: antialiased; }
@@ -245,38 +221,82 @@ const DashboardPage = {
                 .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
                 .header-left h1 { font-size: 26px; color: var(--text-main); font-weight: 800; margin-bottom: 4px; }
                 .header-left p { font-size: 14px; color: var(--text-muted); }
+                /* Learning Path styling - highlighted pill */
+                .lp-wrapper { margin-top: 8px; }
+                .lp-pill { display: inline-flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: linear-gradient(90deg, rgba(14,165,233,0.08), rgba(6,182,212,0.04)); box-shadow: 0 8px 22px rgba(2,6,23,0.06); border-left: 4px solid rgba(6,182,212,0.9); transition: transform 0.12s ease, box-shadow 0.12s ease; }
+                .lp-pill:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(2,6,23,0.12); }
+                .lp-icon { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:8px; background: linear-gradient(180deg, rgba(6,182,212,0.12), rgba(3,105,161,0.04)); box-shadow: inset 0 -2px 6px rgba(2,6,23,0.02); }
+                .lp-text { display:flex; flex-direction:column; }
+                .lp-label { font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.6px; opacity: 0.85; }
+                .lp-name { font-size: 17px; font-weight: 900; color: #035388; margin-top: 2px; line-height: 1; }
+                @media (max-width: 900px) { .lp-name { font-size: 15px; } .lp-pill { padding: 8px 12px; gap:10px; } }
                 
-                .header-right { display: flex; align-items: center; gap: 20px; }
+                .header-right { display: flex; align-items: center; gap: 18px; }
                 
-                /* -- IMPROVED SEARCH BAR -- */
-                .search-wrapper { position: relative; width: 300px; }
-                .search-wrapper input { 
-                    padding: 12px 20px 12px 50px; 
-                    border: 1px solid var(--border-light); 
-                    border-radius: 50px; 
-                    width: 100%; 
-                    font-size: 14px; 
-                    outline: none; 
-                    transition: all 0.2s ease; 
-                    background: white; 
+                /* -- SEARCH CONTAINER (MODERN DESIGN) -- */
+                .search-container {
+                    position: relative;
+                    width: 360px;
+                    display: flex;
+                    align-items: center;
+                }
+                .search-icon-inline {
+                    position: absolute;
+                    left: 16px;
+                    pointer-events: none;
+                    flex-shrink: 0;
+                    transition: color 0.2s ease;
+                }
+                .search-input {
+                    width: 100%;
+                    padding: 11px 16px 11px 50px;
+                    border: 1.5px solid #e2e8f0;
+                    border-radius: 28px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    outline: none;
+                    background: #f8fafc;
+                    color: #1e293b;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     box-sizing: border-box;
-                    color: #475569;
                 }
-                .search-wrapper input:focus { 
-                    border-color: var(--primary); 
-                    box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1); 
+                .search-input::placeholder {
+                    color: #cbd5e1;
+                    font-weight: 400;
                 }
-                .search-wrapper input::placeholder { color: #94a3b8; }
-                .search-wrapper i { 
-                    position: absolute; 
-                    left: 20px; 
-                    top: 50%; 
-                    transform: translateY(-50%); 
+                .search-input:hover {
+                    background: white;
+                    border-color: #cbd5e1;
+                }
+                .search-input:focus {
+                    background: white;
+                    border-color: var(--primary);
+                    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+                }
+                .search-input:focus + .search-icon-inline,
+                .search-container:has(.search-input:focus) .search-icon-inline {
+                    color: var(--primary);
+                }
+                .notif-btn { 
+                    width: 44px; 
+                    height: 44px; 
+                    background: white; 
+                    border-radius: 50%; 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center; 
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+                    cursor: pointer; 
                     color: #64748b; 
-                    font-size: 16px; 
-                    pointer-events: none; 
+                    border: 1.5px solid #e2e8f0; 
+                    transition: all 0.2s ease;
                 }
-                .notif-btn { width: 44px; height: 44px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); cursor: pointer; color: var(--text-muted); border: 1px solid var(--border-light); transition: 0.2s; }
+                .notif-btn:hover { 
+                    background: #f8fafc; 
+                    color: var(--primary);
+                    border-color: #cbd5e1;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                }
                 .notif-btn:hover { background: #f8fafc; color: var(--primary); }
                 
                 /* Grid System */
@@ -285,7 +305,7 @@ const DashboardPage = {
                 .middle-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 
                 /* --- CARDS GLOBAL --- */
-                .card { background: var(--bg-card); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-md); margin-bottom: 24px; position: relative; border: 1px solid rgba(255,255,255,0.5); }
+                .card { background: var(--bg-card); border-radius: 14px; padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 24px; position: relative; border: 1px solid var(--border-light); }
                 .card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
                 .card-header-row h3 { font-size: 16px; font-weight: 700; color: var(--text-main); }
                 .sub-date { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; display: block; font-weight: 500; }
@@ -294,7 +314,7 @@ const DashboardPage = {
                 .mb-20 { margin-bottom: 20px; }
 
                 /* Hero Card */
-                .hero-card { background: linear-gradient(120deg, #1e3a8a 0%, #3b82f6 100%); color: white; display: flex; justify-content: space-between; align-items: center; padding: 32px; height: 160px; border: none; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3); }
+                .hero-card { background: linear-gradient(120deg, var(--primary-dark) 0%, var(--primary) 100%); color: white; display: flex; justify-content: space-between; align-items: center; padding: 28px; height: 150px; border: none; box-shadow: var(--shadow-md); border-radius: 14px; }
                 .hero-text-content { z-index: 2; position: relative; }
                 .hero-text-content h2 { font-size: 24px; margin: 8px 0 12px; color: white; }
                 .hero-text-content p { font-size: 13px; opacity: 0.9; margin-bottom: 20px; max-width: 400px; line-height: 1.5; }
@@ -383,18 +403,18 @@ const DashboardPage = {
                 .pct-text { font-size: 12px; font-weight: 700; color: var(--text-main); }
 
                 /* --- RIGHT COLUMN (STATS) --- */
-                .stats-dark-card { background: var(--secondary); color: white; height: 150px; border: none; overflow: hidden; }
-                .stats-top { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; letter-spacing: 1px; opacity: 0.8; text-transform: uppercase; }
-                .stats-big-num { font-size: 42px; font-weight: 700; margin-top: 15px; position: relative; z-index: 2; }
+                .stats-dark-card { background: linear-gradient(180deg, var(--secondary), #04444a); color: white; height: 150px; border: none; overflow: hidden; border-radius: 14px; box-shadow: var(--shadow-sm); }
+                .stats-top { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; letter-spacing: 1px; opacity: 0.9; text-transform: uppercase; }
+                .stats-big-num { font-size: 46px; font-weight: 900; margin-top: 18px; position: relative; z-index: 2; color: #ffffff; }
                 .btn-detail-stats { background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 20px; padding: 2px 10px; font-size: 10px; cursor: pointer; transition: 0.2s; }
                 .btn-detail-stats:hover { background: rgba(255,255,255,0.2); }
                 
                 .grade-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 220px; }
-                .grade-circle-wrapper { width: 110px; height: 110px; margin-bottom: 15px; position: relative; }
+                .grade-circle-wrapper { width: 120px; height: 120px; margin-bottom: 12px; position: relative; }
                 .circular-chart { display: block; margin: 0 auto; max-width: 100%; max-height: 100%; }
-                .circle-bg { fill: none; stroke: #f1f5f9; stroke-width: 2.5; }
-                .circle { fill: none; stroke-width: 2.5; stroke-linecap: round; animation: progress 1s ease-out forwards; stroke: var(--primary); }
-                .percentage { fill: var(--text-main); font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 0.55em; text-anchor: middle; dominant-baseline: central; }
+                .circle-bg { fill: none; stroke: #eef6fb; stroke-width: 3; }
+                .circle { fill: none; stroke-width: 3.5; stroke-linecap: round; animation: progress 1s ease-out forwards; stroke: var(--primary); }
+                .percentage { fill: var(--text-main); font-family: 'Poppins', sans-serif; font-weight: 900; font-size: 0.62em; text-anchor: middle; dominant-baseline: central; }
                 
                 /* Milestone Timeline */
                 .timeline-container { border-left: 2px solid #e2e8f0; padding-left: 20px; margin-left: 10px; padding-top: 5px; }
@@ -476,14 +496,33 @@ const DashboardPage = {
                     <header class="dash-header">
                         <div class="header-left">
                             <h1>Hello, ${displayName} 👋</h1>
-                            <p>Let's continue your learning journey.</p>
+                            ${learningPathName ? `
+                                <div class="lp-wrapper">
+                                    <div class="lp-pill" title="${learningPathName}">
+                                        <span class="lp-icon" aria-hidden="true">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                                                <path d="M12 2L15 8H9L12 2Z" fill="#06b6d4" />
+                                                <path d="M4 10H20V20H4V10Z" fill="#0369a1" opacity="0.08" />
+                                                <path d="M7 12H17V14H7V12Z" fill="#0369a1" />
+                                            </svg>
+                                        </span>
+                                        <div class="lp-text">
+                                            <span class="lp-label">Learning Path</span>
+                                            <div class="lp-name">${learningPathName}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : `<p>Let's continue your learning journey.</p>`}
                         </div>
                         <div class="header-right">
-                            <div class="search-wrapper">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="text" id="searchInput" placeholder="Search course...">
+                            <div class="search-container">
+                                <svg class="search-icon-inline" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                                    <circle cx="11" cy="11" r="8" stroke="#94a3b8" stroke-width="2" />
+                                    <path d="M17 17l5 5" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" />
+                                </svg>
+                                <input type="text" id="searchInput" placeholder="Search course, module..." class="search-input">
                             </div>
-                            <div class="notif-btn"><i class="fa-regular fa-bell"></i></div>
+                            <button class="notif-btn" type="button"><i class="fa-regular fa-bell"></i></button>
                         </div>
                     </header>
 
@@ -492,9 +531,9 @@ const DashboardPage = {
                             <div class="card hero-card">
                                 <div class="hero-text-content">
                                     <span class="tag-blue">Recommended Next Step</span>
-                                    <h2>Mastering React Hooks</h2>
-                                    <p>Berdasarkan hasil kuis Modul 3, Anda siap untuk materi lanjutan state management.</p>
-                                    <button class="btn-primary"><i class="fa-solid fa-play"></i> Lanjut Belajar</button>
+                                    <h2>${recommendedTitle}</h2>
+                                    <p>${recommendedNote}</p>
+                                    <a href="${recommendedLink}" class="btn-primary"><i class="fa-solid fa-play"></i> Lanjut Belajar</a>
                                 </div>
                                 <div class="hero-image-container">
                                      <i class="fa-brands fa-react react-icon-3d"></i>
@@ -816,10 +855,12 @@ const DashboardPage = {
 
         // --- FETCH DATA & RENDER MODULES + SEARCH LOGIC ---
         setTimeout(async () => {
-            try {
+                try {
                 const userStr = localStorage.getItem('userInfo');
                 const user = userStr ? JSON.parse(userStr) : { email: 'ari.gunawan93@example.com' }; 
-                let allCourses = await getStudentData(user.email); // Store all courses
+                let allCourses = await fetchStudentData(user.email); // Store all courses (mapped)
+                // also fetch raw student records for aggregations
+                const studentRecords = await getStudentRecords(user.email);
 
                 // --- Function to Render Modules (Reusable for Search) ---
                 const renderModules = (courses) => {
@@ -888,28 +929,97 @@ const DashboardPage = {
                 }
 
                 // --- STATS & CHARTS CALCULATIONS (UPDATED WITH CSV LOGIC) ---
+                // Total study time: compute from earliest started_learning_at across student records to now (hours)
                 let totalStudyHours = 0;
-                allCourses.forEach(c => {
-                      const ratio = c.completed_tutorials / c.active_tutorials;
-                      // Use real 'hours' from CSV data logic
-                      totalStudyHours += (ratio > 1 ? 1 : ratio) * c.hours;
-                });
+                if (studentRecords && studentRecords.length > 0) {
+                    const validDates = studentRecords
+                        .map(r => r.started_learning_at || r.started_learning_at)
+                        .filter(Boolean)
+                        .map(s => {
+                            const d = new Date(s);
+                            // try fallback parsing for common formats
+                            if (isNaN(d.getTime())) {
+                                // try replacing d/m/y to m/d/y if needed
+                                try {
+                                    const alt = new Date(s.replace(/(\d+)\/(\d+)\/(\d+)/, function(m, a,b,c){ return a+'/'+b+'/'+c;}));
+                                    return alt;
+                                } catch (_) { return null; }
+                            }
+                            return d;
+                        })
+                        .filter(d => d && !isNaN(d.getTime()));
+
+                    if (validDates.length > 0) {
+                        const earliest = validDates.reduce((min, cur) => cur < min ? cur : min, validDates[0]);
+                        const now = new Date();
+                        const diffMs = now - earliest;
+                        totalStudyHours = Math.max(0, Math.round(diffMs / (1000 * 60 * 60)));
+                    }
+                }
                 document.getElementById('total-study-time').innerText = `${Math.round(totalStudyHours)} hrs`;
 
-                const gradedCourses = allCourses.filter(c => c.score > 0);
+                // Avg grade: get exam_score directly from first valid student record
                 let avgScore = 0;
-                if (gradedCourses.length > 0) {
-                    const totalScore = gradedCourses.reduce((acc, c) => acc + c.score, 0);
-                    avgScore = Math.round(totalScore / gradedCourses.length);
+                if (studentRecords && studentRecords.length > 0) {
+                    // Find first record with valid exam_score
+                    for (let rec of studentRecords) {
+                        const score = parseFloat(rec.exam_score);
+                        if (!isNaN(score) && score > 0) {
+                            avgScore = Math.round(score);
+                            console.log(`✓ Exam Score from record:`, rec.exam_score, 'Parsed:', avgScore);
+                            break;
+                        }
+                    }
+                    if (avgScore === 0) {
+                        console.warn('⚠ No valid exam_score found in any student record');
+                    }
+                } else {
+                    console.warn('⚠ No student records found');
                 }
-                const avgGradeText = document.getElementById('avg-grade-text');
-                const avgRing = document.getElementById('avg-grade-ring');
-                if (avgGradeText) avgGradeText.innerText = avgScore;
-                if (avgRing) avgRing.setAttribute('stroke-dasharray', `${avgScore}, 100`);
-                const verdictEl = document.getElementById('grade-verdict');
-                if(verdictEl) {
-                    verdictEl.innerText = avgScore >= 90 ? "Excellent!" : (avgScore >= 80 ? "Very Good!" : "Good");
-                    verdictEl.style.color = avgScore >= 80 ? "#2196f3" : "#f57c00";
+                
+                // Update Grade UI with retry logic
+                const updateGradeUI = () => {
+                    const avgGradeText = document.getElementById('avg-grade-text');
+                    const avgRing = document.getElementById('avg-grade-ring');
+                    const verdictEl = document.getElementById('grade-verdict');
+                    
+                    let updated = false;
+                    
+                    if (avgGradeText) {
+                        avgGradeText.textContent = avgScore || '-';
+                        console.log('✓ Updated avg-grade-text to:', avgScore);
+                        updated = true;
+                    }
+                    if (avgRing) {
+                        const dashValue = Math.max(0, avgScore);
+                        avgRing.setAttribute('stroke-dasharray', `${dashValue}, 100`);
+                        console.log('✓ Updated avg-grade-ring stroke-dasharray to:', dashValue);
+                        updated = true;
+                    }
+                    if (verdictEl) {
+                        if (avgScore === 0) {
+                            verdictEl.textContent = "No Grade Yet";
+                            verdictEl.style.color = "#94a3b8";
+                        } else if (avgScore >= 90) {
+                            verdictEl.textContent = "Excellent!";
+                            verdictEl.style.color = "#2196f3";
+                        } else if (avgScore >= 80) {
+                            verdictEl.textContent = "Very Good!";
+                            verdictEl.style.color = "#2196f3";
+                        } else {
+                            verdictEl.textContent = "Good";
+                            verdictEl.style.color = "#f57c00";
+                        }
+                        console.log('✓ Updated grade-verdict to:', verdictEl.textContent);
+                        updated = true;
+                    }
+                    
+                    return updated;
+                };
+                
+                // Try update immediately, then retry after 100ms if not found
+                if (!updateGradeUI()) {
+                    setTimeout(updateGradeUI, 100);
                 }
 
                 // --- MILESTONE LOGIC (UPDATED TO ANDROID PATH) ---

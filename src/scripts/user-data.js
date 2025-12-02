@@ -56,13 +56,78 @@ export async function getUsers() {
             if (student.email && student.name) {
                 const email = student.email.toLowerCase().trim();
                 const name = student.name.trim();
-                usersMap.set(email, { name: name, email });
+                // include learning_path_id if available so login can persist it
+                const learning_path_id = student.learning_path_id ? String(student.learning_path_id).trim() : '';
+                usersMap.set(email, { name: name, email, learning_path_id });
             }
         });
     } catch (error) {
         console.error("❌ Gagal memuat data user (getUsers):", error);
     }
     return Array.from(usersMap.values());
+}
+
+// --- FUNCTIONS TO ACCESS RAW STUDENT RECORDS AND LEARNING PATHS ---
+export async function getStudentRecord(targetEmail) {
+    try {
+        let allStudents = [];
+        try {
+            allStudents = await fetchStudentsFromAPI();
+        } catch (errApi) {
+            try {
+                allStudents = await fetchStudentsFromCSV();
+            } catch (errCsv) {
+                console.warn('Failed to fetch student data for record lookup', errCsv);
+            }
+        }
+
+        if (!targetEmail) return null;
+        const lower = targetEmail.toLowerCase();
+        const found = allStudents.find(s => s.email && s.email.toLowerCase().trim() === lower);
+        return found || null;
+    } catch (error) {
+        console.error('Error in getStudentRecord:', error);
+        return null;
+    }
+}
+
+export async function getLearningPaths() {
+    // Try common locations for the learning path CSV (note the repo file is named 'learing path.csv')
+    const pathsToTry = ['./public/data/learing path.csv', './public/data/LP.csv', '/public/data/learing path.csv', './data/learing path.csv'];
+    for (const p of pathsToTry) {
+        try {
+            const resp = await fetch(p);
+            if (!resp.ok) continue;
+            const text = await resp.text();
+            const parsed = parseCsvText(text);
+            return parsed.map(r => ({ learning_path_id: r.learning_path_id ? String(r.learning_path_id).trim() : '', learning_path_name: r.learning_path_name || '' }));
+        } catch (err) { /* try next */ }
+    }
+    console.warn('getLearningPaths: CSV not found in known locations');
+    return [];
+}
+
+export async function getStudentRecords(targetEmail) {
+    try {
+        let allStudents = [];
+        try {
+            allStudents = await fetchStudentsFromAPI();
+        } catch (errApi) {
+            try {
+                allStudents = await fetchStudentsFromCSV();
+            } catch (errCsv) {
+                console.warn('Failed to fetch student data for records lookup', errCsv);
+            }
+        }
+
+        if (!targetEmail) return [];
+        const lower = targetEmail.toLowerCase();
+        const found = allStudents.filter(s => s.email && s.email.toLowerCase().trim() === lower);
+        return found;
+    } catch (error) {
+        console.error('Error in getStudentRecords:', error);
+        return [];
+    }
 }
 
 // --- FUNGSI PENGAMBIL DATA KURSUS LENGKAP ---
@@ -100,4 +165,52 @@ export async function getStudentData(targetEmail) {
         console.error("Error fetching student data (getStudentData):", error);
         return [];
     }
+}
+
+// --- FUNGSI UNTUK MEMBACA lp+course.csv DAN MENYUSUN STRUKTUR KURSUS ---
+export async function getLpCourse() {
+    const pathsToTry = ['./public/data/lp+course.csv', './public/data/lp%2Bcourse.csv', './data/lp+course.csv', '/public/data/lp+course.csv', '/src/public/data/lp+course.csv'];
+    for (const p of pathsToTry) {
+        try {
+            const resp = await fetch(p);
+            if (!resp.ok) continue;
+            const text = await resp.text();
+            const parsed = parseCsvText(text);
+            // Build two structures:
+            // 1) courseMap: course_name -> { learning_path_name, course_level_str, tutorials }
+            // 2) lpCourseOrder: learning_path_name -> [ course_name (in file order) ]
+            const courseMap = new Map();
+            const lpCourseOrder = new Map();
+
+            parsed.forEach(row => {
+                const lp = (row.learning_path_name || '').trim();
+                const course = (row.course_name || '').trim();
+                const level = (row.course_level_str || '').trim();
+                const tut = (row.tutorial_title || '').trim();
+                if (!course) return;
+
+                if (!courseMap.has(course)) courseMap.set(course, { learning_path_name: lp, course_level_str: level, tutorials: [] });
+                const entry = courseMap.get(course);
+                if (tut && !entry.tutorials.includes(tut)) entry.tutorials.push(tut);
+
+                if (lp) {
+                    if (!lpCourseOrder.has(lp)) lpCourseOrder.set(lp, []);
+                    const arr = lpCourseOrder.get(lp);
+                    if (!arr.includes(course)) arr.push(course);
+                }
+            });
+
+            const courseObj = {};
+            for (const [k, v] of courseMap.entries()) courseObj[k] = v;
+
+            const lpOrderObj = {};
+            for (const [k, v] of lpCourseOrder.entries()) lpOrderObj[k] = v;
+
+            return { courseMap: courseObj, lpCourseOrder: lpOrderObj };
+        } catch (err) {
+            /* try next path */
+        }
+    }
+    console.warn('getLpCourse: lp+course.csv not found in known locations');
+    return {};
 }

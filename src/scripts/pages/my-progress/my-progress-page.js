@@ -20,9 +20,9 @@ const MyProgressPage = {
             <!-- Document links removed as requested -->
         </aside>
         <main class="main-content">
-            <div class="progress-header">
+            <div class="progress-header" style="display:flex; align-items:center; gap:12px;">
                 <a href="#/home" class="home-icon-btn" title="Home"><i class="fa-solid fa-house"></i></a>
-                <div class="search-bar-wide">
+                <div class="search-bar-wide" style="flex:1">
                     <input type="text" placeholder="Apa yang ingin anda pelajari">
                 </div>
             </div>

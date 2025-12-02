@@ -259,7 +259,7 @@ const CoursePage = {
 
     return `
       <div class="dashboard-body">
-        <aside class="sidebar">
+          <aside class="sidebar">
           <div class="brand-logo">
                     <i class="fa-solid fa-code"></i> dicoding
                 </div>
@@ -277,10 +277,7 @@ const CoursePage = {
                 <h3 style="margin-bottom:6px;">${title}</h3>
                 <p style="color:#666; font-size:13px;">${total} Modul</p>
               </div>
-              <div>
-                <a href="#/home" class="btn-outline-white" style="margin-right:8px;">Home</a>
-                <a href="#/my-progress" class="btn-primary">Kembali</a>
-              </div>
+              <div></div>
             </div>
 
             <div style="margin-top:20px; display:flex; gap:20px; align-items:flex-start;">

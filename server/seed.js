@@ -78,9 +78,12 @@ const runSeeding = async () => {
         console.log('🚀 Memulai proses seeding data...');
         
         // Pastikan nama file di sini SAMA PERSIS dengan nama file di folder Anda
-        await importCSV('learing path.csv', LearningPath); 
-        await importCSV('course.csv', Course);
-        await importCSV('tutorial.csv', Tutorial);
+        // Gunakan seeder gabungan lp+course untuk membuat LearningPath, Course, Tutorial dari satu CSV
+        const seedLpCourse = require('./lp+course');
+        await seedLpCourse();
+
+        // Jika Anda masih punya file tutorial.csv terpisah, Anda bisa mengimportnya juga.
+        // Namun lp+course.csv sudah menyertakan tutorial, jadi kita lanjut ke students.
         await importCSV('students.csv', Student);
         
         console.log('\n🎉 SELESAI! Tekan Ctrl + C untuk keluar jika tidak otomatis.');
