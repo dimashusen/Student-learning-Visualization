@@ -457,23 +457,21 @@ const DashboardPage = {
             </style>
 
             <div class="dashboard-body">
-                <aside class="sidebar">
-                    <div class="sidebar-header">
-                        <div class="brand-logo"><i class="fa-solid fa-code"></i> dicoding</div>
-                    </div>
-                    <div class="menu-group">
-                        <div class="menu-category">LEARNING</div>
-                        <a href="#/dashboard" class="menu-item active"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
-                        <a href="#/my-progress" class="menu-item"><i class="fa-solid fa-chart-line"></i> My Progress</a>
-                        <a href="#" class="menu-item"><i class="fa-solid fa-chalkboard-user"></i> Mentoring</a>
-                    </div>
-                    <div class="menu-group" style="margin-top:auto;">
-                         <a href="javascript:void(0)" id="logoutDashBtn" class="menu-item" style="color:#ef5350;">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
-                        </a>
-                    </div>
-                </aside>
-
+                 <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-code"></i> dicoding
+                </div>
+            </div>
+        
+            <div class="menu-group">
+                <div class="menu-category">LEARNING</div>
+                <a href="#/home" class="menu-item">Home</a>
+                <a href="#/dashboard" class="menu-item">Dashboard</a>
+                <a href="#/my-progress" class="menu-item">My Progres</a>
+            </div>
+            <!-- Document links removed as requested -->
+        </aside>
                 <main class="main-content">
                     <header class="dash-header">
                         <div class="header-left">
