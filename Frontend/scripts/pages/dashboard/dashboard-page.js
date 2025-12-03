@@ -204,10 +204,8 @@ const DashboardPage = {
                 /* --- SIDEBAR --- */
                 .sidebar { width: 240px; background-color: #1e293b; color: white; padding: 25px 0; display: flex; flex-direction: column; flex-shrink: 0; position: fixed; height: 100vh; z-index: 100; transition: 0.3s; }
                 .sidebar-header { padding: 0 24px 40px; }
-                .brand-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; }
-                .brand-logo i { color: #38bdf8; margin-right: 12px; }
-                
-                .menu-group { padding: 10px 12px; }
+               
+                        .menu-group { padding: 10px 12px; }
                 .menu-category { font-size: 11px; color: #94a3b8; padding: 8px 16px; margin-top: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
                 .menu-item { display: flex; align-items: center; padding: 12px 16px; color: #cbd5e1; border-radius: 8px; margin-bottom: 4px; font-size: 14px; font-weight: 500; }
                 .menu-item:hover { background-color: rgba(255,255,255,0.05); color: white; }
@@ -735,6 +733,14 @@ const DashboardPage = {
         window.openModuleDetail = (modTitle, modLevel, modHours, modRating, modStatus, modStartDate, modEndDate, modScore, modDesc, iconColor, iconHtml) => {
             const bodyEl = document.getElementById('moduleDetailBody');
             const levelBadgeColor = modLevel === 'Dasar' ? 'badge-dasar' : modLevel === 'Pemula' ? 'badge-pemula' : modLevel === 'Menengah' ? 'badge-menengah' : 'badge-mahir';
+            
+            // Format rating as stars (0-5)
+            const ratingNum = parseInt(modRating) || 0;
+            const stars = '⭐'.repeat(Math.min(ratingNum, 5));
+            const ratingDisplay = ratingNum > 0 ? `${stars} ${ratingNum}` : 'Belum ada rating';
+            
+            // Format score
+            const scoreDisplay = modScore > 0 ? Math.round(modScore) : '-';
 
             bodyEl.innerHTML = `
                 <div class="module-detail-header">
@@ -743,17 +749,17 @@ const DashboardPage = {
                     </div>
                     <div class="module-detail-title">
                         <h2>${modTitle}</h2>
-                        <span class="module-detail-badge ${levelBadgeColor}">${modLevel}</span>
+                        <span class="module-detail-badge ${levelBadgeColor}">${modLevel || 'Dasar'}</span>
                     </div>
                 </div>
                 <div class="module-meta-grid">
                     <div class="meta-item">
                         <span class="meta-label">Jam Belajar</span>
-                        <span class="meta-value">${modHours} Jam</span>
+                        <span class="meta-value">${modHours ? modHours + ' Jam' : '-'}</span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Rating</span>
-                        <span class="meta-value">⭐ ${modRating}</span>
+                        <span class="meta-value">${ratingDisplay}</span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Status</span>
@@ -761,11 +767,11 @@ const DashboardPage = {
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Nilai Akhir</span>
-                        <span class="meta-value">${modScore > 0 ? modScore : '-'}</span>
+                        <span class="meta-value">${scoreDisplay}</span>
                     </div>
                 </div>
                 <div class="module-description">
-                    <p>${modDesc}</p>
+                    <p>${modDesc || 'Tidak ada deskripsi'}</p>
                 </div>
                 <button class="module-action-btn">${modStatus === 'Completed' ? 'Lihat Sertifikat' : 'Lanjutkan Belajar'}</button>
             `;

@@ -2,11 +2,12 @@
   "name": "student-learning-visualization-main",
   "version": "1.0.0",
   "description": "",
-  "main": "server/server.js", 
+  "main": "Backend/server.js", 
   "scripts": {
-    "start": "node server/server.js",
-    "seed": "node server/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node Backend/server.js",
+    "seed": "node Backend/seed.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:e2e": "node tests/puppeteer/search-notif.test.js"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +17,9 @@
     "csv-parser": "^3.0.0",
     "express": "^4.21.2",
     "mongoose": "^8.9.5"
+  }
+  ,
+  "devDependencies": {
+    "puppeteer": "^21.0.0"
   }
 }

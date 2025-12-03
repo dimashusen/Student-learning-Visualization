@@ -19,10 +19,10 @@ app.use(cors());
 app.use(express.json());
 
 // --- SAJIKAN FRONTEND ---
-app.use(express.static(path.join(__dirname, '../src')));
+app.use(express.static(path.join(__dirname, '../Frontend')));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../src/index.html'));
+    res.sendFile(path.join(__dirname, '../Frontend/index.html'));
 });
 
 mongoose.connect(MONGO_URI)

@@ -130,6 +130,53 @@ export async function getStudentRecords(targetEmail) {
     }
 }
 
+// --- FUNGSI PENGAMBIL METADATA COURSE ---
+async function getCourseMeta() {
+    const pathsToTry = ['./public/data/course.csv', './data/course.csv', '/public/data/course.csv'];
+    for (const p of pathsToTry) {
+        try {
+            const resp = await fetch(p);
+            if (!resp.ok) continue;
+            const text = await resp.text();
+            const parsed = parseCsvText(text);
+            const courseMap = {};
+            parsed.forEach(row => {
+                const name = (row.course_name || '').trim();
+                const hours = parseFloat(row.hours_to_study) || 0;
+                const level = (row.course_level_str || '').trim();
+                if (name) courseMap[name] = { hours_to_study: hours, course_level_str: level };
+            });
+            return courseMap;
+        } catch (err) {
+            /* try next path */
+        }
+    }
+    return {};
+}
+
+// --- FUNGSI PENGAMBIL LEVEL MAPPING ---
+async function getCourseLevels() {
+    const pathsToTry = ['./public/data/course level.csv', './data/course level.csv', '/public/data/course level.csv'];
+    for (const p of pathsToTry) {
+        try {
+            const resp = await fetch(p);
+            if (!resp.ok) continue;
+            const text = await resp.text();
+            const parsed = parseCsvText(text);
+            const levelMap = {};
+            parsed.forEach(row => {
+                const id = (row.id || '').trim();
+                const name = (row.course_level || '').trim();
+                if (id && name) levelMap[id] = name;
+            });
+            return levelMap;
+        } catch (err) {
+            /* try next path */
+        }
+    }
+    return { '1': 'Dasar', '2': 'Pemula', '3': 'Menengah', '4': 'Mahir', '5': 'Profesional' };
+}
+
 // --- FUNGSI PENGAMBIL DATA KURSUS LENGKAP ---
 export async function getStudentData(targetEmail) {
     try {
@@ -144,22 +191,52 @@ export async function getStudentData(targetEmail) {
             }
         }
 
-        // Mapping data API ke struktur aplikasi
+        // Load course metadata and levels
+        const courseMeta = await getCourseMeta();
+        const courseLevels = await getCourseLevels();
+        const lpCourseData = await getLpCourse();
+        const courseMap = (lpCourseData && lpCourseData.courseMap) || {};
+
+        // Mapping data API ke struktur aplikasi dengan enrichment
         return allStudents
             .filter(s => s.email && s.email.toLowerCase() === targetEmail.toLowerCase())
-            .map(student => ({
-                title: student.course_name,
-                // Logika konversi '1' menjadi true untuk status lulus
-                isCompleted: student.is_graduated === '1',
-                date: student.started_learning_at || "",
-                score: parseFloat(student.exam_score) || 0,
-                active_tutorials: parseInt(student.active_tutorials) || 0,
-                completed_tutorials: parseInt(student.completed_tutorials) || 0,
-                tutorials: parseInt(student.completed_tutorials) || 0,
-                // Additional fields to support final submission and rating
-                final_submission_id: student.final_submission_id || '',
-                submission_rating: student.submission_rating ? parseInt(student.submission_rating, 10) : 0
-            }));
+            .map(student => {
+                const courseName = student.course_name;
+                const meta = courseMeta[courseName] || {};
+                const lpMeta = courseMap[courseName] || {};
+                
+                // Resolve level: course.csv level_str -> courseLevels mapping -> default
+                let level = meta.course_level_str || lpMeta.course_level_str || '1';
+                level = courseLevels[level] || 'Dasar';
+                
+                // Resolve hours
+                const hours = meta.hours_to_study || 0;
+                
+                // Rating: submission_rating from CSV, fallback to dummy calculation
+                let rating = student.submission_rating ? parseInt(student.submission_rating, 10) : 0;
+                if (!rating && student.exam_score) {
+                    const score = parseFloat(student.exam_score);
+                    rating = Math.min(5, Math.ceil(score / 20));
+                }
+                if (!rating) rating = 0;
+                
+                return {
+                    title: courseName,
+                    isCompleted: student.is_graduated === '1',
+                    date: student.started_learning_at || "",
+                    score: parseFloat(student.exam_score) || 0,
+                    active_tutorials: parseInt(student.active_tutorials) || 0,
+                    completed_tutorials: parseInt(student.completed_tutorials) || 0,
+                    tutorials: parseInt(student.completed_tutorials) || 0,
+                    level: level,
+                    hours: hours,
+                    rating: rating,
+                    final_submission_id: student.final_submission_id || '',
+                    submission_rating: rating,
+                    startDate: student.started_learning_at || "",
+                    endDate: ""
+                };
+            });
 
     } catch (error) {
         console.error("Error fetching student data (getStudentData):", error);
