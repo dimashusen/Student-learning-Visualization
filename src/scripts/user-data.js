@@ -214,3 +214,18 @@ export async function getLpCourse() {
     console.warn('getLpCourse: lp+course.csv not found in known locations');
     return {};
 }
+
+// --- FUNGSI UNTUK MENGAMBIL TUTORIAL BERDASARKAN COURSE NAME ---
+export async function getTutorialsByCourseName(courseName) {
+    try {
+        const { courseMap } = await getLpCourse();
+        if (!courseMap || !courseMap[courseName]) {
+            console.warn(`Course "${courseName}" not found in courseMap`);
+            return [];
+        }
+        return courseMap[courseName].tutorials || [];
+    } catch (error) {
+        console.error('Error in getTutorialsByCourseName:', error);
+        return [];
+    }
+}

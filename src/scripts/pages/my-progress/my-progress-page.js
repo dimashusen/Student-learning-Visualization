@@ -1,4 +1,63 @@
-import { getStudentData } from '../../user-data.js';
+import { getStudentData, getLpCourse } from '../../user-data.js';
+
+// Helper: fallback CSV parser (semicolons)
+function parseCsvText(csvText) {
+    const lines = csvText.split(/\r?\n/).filter(Boolean);
+    if (lines.length === 0) return [];
+    const header = lines[0].split(';').map(h => h.trim());
+    const rows = lines.slice(1);
+    return rows.map(line => {
+        const cols = line.split(';');
+        const obj = {};
+        header.forEach((h,i) => obj[h] = cols[i] ? cols[i].trim() : '');
+        return obj;
+    });
+}
+
+// Get course levels from course level.csv
+async function getCourseLevels() {
+    const pathsToTry = ['./public/data/course level.csv', './data/course level.csv', '/public/data/course level.csv'];
+    for (const p of pathsToTry) {
+        try {
+            const resp = await fetch(p);
+            if (!resp.ok) continue;
+            const text = await resp.text();
+            const parsed = parseCsvText(text);
+            const levelMap = {};
+            parsed.forEach(row => {
+                const id = row.id ? String(row.id).trim() : '';
+                const level = row.course_level ? row.course_level.trim() : '';
+                if (id && level) levelMap[id] = level;
+            });
+            return levelMap;
+        } catch (err) { /* try next */ }
+    }
+    console.warn('getCourseLevels: CSV not found');
+    return {};
+}
+
+// Get course data from course.csv to map course_name to course_level_id
+async function getCourseData() {
+    const pathsToTry = ['./public/data/course.csv', './data/course.csv', '/public/data/course.csv'];
+    for (const p of pathsToTry) {
+        try {
+            const resp = await fetch(p);
+            if (!resp.ok) continue;
+            const text = await resp.text();
+            const parsed = parseCsvText(text);
+            const courseMap = {};
+            parsed.forEach(row => {
+                const courseName = row.course_name ? row.course_name.trim() : '';
+                // course.csv uses course_level_str which is the level ID (1,2,3,4,5)
+                const levelId = row.course_level_str ? String(row.course_level_str).trim() : '';
+                if (courseName && levelId) courseMap[courseName] = levelId;
+            });
+            return courseMap;
+        } catch (err) { /* try next */ }
+    }
+    console.warn('getCourseData: CSV not found');
+    return {};
+}
 
 const MyProgressPage = {
   async render() {
@@ -65,93 +124,37 @@ const MyProgressPage = {
         return;
     }
     try {
+        // Get course level mappings
+        const courseLevels = await getCourseLevels();
+        const courseNameToLevelId = await getCourseData();
+        
+        // Get student data
         const courses = await getStudentData(user.email);
-        const coursesCompleted = courses.filter(c => c.isCompleted);
+        
+        // Enhance courses with level information
+        const enhancedCourses = courses.map(course => {
+            const levelId = courseNameToLevelId[course.title];
+            const levelName = levelId ? courseLevels[levelId] : 'Dasar';
+            
+            // Calculate progress percentage based on active and completed tutorials
+            let progress = 0;
+            if (course.active_tutorials && course.active_tutorials > 0) {
+                progress = Math.round((course.completed_tutorials / course.active_tutorials) * 100);
+            }
+            
+            return {
+                ...course,
+                level: levelName,
+                progress: progress,
+                url: `https://www.dicoding.com/search?q=${encodeURIComponent(course.title)}`
+            };
+        });
+        
+        const coursesCompleted = enhancedCourses.filter(c => c.isCompleted);
         // Courses we already have in-progress from CSV
-        const coursesInProgress = courses.filter(c => !c.isCompleted);
+        const coursesInProgress = enhancedCourses.filter(c => !c.isCompleted);
 
-        // --- Add Provided Default In-Progress Courses If Not Present ---
-        const DEFAULT_IN_PROGRESS_COURSES = [
-            "Belajar Dasar AI",
-            "Belajar Fundamental Deep Learning",
-            "Belajar Machine Learning untuk Pemula",
-            "Machine Learning Terapan",
-            "Membangun Proyek Deep Learning Tingkat Mahir",
-            "Memulai Pemrograman dengan Python",
-            "Belajar Fundamental Aplikasi Android",
-            "Belajar Membuat Aplikasi Android untuk Pemula",
-            "Belajar Pengembangan Aplikasi Android Intermediate",
-            "Belajar Prinsip Pemrograman SOLID",
-            "Memulai Pemrograman dengan Kotlin",
-            "Menjadi Android Developer Expert",
-            "Architecting on AWS (Membangun Arsitektur Cloud di AWS)",
-            "Belajar Back-End Pemula dengan JavaScript",
-            "Belajar Dasar Cloud dan Gen AI di AWS",
-            "Belajar Dasar Pemrograman JavaScript",
-            "Belajar Fundamental Back-End dengan JavaScript",
-            "Menjadi Back-End Developer Expert dengan JavaScript",
-            "Menjadi Node.js Application Developer",
-            "Belajar Back-End Pemula dengan Python",
-            "Belajar Dasar Google Cloud",
-            "Belajar Fundamental Back-End dengan Python",
-            "Menjadi Google Cloud Architect",
-            "Menjadi Google Cloud Engineer",
-            "Belajar Analisis Data dengan Python",
-            "Belajar Dasar Data Science",
-            "Belajar Dasar Structured Query Language (SQL)",
-            "Belajar Matematika untuk Data Science",
-            "Belajar Penerapan Data Science",
-            "Belajar Dasar-Dasar DevOps",
-            "Belajar Implementasi CI/CD",
-            "Belajar Jaringan Komputer untuk Pemula",
-            "Belajar Membangun Arsitektur Microservices",
-            "Menjadi Linux System Administrator",
-            "Belajar Dasar Pemrograman Web",
-            "Belajar Fundamental Front-End Web Development",
-            "Belajar Membuat Front-End Web untuk Pemula",
-            "Belajar Pengembangan Web Intermediate",
-            "Prompt Engineering untuk Software Developer",
-            "Belajar Membuat Aplikasi Back-End untuk Pemula dengan Google Cloud",
-            "Belajar Fundamental Aplikasi iOS",
-            "Belajar Membuat Aplikasi iOS untuk Pemula",
-            "Memulai Pemrograman Dengan Swift",
-            "Menjadi iOS Developer Expert",
-            "Machine Learning Operations (MLOps)",
-            "Membangun Sistem Machine Learning",
-            "Belajar Fundamental Aplikasi Flutter",
-            "Belajar Membuat Aplikasi Flutter untuk Pemula",
-            "Belajar Pengembangan Aplikasi Flutter Intermediate",
-            "Memulai Pemrograman dengan Dart",
-            "Menjadi Flutter Developer Expert",
-            "Belajar Fundamental Aplikasi Web dengan React"
-        ];
-
-        // Normalize and dedupe provided titles
-        const providedSet = new Set(DEFAULT_IN_PROGRESS_COURSES.map(t => t.trim()));
-        const additionalTitles = Array.from(providedSet).filter(title =>
-            !coursesCompleted.some(c => (c.title || '').toLowerCase() === title.toLowerCase()) &&
-            !coursesInProgress.some(c => (c.title || '').toLowerCase() === title.toLowerCase())
-        );
-
-        // Convert to placeholder objects and append to coursesInProgress
-        const placeholders = additionalTitles.map(title => ({
-            title: title,
-            isCompleted: false,
-            date: '',
-            score: 0,
-            tutorials: 0,
-            activeTutorials: 0,
-            completedTutorials: 0,
-            progress: 0,
-            status: 'in_progress',
-            level: 'Dasar',
-            url: `https://www.dicoding.com/search?q=${encodeURIComponent(title)}`
-        }));
-
-        if (placeholders.length > 0) {
-            coursesInProgress.push(...placeholders);
-        }
-        // Recompute totals after adding placeholders
+        // Recompute totals
         const total = coursesCompleted.length + coursesInProgress.length;
         const completedCount = coursesCompleted.length;
         const inProgressCount = coursesInProgress.length;
@@ -183,22 +186,25 @@ const MyProgressPage = {
                 let html = '';
                 coursesInProgress.forEach(course => {
                     const levelBadge = course.level ? `<span class="badge-level small">${course.level}</span>` : '';
-                                const progressBarSmall = `
-                                    <div class="course-mini-progress">
-                                        <div class="mini-track">
-                                            <div class="mini-fill" style="width:${course.progress}%"></div>
-                                        </div>
-                                        <div class="mini-percent">${course.progress}%</div>
-                                    </div>`;
-                    const link = course.url ? course.url : '#';
+                    const progressBarSmall = `
+                        <div class="course-mini-progress">
+                            <div class="mini-track">
+                                <div class="mini-fill" style="width:${course.progress}%"></div>
+                            </div>
+                            <div class="mini-percent">${course.progress}%</div>
+                        </div>`;
+                    const tutorialInfo = `<div class="tutorial-info" style="font-size: 12px; color: #666; margin-top: 4px;">
+                        Tutorial: ${course.completed_tutorials}/${course.active_tutorials}
+                    </div>`;
                     html += `
                     <div class="course-item-row">
                         <div class="course-icon"><i class="fas fa-book-open"></i></div>
                         <div class="course-info-text">
                             <div class="course-name">${course.title} ${levelBadge}</div>
                             ${progressBarSmall}
+                            ${tutorialInfo}
                         </div>
-                        <a href="#/course?title=${encodeURIComponent(course.title)}" class="btn-continue" aria-label="Continue ${course.title}">Continue</a>
+                        <a href="#/tutorials?title=${encodeURIComponent(course.title)}" class="btn-continue" aria-label="Continue ${course.title}">Continue</a>
                     </div>`;
                 });
                 listContainer.innerHTML = html;

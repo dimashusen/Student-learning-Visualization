@@ -350,7 +350,7 @@ const CoursePage = {
                     <div style="height:100%; width:${overallProgress}%; background:#ff9800;"></div>
                   </div>
                   <div style="text-align:right; font-weight:700; color:#555; margin-bottom:10px;">${overallProgress}%</div>
-                  <a href="#/my-progress" class="btn-primary">Continue Learning</a>
+                  <a href="#/tutorials?title=${encodeURIComponent(title)}" class="btn-primary">Continue Learning</a>
                 </div>
               </aside>
             </div>

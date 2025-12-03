@@ -15,7 +15,7 @@ const HomePage = {
     const navItemsHtml = `
       <li><a href="#/home" class="nav-item active">Home</a></li>
         <li><a href="javascript:void(0)" id="navDashboard" class="nav-item">Dashboard</a></li>
-        <li><a href="javascript:void(0)" id="navAcademy" class="nav-item"></>Academy</a></li>
+        <li><a href="#/my-progress" id="navAcademy" class="nav-item">Academy</a></li>
         ${authBtnHtml}
     `;
 
@@ -149,13 +149,12 @@ const HomePage = {
         });
     }
 
-    // B. ACADEMY -> Placeholder / Katalog (TIDAK KE MY PROGRESS)
+    // B. ACADEMY -> Arahkan ke My Progress (Butuh Login)
     if (navAcademy) {
-        navAcademy.addEventListener('click', (e) => {
-            e.preventDefault();
-            // REVISI: Jangan ke My Progress. Tampilkan alert saja.
-            alert("Halaman Academy (Katalog Kelas) akan segera hadir!");
-        });
+      navAcademy.addEventListener('click', (e) => {
+        // Gunakan handler yang sama untuk proteksi akses
+        handleRestrictedAccess(e, "/my-progress");
+      });
     }
   },
 };
