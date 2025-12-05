@@ -1,34 +1,40 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const fs = require('fs');
 const csv = require('csv-parser');
 const path = require('path');
 
 // --- KONFIGURASI ---
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://msadan:474747@students.jpwpnl5.mongodb.net/dicoding_db?retryWrites=true&w=majority&appName=Students';
 const CSV_SEPARATOR = ';'; 
-
-// URI Database
-const MONGO_URI = 'mongodb+srv://msadan:474747@students.jpwpnl5.mongodb.net/dicoding_db?retryWrites=true&w=majority&appName=Students';
 
 // --- IMPORT MODEL ---
 const Student = require('./models/Student');
 const Course = require('./models/Course');
 const LearningPath = require('./models/LearningPath');
 const Tutorial = require('./models/Tutorial');
+
+// [BARU] Import Model untuk file baru
+// Pastikan Anda sudah membuat file schema-nya di folder models!
 const CourseLevel = require('./models/CourseLevel'); 
+const LPCourse = require('./models/LPCourse'); // Model untuk file 'LP+course.csv'
 
-// Koneksi ke Database
-mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ Terhubung ke MongoDB Atlas'))
-    .catch(err => { 
-        console.error('❌ Gagal koneksi:', err); 
-        process.exit(1); 
-    });
+// --- KONEKSI DATABASE ---
+const connectDB = async () => {
+    try {
+        await mongoose.connect(MONGO_URI);
+        console.log('✅ Terhubung ke MongoDB Atlas');
+    } catch (err) {
+        console.error('❌ Gagal koneksi database:', err);
+        process.exit(1);
+    }
+};
 
-// Fungsi Import Generic
+// --- FUNGSI IMPORT CSV ---
 const importCSV = (fileName, Model) => {
     return new Promise((resolve, reject) => {
         const results = [];
-        const filePath = path.join(__dirname, `../src/public/data/${fileName}`);
+        const filePath = path.join(__dirname, '../src/public/data', fileName);
 
         console.log(`\n📂 Membaca file: ${fileName} ...`);
 
@@ -42,17 +48,19 @@ const importCSV = (fileName, Model) => {
             .pipe(csv({
                 separator: CSV_SEPARATOR,
                 mapHeaders: ({ header }) => header.trim().replace(/^\ufeff/, ''), 
-                mapValues: ({ value }) => value ? value.trim() : null
+                mapValues: ({ value }) => {
+                    if (!value) return null;
+                    const cleanValue = value.trim();
+                    return isNaN(Number(cleanValue)) ? cleanValue : Number(cleanValue);
+                }
             }))
             .on('data', (data) => {
-                if (Object.keys(data).length > 0) {
-                    results.push(data);
-                }
+                if (Object.keys(data).length > 0) results.push(data);
             })
             .on('end', async () => {
                 try {
                     if (results.length > 0) {
-                        await Model.deleteMany({});
+                        await Model.deleteMany({}); // Reset collection
                         await Model.insertMany(results);
                         console.log(`   ✅ SUKSES: ${results.length} data masuk ke '${Model.modelName}'`);
                     } else {
@@ -60,34 +68,47 @@ const importCSV = (fileName, Model) => {
                     }
                     resolve();
                 } catch (error) {
-                    console.error(`   ❌ Gagal simpan DB (${fileName}):`, error.message);
-                    reject(error);
+                    console.error(`   ❌ Gagal insert DB (${fileName}):`, error.message);
+                    resolve(); 
                 }
             })
             .on('error', (err) => {
-                console.error(`   ❌ Error baca file ${fileName}:`, err.message);
+                console.error(`   ❌ Error stream file ${fileName}:`, err.message);
                 reject(err);
             });
     });
 };
 
-// Fungsi Eksekusi Utama
+// --- EKSEKUSI UTAMA ---
 const runSeeding = async () => {
+    await connectDB();
+
+    console.log('🚀 Memulai proses seeding data...');
+
     try {
-        console.log('🚀 Memulai proses seeding data...');
+        // 1. Data Master / Referensi
+        await importCSV('learing path.csv', LearningPath);
+        await importCSV('course level.csv', CourseLevel); // [BARU] Course Level
         
-        await importCSV('learing path.csv', LearningPath); 
-        await importCSV('course level.csv', CourseLevel);
+        // 2. Data Utama
         await importCSV('course.csv', Course);
         await importCSV('tutorial.csv', Tutorial);
-        await importCSV('LP.csv', Student);
         
-        console.log('\n🎉 SEMUA PROSES SELESAI! Tekan Ctrl + C untuk keluar.');
-        process.exit();
+        // 3. Data Relasi / Mapping
+        await importCSV('LP+course.csv', LPCourse); // [BARU] LP + Course mapping
+        
+        // 4. Data Transaksi / User
+        // Menggunakan students.csv karena lebih sesuai untuk data user dibanding LP.csv
+        await importCSV('students.csv', Student); 
+
+        console.log('\n🎉 SEMUA PROSES SELESAI!');
     } catch (error) {
-        console.error('❌ Terjadi kesalahan fatal:', error);
-        process.exit(1);
-    }
+        console.error('❌ Terjadi kesalahan:', error);
+    } finally {
+        await mongoose.connection.close();
+        console.log('👋 Koneksi ditutup.');
+        process.exit();
+    }z
 };
 
 runSeeding();
