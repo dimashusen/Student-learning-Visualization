@@ -4,22 +4,27 @@ const csv = require('csv-parser');
 const path = require('path');
 
 // --- KONFIGURASI ---
-// Cek file CSV Anda di Notepad/Excel. Jika pemisahnya koma, gunakan ','. Jika titik koma, gunakan ';'.
-const CSV_SEPARATOR = ';'; // <--- GANTI INI JIKA MASIH GAGAL (Coba ',' atau ';')
+const CSV_SEPARATOR = ';'; 
 
-// Koneksi ke MongoDB Atlas
+// URI Database
 const MONGO_URI = 'mongodb+srv://msadan:474747@students.jpwpnl5.mongodb.net/dicoding_db?retryWrites=true&w=majority&appName=Students';
 
-// Import Model
+// --- IMPORT MODEL ---
 const Student = require('./models/Student');
 const Course = require('./models/Course');
 const LearningPath = require('./models/LearningPath');
 const Tutorial = require('./models/Tutorial');
+const CourseLevel = require('./models/CourseLevel'); 
 
+// Koneksi ke Database
 mongoose.connect(MONGO_URI)
     .then(() => console.log('✅ Terhubung ke MongoDB Atlas'))
-    .catch(err => { console.error('❌ Gagal koneksi:', err); process.exit(1); });
+    .catch(err => { 
+        console.error('❌ Gagal koneksi:', err); 
+        process.exit(1); 
+    });
 
+// Fungsi Import Generic
 const importCSV = (fileName, Model) => {
     return new Promise((resolve, reject) => {
         const results = [];
@@ -29,61 +34,55 @@ const importCSV = (fileName, Model) => {
 
         if (!fs.existsSync(filePath)) {
             console.warn(`⚠️  File TIDAK DITEMUKAN: ${filePath}`);
-            resolve();
+            resolve(); 
             return;
         }
 
         fs.createReadStream(filePath)
             .pipe(csv({
                 separator: CSV_SEPARATOR,
-                mapHeaders: ({ header }) => header.trim().replace(/^\ufeff/, ''), // Hapus BOM & Spasi
-                mapValues: ({ value }) => value ? value.trim() : null // Bersihkan spasi di data
+                mapHeaders: ({ header }) => header.trim().replace(/^\ufeff/, ''), 
+                mapValues: ({ value }) => value ? value.trim() : null
             }))
             .on('data', (data) => {
-                results.push(data);
+                if (Object.keys(data).length > 0) {
+                    results.push(data);
+                }
             })
             .on('end', async () => {
                 try {
-                    // --- DIAGNOSTIK: LOG DATA PERTAMA ---
                     if (results.length > 0) {
-                        console.log(`   🔍 Cek Sampel Data Pertama (${Model.modelName}):`);
-                        console.log(JSON.stringify(results[0], null, 2)); // Tampilkan data agar Anda bisa cek
-                    }
-                    
-                    if (results.length === 0) {
-                        console.warn(`   ⚠️  PERINGATAN: Tidak ada data terbaca! Coba ganti separator di kodingan.`);
-                    } else if (Object.keys(results[0]).length <= 1) {
-                        console.warn(`   ⚠️  PERINGATAN: Kolom tidak terdeteksi dengan benar! Data terlihat menyatu. Ganti CSV_SEPARATOR.`);
-                    } else {
-                        // Hapus data lama & Insert baru
                         await Model.deleteMany({});
                         await Model.insertMany(results);
-                        console.log(`   ✅ SUKSES: ${results.length} data masuk ke ${Model.modelName}`);
+                        console.log(`   ✅ SUKSES: ${results.length} data masuk ke '${Model.modelName}'`);
+                    } else {
+                        console.warn(`   ⚠️  KOSONG: Tidak ada data di ${fileName}`);
                     }
                     resolve();
                 } catch (error) {
-                    console.error(`   ❌ Gagal menyimpan ke DB:`, error.message);
+                    console.error(`   ❌ Gagal simpan DB (${fileName}):`, error.message);
                     reject(error);
                 }
             })
             .on('error', (err) => {
-                console.error(`   ❌ Error membaca file:`, err.message);
+                console.error(`   ❌ Error baca file ${fileName}:`, err.message);
                 reject(err);
             });
     });
 };
 
+// Fungsi Eksekusi Utama
 const runSeeding = async () => {
     try {
         console.log('🚀 Memulai proses seeding data...');
         
-        // Pastikan nama file di sini SAMA PERSIS dengan nama file di folder Anda
         await importCSV('learing path.csv', LearningPath); 
+        await importCSV('course level.csv', CourseLevel);
         await importCSV('course.csv', Course);
         await importCSV('tutorial.csv', Tutorial);
-        await importCSV('students.csv', Student);
+        await importCSV('LP.csv', Student);
         
-        console.log('\n🎉 SELESAI! Tekan Ctrl + C untuk keluar jika tidak otomatis.');
+        console.log('\n🎉 SEMUA PROSES SELESAI! Tekan Ctrl + C untuk keluar.');
         process.exit();
     } catch (error) {
         console.error('❌ Terjadi kesalahan fatal:', error);
