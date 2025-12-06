@@ -1,4 +1,5 @@
 // --- FUNGSI AMBIL USER UNTUK LOGIN ---
+
 // Helper: fallback CSV parser (semicolons)
 function parseCsvText(csvText) {
     const lines = csvText.split(/\r?\n/).filter(Boolean);
@@ -13,8 +14,25 @@ function parseCsvText(csvText) {
     });
 }
 
+// --- LOGIKA URL API OTOMATIS (BARU) ---
+function getApiUrl() {
+    const hostname = window.location.hostname;
+    
+    // 1. Jika dibuka di Localhost (Laptop), gunakan server lokal
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:3000';
+    }
+
+    // 2. Jika dibuka di Netlify (Internet), gunakan server Render
+    // 👇👇 GANTI INI DENGAN URL DARI RENDER ANDA NANTI 👇👇
+    return 'https://GANTI-DENGAN-URL-RENDER-ANDA.onrender.com'; 
+}
+
 async function fetchStudentsFromAPI() {
-    const response = await fetch('http://localhost:3000/api/students');
+    const BASE_URL = getApiUrl(); // Ambil URL yang sesuai (Local atau Render)
+    console.log(`Menghubungkan ke server: ${BASE_URL}`); // Debugging info
+
+    const response = await fetch(`${BASE_URL}/api/students`);
     if (!response.ok) throw new Error('Gagal mengambil data dari server');
     return response.json();
 }
@@ -45,6 +63,7 @@ export async function getUsers() {
             allStudents = await fetchStudentsFromAPI();
         } catch (errApi) {
             // If API fails, fallback to CSV in public folder
+            console.warn('API Error, mencoba Fallback CSV...', errApi);
             try {
                 allStudents = await fetchStudentsFromCSV();
             } catch (errCsv) {
