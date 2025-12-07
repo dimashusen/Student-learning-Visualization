@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config();
+const path = require('path');
 
 // Import Model
 const Student = require('./models/Student');
@@ -10,27 +10,14 @@ const LearningPath = require('./models/LearningPath');
 const Tutorial = require('./models/Tutorial');
 
 const app = express();
+// PENTING: Railway akan memberikan PORT otomatis ke process.env.PORT
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI;
 
-// --- KONFIGURASI CORS (PENTING) ---
-// Mengizinkan Frontend (Netlify/Localhost) mengambil data
-app.use(cors({
-    origin: '*', // Setelah deploy sukses, bisa diganti dengan URL Netlify Anda agar lebih aman
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type']
-}));
+// PENTING: Gunakan Environment Variable untuk URI, fallback ke string hardcode untuk lokal
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://msadan:474747@students.jpwpnl5.mongodb.net/dicoding_db?retryWrites=true&w=majority&appName=Students';
 
+app.use(cors()); // Mengizinkan akses dari semua domain (termasuk Netlify nanti)
 app.use(express.json());
-
-// --- DATABASE CONNECT ---
-if (!MONGO_URI) {
-    console.error("❌ FATAL: MONGO_URI tidak ditemukan di Environment Variables.");
-} else {
-    mongoose.connect(MONGO_URI)
-        .then(() => console.log('✅ Connected to MongoDB Atlas'))
-        .catch(err => console.error('❌ MongoDB Error:', err));
-}
 
 // --- API ENDPOINTS ---
 
@@ -38,35 +25,43 @@ app.get('/api/students', async (req, res) => {
     try {
         const students = await Student.find();
         res.json(students);
-    } catch (error) { res.status(500).json({ error: error.message }); }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 app.get('/api/courses', async (req, res) => {
     try {
         const courses = await Course.find();
         res.json(courses);
-    } catch (error) { res.status(500).json({ error: error.message }); }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 app.get('/api/paths', async (req, res) => {
     try {
         const paths = await LearningPath.find();
         res.json(paths);
-    } catch (error) { res.status(500).json({ error: error.message }); }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 app.get('/api/tutorials', async (req, res) => {
     try {
         const tutorials = await Tutorial.find();
         res.json(tutorials);
-    } catch (error) { res.status(500).json({ error: error.message }); }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// Route Default untuk Cek Server
+// Route default untuk cek server menyala
 app.get('/', (req, res) => {
-    res.send('Backend API Running... Silakan akses frontend via Netlify.');
+    res.send('Server Backend Berjalan! Silakan akses endpoint API.');
 });
 
 app.listen(PORT, () => {
-    console.log(`Server API berjalan di port ${PORT}`);
+    console.log(`Server berjalan di port ${PORT}`);
 });

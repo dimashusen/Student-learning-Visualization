@@ -14,7 +14,7 @@ function parseCsvText(csvText) {
     });
 }
 
-// --- LOGIKA URL API OTOMATIS (BARU) ---
+// --- KONFIGURASI URL API (OTOMATIS) ---
 function getApiUrl() {
     const hostname = window.location.hostname;
     
@@ -23,14 +23,14 @@ function getApiUrl() {
         return 'http://localhost:3000';
     }
 
-    // 2. Jika dibuka di Netlify (Internet), gunakan server Render
-    // 👇👇 GANTI INI DENGAN URL DARI RENDER ANDA NANTI 👇👇
-    return 'https://GANTI-DENGAN-URL-RENDER-ANDA.onrender.com'; 
+    // 2. Jika dibuka di Netlify (Production), gunakan server Railway
+    // ⚠️ PENTING: Ganti URL di bawah ini dengan URL Backend Railway Anda setelah deploy!
+    return 'https://GANTI-DENGAN-URL-RAILWAY-ANDA.up.railway.app'; 
 }
 
 async function fetchStudentsFromAPI() {
-    const BASE_URL = getApiUrl(); // Ambil URL yang sesuai (Local atau Render)
-    console.log(`Menghubungkan ke server: ${BASE_URL}`); // Debugging info
+    const BASE_URL = getApiUrl(); // Otomatis pilih Local atau Railway
+    // console.log(`Menghubungkan ke server: ${BASE_URL}`); // Uncomment jika ingin debugging
 
     const response = await fetch(`${BASE_URL}/api/students`);
     if (!response.ok) throw new Error('Gagal mengambil data dari server');
@@ -38,8 +38,7 @@ async function fetchStudentsFromAPI() {
 }
 
 async function fetchStudentsFromCSV() {
-    // Try to fetch the CSV directly from public folder.
-    // When served via a static server, the path is '/public/data/students.csv' from the 'src' folder.
+    // Mencoba mengambil CSV langsung dari folder public
     const paths = ['./public/data/students.csv', './data/students.csv', '/public/data/students.csv', '/src/public/data/students.csv'];
     for (const p of paths) {
         try {
@@ -60,9 +59,10 @@ export async function getUsers() {
     try {
         let allStudents = [];
         try {
+            // Prioritas 1: Coba ambil dari API (Railway/Localhost)
             allStudents = await fetchStudentsFromAPI();
         } catch (errApi) {
-            // If API fails, fallback to CSV in public folder
+            // Prioritas 2: Jika API mati/gagal, ambil dari file CSV (Fallback)
             console.warn('API Error, mencoba Fallback CSV...', errApi);
             try {
                 allStudents = await fetchStudentsFromCSV();
@@ -111,7 +111,6 @@ export async function getStudentRecord(targetEmail) {
 }
 
 export async function getLearningPaths() {
-    // Try common locations for the learning path CSV (note the repo file is named 'learing path.csv')
     const pathsToTry = ['./public/data/learing path.csv', './public/data/LP.csv', '/public/data/learing path.csv', './data/learing path.csv'];
     for (const p of pathsToTry) {
         try {
@@ -272,9 +271,7 @@ export async function getLpCourse() {
             if (!resp.ok) continue;
             const text = await resp.text();
             const parsed = parseCsvText(text);
-            // Build two structures:
-            // 1) courseMap: course_name -> { learning_path_name, course_level_str, tutorials }
-            // 2) lpCourseOrder: learning_path_name -> [ course_name (in file order) ]
+            
             const courseMap = new Map();
             const lpCourseOrder = new Map();
 
