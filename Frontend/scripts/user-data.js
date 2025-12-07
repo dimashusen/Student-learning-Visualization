@@ -14,7 +14,7 @@ function parseCsvText(csvText) {
     });
 }
 
-// --- KONFIGURASI URL API (OTOMATIS) ---
+// --- LOGIKA URL API OTOMATIS ---
 function getApiUrl() {
     const hostname = window.location.hostname;
     
@@ -23,22 +23,28 @@ function getApiUrl() {
         return 'http://localhost:3000';
     }
 
-    // 2. Jika dibuka di Netlify (Production), gunakan server Railway
-    // ⚠️ PENTING: Ganti URL di bawah ini dengan URL Backend Railway Anda setelah deploy!
-    return 'https://GANTI-DENGAN-URL-RAILWAY-ANDA.up.railway.app'; 
+    // 2. Jika dibuka di Internet (Netlify/Production), gunakan server Vercel
+    // ⚠️ PENTING: Ganti URL di bawah ini dengan URL Vercel Anda setelah deploy backend!
+    // Contoh: 'https://backend-siswa-saya.vercel.app'
+    return 'https://GANTI-DENGAN-DOMAIN-VERCEL-ANDA.vercel.app'; 
 }
 
 async function fetchStudentsFromAPI() {
-    const BASE_URL = getApiUrl(); // Otomatis pilih Local atau Railway
-    // console.log(`Menghubungkan ke server: ${BASE_URL}`); // Uncomment jika ingin debugging
+    const BASE_URL = getApiUrl();
+    // console.log(`Menghubungkan ke server: ${BASE_URL}`); // Uncomment untuk debug
 
-    const response = await fetch(`${BASE_URL}/api/students`);
-    if (!response.ok) throw new Error('Gagal mengambil data dari server');
-    return response.json();
+    try {
+        const response = await fetch(`${BASE_URL}/api/students`);
+        if (!response.ok) throw new Error('Gagal mengambil data dari server');
+        return await response.json();
+    } catch (error) {
+        throw error;
+    }
 }
 
 async function fetchStudentsFromCSV() {
-    // Mencoba mengambil CSV langsung dari folder public
+    // Mencoba mengambil CSV langsung dari folder public (sebagai fallback)
+    // Path disesuaikan untuk berbagai kemungkinan struktur folder
     const paths = ['./public/data/students.csv', './data/students.csv', '/public/data/students.csv', '/src/public/data/students.csv'];
     for (const p of paths) {
         try {
@@ -59,10 +65,10 @@ export async function getUsers() {
     try {
         let allStudents = [];
         try {
-            // Prioritas 1: Coba ambil dari API (Railway/Localhost)
+            // Prioritas 1: Ambil dari API (Vercel atau Localhost)
             allStudents = await fetchStudentsFromAPI();
         } catch (errApi) {
-            // Prioritas 2: Jika API mati/gagal, ambil dari file CSV (Fallback)
+            // Prioritas 2: Jika API mati/gagal, ambil dari CSV (Fallback)
             console.warn('API Error, mencoba Fallback CSV...', errApi);
             try {
                 allStudents = await fetchStudentsFromCSV();
@@ -75,7 +81,7 @@ export async function getUsers() {
             if (student.email && student.name) {
                 const email = student.email.toLowerCase().trim();
                 const name = student.name.trim();
-                // include learning_path_id if available so login can persist it
+                // sertakan learning_path_id agar login bisa menyimpannya
                 const learning_path_id = student.learning_path_id ? String(student.learning_path_id).trim() : '';
                 usersMap.set(email, { name: name, email, learning_path_id });
             }
@@ -86,7 +92,8 @@ export async function getUsers() {
     return Array.from(usersMap.values());
 }
 
-// --- FUNCTIONS TO ACCESS RAW STUDENT RECORDS AND LEARNING PATHS ---
+// --- FUNGSI UNTUK AKSES DATA STUDENT & LEARNING PATH ---
+
 export async function getStudentRecord(targetEmail) {
     try {
         let allStudents = [];
