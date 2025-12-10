@@ -13,11 +13,24 @@ const Tutorial = require('./models/Tutorial');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// --- CORS CONFIGURATION ---
+const corsOptions = {
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'https://my-visualization.vercel.app',
+        'https://student-learning-visualization.netlify.app'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+app.use(express.json());
+
 // URI MongoDB
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://msadan:474747@students.jpwpnl5.mongodb.net/dicoding_db?retryWrites=true&w=majority&appName=Students';
-
-app.use(cors());
-app.use(express.json());
 
 // Serve Static Files dari Frontend folder
 app.use(express.static(path.join(__dirname, '../Frontend')));
