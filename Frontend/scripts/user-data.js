@@ -24,9 +24,7 @@ function getApiUrl() {
     }
 
     // 2. Jika dibuka di Internet (Netlify/Production), gunakan server Vercel
-    // ⚠️ PENTING: Ganti URL di bawah ini dengan URL Vercel Anda setelah deploy backend!
-    // Contoh: 'https://backend-siswa-saya.vercel.app'
-    return 'https://GANTI-DENGAN-DOMAIN-VERCEL-ANDA.vercel.app'; 
+    return 'https://my-visualization.vercel.app'; 
 }
 
 async function fetchStudentsFromAPI() {

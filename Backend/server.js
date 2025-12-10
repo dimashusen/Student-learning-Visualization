@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
+const open = require('open').default || require('open');
 
 // Import Model
 const Student = require('./models/Student');
@@ -17,6 +18,9 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://msadan:474747@students
 
 app.use(cors());
 app.use(express.json());
+
+// Serve Static Files dari Frontend folder
+app.use(express.static(path.join(__dirname, '../Frontend')));
 
 // --- DATABASE CONNECTION ---
 // Kita bungkus agar koneksi reused di lingkungan serverless
@@ -37,7 +41,7 @@ connectDB();
 // --- API ENDPOINTS ---
 
 app.get('/', (req, res) => {
-    res.send('Server Backend Vercel Berjalan! Silakan akses /api/students dll.');
+    res.sendFile(path.join(__dirname, '../Frontend/index.html'));
 });
 
 app.get('/api/students', async (req, res) => {
@@ -87,7 +91,10 @@ module.exports = app;
 // --- PENTING UNTUK LOCALHOST ---
 // Kode ini hanya jalan jika file dijalankan langsung (node server.js), bukan diimport Vercel
 if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`Server berjalan di http://localhost:${PORT}`);
+    app.listen(PORT, async () => {
+        const url = `http://localhost:${PORT}`;
+        console.log(`Server berjalan di ${url}`);
+        console.log('Opening browser...');
+        await open(url);
     });
 }
