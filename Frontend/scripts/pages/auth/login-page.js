@@ -10,10 +10,10 @@ const LoginPage = {
           
           <form id="loginForm" class="auth-form">
             <div class="form-group">
-              <input type="email" id="inputEmail" class="form-input" placeholder="Email (ex: citra.wibowo173@example.com)" required>
+              <input type="email" id="inputEmail" class="form-input" placeholder="Email " required>
             </div>
             <div class="form-group">
-              <input type="password" id="inputPassword" class="form-input" placeholder="Password (Default: 123456)" required>
+              <input type="password" id="inputPassword" class="form-input" placeholder="Password " required>
             </div>
             <div class="form-options">
               <label class="remember-me"><input type="checkbox"> Remember Me</label>
