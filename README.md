@@ -1,108 +1,146 @@
 # Student Learning Progress Visualization
 
-## Deskripsi Proyek
-
-Student Learning Progress Visualization merupakan aplikasi berbasis web yang dirancang untuk membantu siswa memantau progres belajar secara transparan dan terstruktur. Aplikasi ini menampilkan visualisasi progres pembelajaran, milestone pencapaian, serta rekomendasi langkah pembelajaran selanjutnya agar siswa tetap termotivasi dan terarah dalam menyelesaikan modul pembelajaran.
-
-Proyek ini dikembangkan sebagai bagian dari **Capstone Project Asah led by Dicoding in association with Accenture**.
+**ID Tim:** A25-CS175  
+**Kategori:** Capstone Project – Asah (Dicoding in association with Accenture)
 
 ---
 
-## Teknologi yang Digunakan
+## 📝 Deskripsi Proyek
+Platform pembelajaran digital saat ini menghadapi tantangan berupa kurangnya kejelasan progres belajar siswa, rendahnya motivasi dalam menyelesaikan modul, serta minimnya panduan yang jelas mengenai langkah pembelajaran selanjutnya.
 
-* **Frontend**: React.js
-* **Backend**: Node.js (Express.js)
-* **Database**: MongoDB / MySQL
-* **Deployment Backend**: Vercel
-* **Deployment Frontend**: Netlify
+Melalui proyek **Student Learning Progress Visualization**, tim kami merancang sistem yang mampu:
+- Menampilkan progres belajar siswa secara transparan,
+- Menyediakan *milestone* capaian pembelajaran yang memotivasi,
+- Memberikan rekomendasi langkah pembelajaran berikutnya secara terarah.
+
+Solusi ini bertujuan untuk meningkatkan *engagement*, retensi pengguna, serta tingkat penyelesaian program (*completion rate*) pada platform pembelajaran digital.
+
+**Status Proyek:** ✅ 100% Selesai  
+**Deployment:** Backend menggunakan **Vercel**, Frontend menggunakan **Netlify**
 
 ---
 
-## Cara Instalasi dan Penyiapan Proyek
+## 🛠️ Teknologi yang Digunakan
+Berdasarkan pengembangan dan hasil mentoring:
+
+- **Frontend:** React.js (UI modern dan responsif)
+- **Backend:** Node.js dengan Express.js / Hapi.js
+- **Database:** MySQL / MongoDB
+- **Deployment:**  
+  - Backend: Vercel  
+  - Frontend: Netlify  
+
+---
+
+## ⚙️ Cara Instalasi dan Penyiapan Proyek (Installation)
+
+Ikuti langkah-langkah berikut untuk menjalankan proyek di lingkungan lokal:
 
 ### 1. Clone Repository
-
 ```bash
-git clone <repository-url>
-cd student-learning-progress-visualization
-```
+git clone [MASUKKAN_URL_GITHUB_ANDA_DISINI]
+cd [NAMA_FOLDER_PROYEK]
 
-### 2. Instalasi Dependensi
+## 2. Instalasi Dependensi
 
-#### Backend
+Proyek ini memisahkan **frontend** dan **backend**, sehingga instalasi dependensi dilakukan secara terpisah.
+
+### Backend
 
 ```bash
 cd backend
 npm install
 ```
 
-#### Frontend
+### Frontend
 
 ```bash
-cd frontend
+cd ../frontend
 npm install
 ```
 
-### 3. Konfigurasi Environment
+---
 
-Buat file `.env` pada folder backend dan sesuaikan dengan konfigurasi lokal masing-masing.
+## 3. Konfigurasi Environment Variable
 
-Contoh variabel environment:
+Buat file `.env` di folder **backend** (dan frontend jika diperlukan), lalu sesuaikan dengan konfigurasi lokal.
+
+### Contoh Konfigurasi
 
 ```env
 PORT=5000
 DATABASE_URL=your_database_url
 ```
 
-> **Catatan:** Jangan mencantumkan credential, API key, password, atau data sensitif lainnya ke dalam repository.
+⚠️ **PERINGATAN KEAMANAN (WAJIB):**
+Jangan mencantumkan credential asli seperti **password database, API key, token, atau data sensitif lainnya** ke dalam repository GitHub.
+Pastikan file `.env` telah dimasukkan ke dalam `.gitignore`.
 
-### 4. Menjalankan Aplikasi
+---
+
+## 📖 Petunjuk Penggunaan Aplikasi (Usage)
+
+### Menjalankan Aplikasi Secara Lokal
 
 #### Menjalankan Backend
 
 ```bash
-npm run start
+# di folder backend
+npm start
 ```
 
 #### Menjalankan Frontend
 
 ```bash
-npm run dev
+# di folder frontend
+npm run start
 ```
 
-Aplikasi frontend dapat diakses melalui browser setelah server berhasil dijalankan.
+#### Akses Aplikasi
+
+```text
+http://localhost:3000
+```
+
+> Sesuaikan dengan port yang muncul di terminal.
 
 ---
 
-## Petunjuk Penggunaan Aplikasi
+## ✨ Fitur Utama
 
-1. Pengguna dapat melihat **progres pembelajaran** dalam bentuk visualisasi yang mudah dipahami.
-2. Sistem menampilkan **milestone pembelajaran** untuk membantu siswa mengetahui capaian yang telah diraih.
-3. Aplikasi memberikan **rekomendasi langkah selanjutnya** berdasarkan progres belajar yang telah dicapai.
-4. Informasi ditampilkan secara terstruktur untuk meningkatkan motivasi dan keterlibatan pengguna dalam proses belajar.
-
----
-
-## Informasi Tambahan
-
-* Proyek ini berfokus pada peningkatan *engagement*, *retention*, dan *completion rate* siswa.
-* Dokumentasi disusun sebagai bagian dari kewajiban Capstone Project dan dapat dikembangkan lebih lanjut.
-* Seluruh data yang digunakan bersifat non-sensitif dan aman untuk keperluan pembelajaran.
+* **Dashboard Progres**
+  Menampilkan visualisasi capaian pembelajaran siswa.
+* **Milestone Pembelajaran**
+  Menunjukkan target pembelajaran yang telah diselesaikan.
+* **Rekomendasi Pembelajaran**
+  Memberikan saran modul selanjutnya berdasarkan progres belajar.
 
 ---
 
-## Tim Pengembang
+## 👥 Tim Pengembang (A25-CS175)
 
-* (F248D5Y0489) - Dimas Husen - Front-End Web & Back-End with AI
-* (F248D5Y0589) - Fardan Zaindi A - Front-End Web & Back-End with AI
-* (F248D5Y0579) - Fajar Nugroho - Front-End Web & Back-End with AI
-* (F248D5X0395) - Cinda Kamilah H - Front-End Web & Back-End with AI
-* (F248D5X0238) - Anis Setiawati - Front-End Web & Back-End with AI
+* **(F248D5Y0489)** – Dimas Husen – Front-End Web & Back-End with AI
+* **(F248D5Y0589)** – Fardan Zaindi A – Front-End Web & Back-End with AI
+* **(F248D5Y0579)** – Fajar Nugroho – Front-End Web & Back-End with AI
+* **(F248D5X0395)** – Cinda Kamilah H – Front-End Web & Back-End with AI
+* **(F248D5X0238)** – Anis Setiawati – Front-End Web & Back-End with AI
 
-Advisor: [A25-FB002] - Monterico Adrian
+**Advisor:**
+[A25-FB002] – Monterico Adrian
 
 ---
 
-## Lisensi
+## 🔗 Tautan Penting
 
-Proyek ini dikembangkan untuk keperluan edukasi dan Capstone Project Asah by Dicoding.
+* **Video Pitching:** [https://youtu.be/la1l5-pr0Mc?si=y-YxuxSdZ5srNQfH)
+* **Deployment Frontend:** [https://student-learning-visualization.netlify.app/ done]
+* **Deployment Backend:** [https://my-visualization.vercel.app/]
+
+---
+
+## 📌 Catatan
+
+* Proyek ini dikembangkan untuk keperluan edukasi dan **Capstone Project Asah by Dicoding**.
+
+
+
